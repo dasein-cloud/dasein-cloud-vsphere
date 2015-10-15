@@ -643,9 +643,27 @@ public class Vm extends AbstractVMSupport<PrivateCloud> {
                             userData.setFullName(options.getWinOwnerName());
                             userData.setOrgName(options.getWinOrgName());
                             String serial = options.getWinProductSerialNum();
+                            log.debug("Found win license key: "+serial);
+                            log.debug("Guest os version: "+ template.getConfig().getGuestFullName());
+                            String guestOS = template.getConfig().getGuestFullName();
                             if (serial == null || serial.trim().length() <= 0) {
                                 log.warn("Product license key not specified in launch options. Trying to get default.");
-                                serial = getWindowsProductLicenseForOSEdition(template.getConfig().getGuestFullName());
+                                CustomFieldValue[] customValues = template.getCustomValue();
+                                for (CustomFieldValue value : customValues) {
+                                    if (value instanceof CustomFieldStringValue) {
+                                        CustomFieldStringValue string = (CustomFieldStringValue) value;
+                                        if (string.getValue().contains("2k12r2")) {
+                                            guestOS = "Windows Server 2012 R2 Server Standard";
+                                            log.debug("Found custom value specifying "+string.getValue());
+                                            break;
+                                        }
+                                    }
+                                }
+                                serial = getWindowsProductLicenseForOSEdition(guestOS);
+                                log.debug("License key found for guest OS version: " + serial);
+                            }
+                            else {
+                                log.debug("Using the user provided key: "+serial);
                             }
                             userData.setProductId(serial);
                             sysprep.setUserData(userData);

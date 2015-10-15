@@ -1,6 +1,7 @@
 package org.dasein.cloud.vsphere.compute;
 
 import com.vmware.vim25.*;
+import org.apache.log4j.Logger;
 import org.dasein.cloud.CloudException;
 import org.dasein.cloud.InternalException;
 import org.dasein.cloud.ProviderContext;
@@ -14,11 +15,13 @@ import org.dasein.cloud.util.Cache;
 import org.dasein.cloud.util.CacheLevel;
 import org.dasein.cloud.vsphere.*;
 import org.dasein.cloud.vsphere.capabilities.VmCapabilities;
+import org.dasein.util.CalendarWrapper;
 import org.dasein.util.uom.storage.Gigabyte;
 import org.dasein.util.uom.storage.Megabyte;
 import org.dasein.util.uom.storage.Storage;
 import org.dasein.util.uom.time.Day;
 import org.dasein.util.uom.time.Minute;
+import org.dasein.util.uom.time.Second;
 import org.dasein.util.uom.time.TimePeriod;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,6 +38,7 @@ import java.util.*;
 
 
 public class Vm extends AbstractVMSupport<Vsphere> {
+    static private final Logger logger = Vsphere.getLogger(Vm.class);
     Vsphere provider = null;
     private List<PropertySpec> virtualMachinePSpec;
     private List<PropertySpec> rpPSpecs;
@@ -45,6 +49,82 @@ public class Vm extends AbstractVMSupport<Vsphere> {
         super(provider);
         this.provider = provider;
         dc = provider.getDataCenterServices();
+    }
+
+    @Nonnull
+    @Override
+    public VirtualMachine alterVirtualMachineSize(@Nonnull String virtualMachineId, @Nullable String cpuCount, @Nullable String ramInMB) throws InternalException, CloudException {
+        APITrace.begin(getProvider(), "Vm.alterVirtualMachineSize");
+        try {
+            VirtualMachine vm = getVirtualMachine(virtualMachineId);
+            if( vm == null ) {
+                throw new CloudException("Unable to find vm with id " + virtualMachineId);
+            }
+
+            if( cpuCount == null && ramInMB == null ) {
+                throw new CloudException("No cpu count or ram change provided");
+            }
+            int cpuCountVal;
+            long memoryVal;
+
+
+            VirtualMachineConfigSpec spec = new VirtualMachineConfigSpec();
+            if( ramInMB != null ) {
+                memoryVal = Long.parseLong(ramInMB);
+                spec.setMemoryMB(memoryVal);
+            }
+            if( cpuCount != null ) {
+                cpuCountVal = Integer.parseInt(cpuCount);
+                spec.setNumCPUs(cpuCountVal);
+                spec.setCpuHotAddEnabled(true);
+                spec.setNumCoresPerSocket(cpuCountVal);
+            }
+
+            ManagedObjectReference vmRef = new ManagedObjectReference();
+            vmRef.setValue(virtualMachineId);
+            vmRef.setType("VirtualMachine");
+
+            CloudException lastError;
+            ManagedObjectReference taskMor = reconfigVMTask(vmRef, spec);
+            VsphereMethod method = new VsphereMethod(provider);
+            TimePeriod interval = new TimePeriod<Second>(15, TimePeriod.SECOND);
+
+            if( taskMor != null && !method.getOperationComplete(taskMor, interval, 4) ) {
+                long timeout = System.currentTimeMillis() + ( CalendarWrapper.MINUTE * 20L );
+
+                while( System.currentTimeMillis() < timeout ) {
+                    try {
+                        Thread.sleep(10000L);
+                    }
+                    catch( InterruptedException ignore ) {
+                    }
+
+                    for( VirtualMachine s : listVirtualMachines() ) {
+                        if( s.getProviderVirtualMachineId().equals(virtualMachineId) ) {
+                            return s;
+                        }
+                    }
+                }
+                lastError = new CloudException("Unable to identify updated server.");
+            }
+            else {
+                lastError = new CloudException("Failed to update VM: " + method.getTaskError().getVal());
+            }
+            if( lastError != null ) {
+                throw lastError;
+            }
+            throw new CloudException("No server and no error");
+        }
+        finally {
+            APITrace.end();
+        }
+    }
+
+    @Nonnull
+    @Override
+    public VirtualMachine clone(@Nonnull String vmId, @Nonnull String intoDcId, @Nonnull String name, @Nonnull String description, boolean powerOn, @Nullable String... firewallIds) throws InternalException, CloudException {
+        //todo WIP
+        return super.clone(vmId, intoDcId, name, description, powerOn, firewallIds);
     }
 
     public RetrieveResult retrieveObjectList(Vsphere provider, @Nonnull String baseFolder, @Nullable List<SelectionSpec> selectionSpecsArr, @Nonnull List<PropertySpec> pSpecs) throws InternalException, CloudException {
@@ -366,8 +446,6 @@ public class Vm extends AbstractVMSupport<Vsphere> {
             //get attached volumes
             List<PropertySpec> pSpecs = getVirtualMachinePSpec();
             RetrieveResult listobcont = retrieveObjectList(provider, "vmFolder", null, pSpecs);
-            ObjectManagement om = new ObjectManagement();
-            om.writeJsonFile(listobcont, "src/test/resources/VirtualMachine/virtualMachines.json");
 
             if (listobcont != null) {
                 Iterable<ResourcePool> rps = getAllResourcePoolsIncludingRoot();//return all resourcePools
@@ -375,8 +453,10 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                 List<ObjectContent> objectContents = listobcont.getObjects();
                 for (ObjectContent oc : objectContents) {
                     boolean isTemplate = false;
+
                     ManagedObjectReference vmRef = oc.getObj();
                     String vmId = vmRef.getValue();
+
                     List<DynamicProperty> dps = oc.getPropSet();
                     VirtualMachineConfigInfo vmInfo = null;
                     ManagedObjectReference rpRef = null, parentRef = null;
@@ -435,7 +515,6 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                                 }
                                 if (vm.getProviderDataCenterId() != null) {
                                     vm.setTag("vmFolder", vmFolderName);
-                                    vm.setAffinityGroupId(getHost(dataCenterId, vmRuntimeInfo));
                                     vm.setResourcePoolId(rpRef.getValue());
                                     list.add(vm);
                                 }
@@ -452,13 +531,186 @@ public class Vm extends AbstractVMSupport<Vsphere> {
     }
 
     @Override
+    public void reboot(@Nonnull String vmId) throws CloudException, InternalException {
+        APITrace.begin(provider, "Vm.reboot");
+        try {
+            VirtualMachine vm = getVirtualMachine(vmId);
+            if (vm == null) {
+                throw new CloudException("Unable to find vm with id "+vmId);
+            }
+
+            ManagedObjectReference vmRef = new ManagedObjectReference();
+            vmRef.setType("VirtualMachine");
+            vmRef.setValue(vmId);
+
+            VsphereConnection vsphereConnection = provider.getServiceInstance();
+            VimPortType vimPortType = vsphereConnection.getVimPort();
+            try {
+                vimPortType.rebootGuest(vmRef);
+            } catch (InvalidStateFaultMsg invalidStateFaultMsg) {
+                throw new CloudException("InvalidStateFaultMsg when rebooting vm", invalidStateFaultMsg);
+            } catch (RuntimeFaultFaultMsg runtimeFaultFaultMsg) {
+                throw new CloudException("RuntimeFaultFaultMsg when rebooting vm", runtimeFaultFaultMsg);
+            } catch (TaskInProgressFaultMsg taskInProgressFaultMsg) {
+                throw new CloudException("TaskInProgressFaultMsg when rebooting vm", taskInProgressFaultMsg);
+            } catch (ToolsUnavailableFaultMsg toolsUnavailableFaultMsg) {
+                throw new CloudException("ToolsUnavailableFaultMsg when rebooting vm", toolsUnavailableFaultMsg);
+            }
+
+        }
+        finally {
+            APITrace.end();
+        }
+    }
+
+    @Override
+    public void resume(@Nonnull String vmId) throws CloudException, InternalException {
+        APITrace.begin(provider, "Vm.resume");
+        try {
+            VirtualMachine vm = getVirtualMachine(vmId);
+            if (vm == null) {
+                throw new CloudException("Unable to find vm with id "+vmId);
+            }
+
+            ManagedObjectReference vmRef = new ManagedObjectReference();
+            vmRef.setType("VirtualMachine");
+            vmRef.setValue(vmId);
+
+            ManagedObjectReference hostRef = new ManagedObjectReference();
+            vmRef.setType("HostSystem");
+            vmRef.setValue(vm.getAffinityGroupId());
+
+            VsphereConnection vsphereConnection = provider.getServiceInstance();
+            VimPortType vimPortType = vsphereConnection.getVimPort();
+            try {
+                vimPortType.powerOnVMTask(vmRef, hostRef);
+            } catch (FileFaultFaultMsg fileFaultFaultMsg) {
+                throw new CloudException("FileFaultFaultMsg when resuming vm", fileFaultFaultMsg);
+            } catch (InsufficientResourcesFaultFaultMsg insufficientResourcesFaultFaultMsg) {
+                throw new CloudException("InsufficientResourcesFaultFaultMsg when resuming vm", insufficientResourcesFaultFaultMsg);
+            } catch (InvalidStateFaultMsg invalidStateFaultMsg) {
+                throw new CloudException("InvalidStateFaultMsg when resuming vm", invalidStateFaultMsg);
+            } catch (RuntimeFaultFaultMsg runtimeFaultFaultMsg) {
+                throw new CloudException("RuntimeFaultFaultMsg when resuming vm", runtimeFaultFaultMsg);
+            } catch (TaskInProgressFaultMsg taskInProgressFaultMsg) {
+                throw new CloudException("TaskInProgressFaultMsg when resuming vm", taskInProgressFaultMsg);
+            } catch (VmConfigFaultFaultMsg vmConfigFaultFaultMsg) {
+                throw new CloudException("VmConfigFaultFaultMsg when resuming vm", vmConfigFaultFaultMsg);
+            }
+
+        }
+        finally {
+            APITrace.end();
+        }
+    }
+
+    @Override
     public void start(@Nonnull String vmId) throws InternalException, CloudException {
-        super.start(vmId);
+        APITrace.begin(provider, "Vm.start");
+        try {
+            VirtualMachine vm = getVirtualMachine(vmId);
+            if (vm == null) {
+                throw new CloudException("Unable to find vm with id "+vmId);
+            }
+            ManagedObjectReference vmRef = new ManagedObjectReference();
+            vmRef.setValue(vmId);
+            vmRef.setType("VirtualMachine");
+
+            String hostId = vm.getAffinityGroupId();
+            if (hostId != null) {
+                ManagedObjectReference hostRef = new ManagedObjectReference();
+                hostRef.setType("HostSystem");
+                hostRef.setValue(hostId);
+
+                VsphereConnection vsphereConnection = provider.getServiceInstance();
+                VimPortType vimPortType = vsphereConnection.getVimPort();
+
+                try {
+                    vimPortType.powerOnVMTask(vmRef, hostRef);
+                } catch (FileFaultFaultMsg fileFaultFaultMsg) {
+                    throw new CloudException("FileFaultFaultMsg when starting vm", fileFaultFaultMsg);
+                } catch (InsufficientResourcesFaultFaultMsg insufficientResourcesFaultFaultMsg) {
+                    throw new CloudException("InsufficientResourcesFaultFaultMsg when starting vm", insufficientResourcesFaultFaultMsg);
+                } catch (InvalidStateFaultMsg invalidStateFaultMsg) {
+                    throw new CloudException("InvalidStateFaultMsg when starting vm", invalidStateFaultMsg);
+                } catch (RuntimeFaultFaultMsg runtimeFaultFaultMsg) {
+                    throw new CloudException("RuntimeFaultFaultMsg when starting vm", runtimeFaultFaultMsg);
+                } catch (TaskInProgressFaultMsg taskInProgressFaultMsg) {
+                    throw new CloudException("TaskInProgressFaultMsg when starting vm", taskInProgressFaultMsg);
+                } catch (VmConfigFaultFaultMsg vmConfigFaultFaultMsg) {
+                    throw new CloudException("VmConfigFaultFaultMsg when starting vm", vmConfigFaultFaultMsg);
+                }
+            }
+        }
+        finally {
+            APITrace.end();
+        }
     }
 
     @Override
     public void stop(@Nonnull String vmId, boolean force) throws InternalException, CloudException {
-        super.stop(vmId, force);
+        APITrace.begin(provider, "Vm.stop");
+        try {
+            VirtualMachine vm = getVirtualMachine(vmId);
+            if (vm == null) {
+                throw new CloudException("Unable to find vm with id "+vmId);
+            }
+            ManagedObjectReference vmRef = new ManagedObjectReference();
+            vmRef.setValue(vmId);
+            vmRef.setType("VirtualMachine");
+
+            VsphereConnection vsphereConnection = provider.getServiceInstance();
+            VimPortType vimPortType = vsphereConnection.getVimPort();
+            try {
+                if (force) {
+                    vimPortType.powerOffVMTask(vmRef);
+                }
+                else {
+                    vimPortType.shutdownGuest(vmRef);
+                }
+            } catch (InvalidStateFaultMsg invalidStateFaultMsg) {
+                throw new CloudException("InvalidStateFaultMsg when stopping vm", invalidStateFaultMsg);
+            } catch (RuntimeFaultFaultMsg runtimeFaultFaultMsg) {
+                throw new CloudException("RuntimeFaultFaultMsg when stopping vm", runtimeFaultFaultMsg);
+            } catch (TaskInProgressFaultMsg taskInProgressFaultMsg) {
+                throw new CloudException("TaskInProgressFaultMsg when stopping vm", taskInProgressFaultMsg);
+            } catch (ToolsUnavailableFaultMsg toolsUnavailableFaultMsg) {
+                throw new CloudException("ToolsUnavailableFaultMsg when stopping vm", toolsUnavailableFaultMsg);
+            }
+        }
+        finally {
+            APITrace.end();
+        }
+    }
+
+    @Override
+    public void suspend(@Nonnull String vmId) throws CloudException, InternalException {
+        APITrace.begin(provider, "Vm.suspend");
+        try {
+            VirtualMachine vm = getVirtualMachine(vmId);
+            if (vm == null) {
+                throw new CloudException("Unable to find vm with id "+vmId);
+            }
+
+            ManagedObjectReference vmRef = new ManagedObjectReference();
+            vmRef.setType("VirtualMachine");
+            vmRef.setValue(vmId);
+
+            VsphereConnection vsphereConnection = provider.getServiceInstance();
+            VimPortType vimPortType = vsphereConnection.getVimPort();
+            try {
+                vimPortType.suspendVMTask(vmRef);
+            } catch (InvalidStateFaultMsg invalidStateFaultMsg) {
+                throw new CloudException("InvalidStateFaultMsg when suspending vm", invalidStateFaultMsg);
+            } catch (RuntimeFaultFaultMsg runtimeFaultFaultMsg) {
+                throw new CloudException("RuntimeFaultFaultMsg when suspending vm", runtimeFaultFaultMsg);
+            } catch (TaskInProgressFaultMsg taskInProgressFaultMsg) {
+                throw new CloudException("TaskInProgressFaultMsg when suspending vm", taskInProgressFaultMsg);
+            }
+        }
+        finally {
+            APITrace.end();
+        }
     }
 
     private transient volatile VmCapabilities capabilities;
@@ -486,7 +738,43 @@ public class Vm extends AbstractVMSupport<Vsphere> {
 
     @Override
     public void terminate(@Nonnull String vmId, String explanation) throws InternalException, CloudException {
-        // TODO Auto-generated method stub
+        APITrace.begin(provider, "Vm.suspend");
+        try {
+            VirtualMachine vm = getVirtualMachine(vmId);
+            if (vm == null) {
+                throw new CloudException("Unable to find vm with id "+vmId);
+            }
+
+            ManagedObjectReference vmRef = new ManagedObjectReference();
+            vmRef.setType("VirtualMachine");
+            vmRef.setValue(vmId);
+
+            VsphereConnection vsphereConnection = provider.getServiceInstance();
+            VimPortType vimPortType = vsphereConnection.getVimPort();
+
+            try {
+                if (!vm.getCurrentState().equals(VmState.STOPPED)) {
+                    ManagedObjectReference taskMor = vimPortType.powerOffVMTask(vmRef);
+                    VsphereMethod method = new VsphereMethod(provider);
+                    TimePeriod interval = new TimePeriod<Second>(15, TimePeriod.SECOND);
+                    if (!method.getOperationComplete(taskMor, interval, 4)) {
+                        throw new CloudException("Error stopping vm prior to termination: "+method.getTaskError().getVal());
+                    }
+                }
+                vimPortType.destroyTask(vmRef);
+            } catch (InvalidStateFaultMsg invalidStateFaultMsg) {
+                throw new CloudException("InvalidStateFaultMsg when terminating vm", invalidStateFaultMsg);
+            } catch (RuntimeFaultFaultMsg runtimeFaultFaultMsg) {
+                throw new CloudException("RuntimeFaultFaultMsg when terminating vm", runtimeFaultFaultMsg);
+            } catch (TaskInProgressFaultMsg taskInProgressFaultMsg) {
+                throw new CloudException("TaskInProgressFaultMsg when terminating vm", taskInProgressFaultMsg);
+            } catch (VimFaultFaultMsg vimFaultFaultMsg) {
+                throw new CloudException("VimFaultFaultMsg when terminating vm", vimFaultFaultMsg);
+            }
+        }
+        finally {
+            APITrace.end();
+        }
         
     }
 
@@ -540,6 +828,7 @@ public class Vm extends AbstractVMSupport<Vsphere> {
         server.setArchitecture(getArchitecture(os));
         server.setDescription(vmInfo.getGuestFullName());
         server.setProductId(getProduct(vmInfo.getHardware()).getProviderProductId());
+        server.setAffinityGroupId(runtime.getHost().getValue());
         String imageId = vmInfo.getAnnotation();
 
         if( imageId != null && imageId.length() > 0 && !imageId.contains(" ") ) {
@@ -613,8 +902,6 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                 }
             }
         }
-
-       // VirtualMachineRuntimeInfo runtime = vm.getRuntime();
 
         if( runtime != null ) {
             VirtualMachinePowerState state = runtime.getPowerState();

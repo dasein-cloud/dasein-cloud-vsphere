@@ -140,6 +140,7 @@ public class ImageSupport extends AbstractImageSupport<Vsphere> {
 
             if (props != null) {
                 for (ObjectContent oc : props.getObjects()) {
+                    ManagedObjectReference templateRef = oc.getObj();
                     Platform platform = null;
                     String name = null;
                     String description = null;
@@ -162,7 +163,7 @@ public class ImageSupport extends AbstractImageSupport<Vsphere> {
                          }
                          name = virtualMachineConfigSummary.getName();
                          description = virtualMachineConfigSummary.getGuestFullName();
-                         imageId = virtualMachineConfigSummary.getGuestId();
+                         imageId = templateRef.getValue();
                          platform = Platform.guess(virtualMachineConfigSummary.getGuestFullName());
                          ImageClass imageClass = ImageClass.MACHINE;
 

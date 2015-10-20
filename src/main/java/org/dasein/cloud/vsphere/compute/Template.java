@@ -271,7 +271,7 @@ public class Template extends AbstractImageSupport<PrivateCloud> {
     public @Nonnull Iterable<ResourceStatus> listImageStatus(@Nonnull ImageClass cls) throws CloudException, InternalException {
         APITrace.begin(getProvider(), "Image.listImageStatus");
         try {
-            ArrayList<ResourceStatus> status = new ArrayList<ResourceStatus>();
+            ArrayList<ResourceStatus> status = new ArrayList<>();
 
             for( MachineImage img : listImages(cls) ) {
                 status.add(new ResourceStatus(img.getProviderMachineImageId(), img.getCurrentState()));
@@ -287,7 +287,7 @@ public class Template extends AbstractImageSupport<PrivateCloud> {
     public @Nonnull Iterable<MachineImage> listImages(@Nullable ImageFilterOptions options) throws CloudException, InternalException {
         APITrace.begin(getProvider(), "Image.listImages");
         try {
-            ArrayList<MachineImage> machineImages = new ArrayList<MachineImage>();
+            ArrayList<MachineImage> machineImages = new ArrayList<>();
             ServiceInstance instance = getServiceInstance();
 
             Folder folder = getProvider().getVmFolder(instance);

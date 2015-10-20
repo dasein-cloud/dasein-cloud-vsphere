@@ -21,8 +21,10 @@ package org.dasein.cloud.vsphere.compute;
 import com.vmware.vim25.InvalidProperty;
 import com.vmware.vim25.RuntimeFault;
 import com.vmware.vim25.mo.*;
-import org.apache.log4j.Logger;
-import org.dasein.cloud.*;
+import org.dasein.cloud.CloudErrorType;
+import org.dasein.cloud.CloudException;
+import org.dasein.cloud.InternalException;
+import org.dasein.cloud.OperationNotSupportedException;
 import org.dasein.cloud.compute.AbstractAffinityGroupSupport;
 import org.dasein.cloud.compute.AffinityGroup;
 import org.dasein.cloud.compute.AffinityGroupCreateOptions;
@@ -41,19 +43,17 @@ import javax.servlet.http.HttpServletResponse;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * User: daniellemayne
  * Date: 18/07/2014
  * Time: 09:12
  */
-public class Host extends AbstractAffinityGroupSupport {
-    static private final Logger log = PrivateCloud.getLogger(Host.class, "std");
-    private PrivateCloud provider;
+public class Host extends AbstractAffinityGroupSupport<PrivateCloud> {
 
     Host(@Nonnull PrivateCloud provider) {
         super(provider);
-        this.provider = provider;
     }
 
     @Nonnull
@@ -70,7 +70,7 @@ public class Host extends AbstractAffinityGroupSupport {
     @Nonnull
     @Override
     public AffinityGroup get(@Nonnull String affinityGroupId) throws InternalException, CloudException {
-        APITrace.begin(provider, "getAffinityGroup");
+        APITrace.begin(getProvider(), "getAffinityGroup");
         try {
             HostSystem host = getHostSystemForAffinity(affinityGroupId);
             if (host != null) {
@@ -102,16 +102,17 @@ public class Host extends AbstractAffinityGroupSupport {
     @Nonnull
     @Override
     public Iterable<AffinityGroup> list(@Nonnull AffinityGroupFilterOptions options) throws InternalException, CloudException {
-        APITrace.begin(provider, "listAffinityGroups");
+        APITrace.begin(getProvider(), "listAffinityGroups");
         try {
-            ProviderContext ctx = provider.getContext();
             ArrayList<AffinityGroup> possibles = new ArrayList<AffinityGroup>();
             String dc = options.getDataCenterId();
 
             ServiceInstance instance = getServiceInstance();
-            Dc dcServices = provider.getDataCenterServices();
-            Datacenter vdc = dcServices.getVmwareDatacenterFromVDCId(instance, ctx.getRegionId());
-
+            Dc dcServices = getProvider().getDataCenterServices();
+            Datacenter vdc = dcServices.getVmwareDatacenterFromVDCId(instance, getContext().getRegionId());
+            if( vdc == null ) {
+                return Collections.EMPTY_LIST;
+            }
             try {
                 for( ManagedEntity me : vdc.getHostFolder().getChildEntity() ) {
                     if (dc != null) {
@@ -148,10 +149,10 @@ public class Host extends AbstractAffinityGroupSupport {
     }
 
     public HostSystem getHostSystemForAffinity(@Nonnull String affinityGroupId) throws CloudException, InternalException {
-        APITrace.begin(provider, "getHostSystemForAffinity");
+        APITrace.begin(getProvider(), "getHostSystemForAffinity");
         try {
             ServiceInstance instance = getServiceInstance();
-            Folder folder = provider.getVmFolder(instance);
+            Folder folder = getProvider().getVmFolder(instance);
             ManagedEntity me;
 
             try {
@@ -168,8 +169,7 @@ public class Host extends AbstractAffinityGroupSupport {
             }
 
             if (me != null) {
-                HostSystem host = (HostSystem) me;
-                return host;
+                return (HostSystem) me;
             }
             return null;
         }
@@ -179,17 +179,16 @@ public class Host extends AbstractAffinityGroupSupport {
     }
 
     public Collection<HostSystem> listHostSystems(@Nullable String datacenterId) throws CloudException,InternalException {
-        APITrace.begin(provider, "listHostSystems");
+        APITrace.begin(getProvider(), "listHostSystems");
         try {
-            Cache<HostSystem> cache = Cache.getInstance(provider, "hosts"+datacenterId, HostSystem.class, CacheLevel.REGION_ACCOUNT, new TimePeriod<Minute>(15, TimePeriod.MINUTE));
-            Collection<HostSystem> hostSystems = (Collection<HostSystem>)cache.get(provider.getContext());
+            Cache<HostSystem> cache = Cache.getInstance(getProvider(), "hosts"+datacenterId, HostSystem.class, CacheLevel.REGION_ACCOUNT, new TimePeriod<Minute>(15, TimePeriod.MINUTE));
+            Collection<HostSystem> hostSystems = (Collection<HostSystem>)cache.get(getContext());
 
             if( hostSystems == null ) {
-                hostSystems = new ArrayList<HostSystem>();
-                ProviderContext ctx = provider.getContext();
+                hostSystems = new ArrayList<>();
                 ServiceInstance instance = getServiceInstance();
-                Dc dcServices = provider.getDataCenterServices();
-                Datacenter vdc = dcServices.getVmwareDatacenterFromVDCId(instance, ctx.getRegionId());
+                Dc dcServices = getProvider().getDataCenterServices();
+                Datacenter vdc = dcServices.getVmwareDatacenterFromVDCId(instance, getContext().getRegionId());
 
                 try {
                     for( ManagedEntity me : vdc.getHostFolder().getChildEntity() ) {
@@ -210,7 +209,7 @@ public class Host extends AbstractAffinityGroupSupport {
                             }
                         }
                     }
-                    cache.put(provider.getContext(), hostSystems);
+                    cache.put(getContext(), hostSystems);
                 }
                 catch (RemoteException e) {
                     throw new CloudException(e);
@@ -224,7 +223,7 @@ public class Host extends AbstractAffinityGroupSupport {
     }
 
     public Collection<Datastore> listDatastoresForHost(HostSystem host) throws CloudException, InternalException {
-        ArrayList<Datastore> list = new ArrayList<Datastore>();
+        ArrayList<Datastore> list = new ArrayList<>();
         try {
             Datastore[] datastores = host.getDatastores();
             for (Datastore datastore : datastores) {
@@ -239,7 +238,7 @@ public class Host extends AbstractAffinityGroupSupport {
 
 
     private @Nonnull ServiceInstance getServiceInstance() throws CloudException, InternalException {
-        ServiceInstance instance = provider.getServiceInstance();
+        ServiceInstance instance = getProvider().getServiceInstance();
 
         if( instance == null ) {
             throw new CloudException(CloudErrorType.AUTHENTICATION, HttpServletResponse.SC_UNAUTHORIZED, null, "Unauthorized");

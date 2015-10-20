@@ -40,18 +40,16 @@ import java.util.*;
  * Date: 11/06/2014
  * Time: 12:33
  */
-public class VSphereNetwork extends AbstractVLANSupport{
+public class VSphereNetwork extends AbstractVLANSupport<PrivateCloud> {
 
-    private PrivateCloud provider;
     static private final Logger log = PrivateCloud.getLogger(VSphereNetwork.class, "std");
 
     VSphereNetwork(PrivateCloud provider) {
         super(provider);
-        this.provider = provider;
     }
 
     private @Nonnull ServiceInstance getServiceInstance() throws CloudException, InternalException {
-        ServiceInstance instance = provider.getServiceInstance();
+        ServiceInstance instance = getProvider().getServiceInstance();
 
         if( instance == null ) {
             throw new CloudException(CloudErrorType.AUTHENTICATION, HttpServletResponse.SC_UNAUTHORIZED, null, "Unauthorized");
@@ -64,7 +62,7 @@ public class VSphereNetwork extends AbstractVLANSupport{
     @Override
     public VLANCapabilities getCapabilities() throws CloudException, InternalException {
         if( capabilities == null ) {
-            capabilities = new VSphereNetworkCapabilities(provider);
+            capabilities = new VSphereNetworkCapabilities(getProvider());
         }
         return capabilities;
     }
@@ -133,7 +131,7 @@ public class VSphereNetwork extends AbstractVLANSupport{
     @Nonnull
     @Override
     public Iterable<VLAN> listVlans() throws CloudException, InternalException {
-        APITrace.begin(provider, "Network.listVlans");
+        APITrace.begin(getProvider(), "Network.listVlans");
 
         try {
             ServiceInstance instance = getServiceInstance();
@@ -144,7 +142,7 @@ public class VSphereNetwork extends AbstractVLANSupport{
             Network[] nets;
             String rid = getContext().getRegionId();
             if( rid != null ) {
-                dc = provider.getDataCenterServices().getVmwareDatacenterFromVDCId(instance, rid);
+                dc = getProvider().getDataCenterServices().getVmwareDatacenterFromVDCId(instance, rid);
 
                 try {
                     nets = dc.getNetworks();

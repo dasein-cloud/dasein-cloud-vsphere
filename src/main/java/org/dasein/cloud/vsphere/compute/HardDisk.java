@@ -48,14 +48,12 @@ import java.util.*;
  */
 public class HardDisk extends AbstractVolumeSupport<PrivateCloud>{
 
-    private PrivateCloud provider;
     HardDisk(@Nonnull PrivateCloud provider) {
         super(provider);
-        this.provider = provider;
     }
 
     private @Nonnull ServiceInstance getServiceInstance() throws CloudException, InternalException {
-        ServiceInstance instance = provider.getServiceInstance();
+        ServiceInstance instance = getProvider().getServiceInstance();
 
         if( instance == null ) {
             throw new CloudException(CloudErrorType.AUTHENTICATION, HttpServletResponse.SC_UNAUTHORIZED, null, "Unauthorized");
@@ -67,36 +65,18 @@ public class HardDisk extends AbstractVolumeSupport<PrivateCloud>{
     @Override
     public VolumeCapabilities getCapabilities() throws CloudException, InternalException {
         if( capabilities == null ) {
-            capabilities = new HardDiskCapabilities(provider);
+            capabilities = new HardDiskCapabilities(getProvider());
         }
         return capabilities;
     }
 
-    @Nonnull
-    @Override
-    public Storage<Gigabyte> getMinimumVolumeSize() throws InternalException, CloudException {
-        return getCapabilities().getMinimumVolumeSize();
-    }
-
-    @Nonnull
-    @Override
-    public String getProviderTermForVolume(@Nonnull Locale locale) {
-        return "hard disk";
-    }
-
-    @Nonnull
-    @Override
-    public Iterable<String> listPossibleDeviceIds(@Nonnull Platform platform) throws InternalException, CloudException {
-        return getCapabilities().listPossibleDeviceIds(platform);
-    }
-
     @Override
     public void attach(@Nonnull String volumeId, @Nonnull String toServer, @Nonnull String deviceId) throws InternalException, CloudException {
-        APITrace.begin(provider, "HardDisk.attach");
+        APITrace.begin(getProvider(), "HardDisk.attach");
         try {
             try {
                 ServiceInstance instance = getServiceInstance();
-                Vm support = provider.getComputeServices().getVirtualMachineSupport();
+                Vm support = getProvider().getComputeServices().getVirtualMachineSupport();
                 com.vmware.vim25.mo.VirtualMachine vm = support.getVirtualMachine(instance, toServer);
                 if (vm == null) {
                     throw new CloudException("Unable to find vm with id "+toServer);
@@ -213,7 +193,7 @@ public class HardDisk extends AbstractVolumeSupport<PrivateCloud>{
                     int cKey = 1000;
                     boolean scsiExists = false;
                     int numDisks = 0;
-                    List<String> diskNames = new ArrayList<String>();
+                    List<String> diskNames = new ArrayList<>();
                     for (VirtualDevice device : devices) {
                         if (device instanceof VirtualSCSIController) {
                             if (!scsiExists) {
@@ -334,14 +314,14 @@ public class HardDisk extends AbstractVolumeSupport<PrivateCloud>{
 
     @Override
     public void detach(@Nonnull String volumeId, boolean force) throws InternalException, CloudException {
-        APITrace.begin(provider, "HardDisk.detach");
+        APITrace.begin(getProvider(), "HardDisk.detach");
         try {
             Volume volume = getVolume(volumeId);
             if (volume.getProviderVirtualMachineId() == null) {
                 throw new CloudException("Volume not currently attached");
             }
 
-            Vm support = provider.getComputeServices().getVirtualMachineSupport();
+            Vm support = getProvider().getComputeServices().getVirtualMachineSupport();
             ServiceInstance instance = getServiceInstance();
             VirtualMachine vm = support.getVirtualMachine(instance, volume.getProviderVirtualMachineId());
 
@@ -429,21 +409,18 @@ public class HardDisk extends AbstractVolumeSupport<PrivateCloud>{
     @Nonnull
     @Override
     public Iterable<Volume> listVolumes() throws InternalException, CloudException {
-        APITrace.begin(provider, "HardDisk.listVolumes");
+        APITrace.begin(getProvider(), "HardDisk.listVolumes");
         try {
-            List<Volume> list = new ArrayList<Volume>();
-            List<String> fileNames = new ArrayList<String>();
-            ProviderContext ctx = provider.getContext();
-            if (ctx != null) {
-                if (ctx.getRegionId() == null) {
-                    throw new CloudException("Region id is not set");
-                }
+            List<Volume> list = new ArrayList<>();
+            List<String> fileNames = new ArrayList<>();
+            if (getContext().getRegionId() == null) {
+                throw new CloudException("Region id is not set");
             }
 
             ServiceInstance instance = getServiceInstance();
 
             //get attached volumes
-            Folder folder = provider.getVmFolder(instance);
+            Folder folder = getProvider().getVmFolder(instance);
 
             ManagedEntity[] mes;
 
@@ -477,7 +454,7 @@ public class HardDisk extends AbstractVolumeSupport<PrivateCloud>{
                             if( dc2 == null ) {
                                 return Collections.emptyList();
                             }
-                            DataCenter ourDC = provider.getDataCenterServices().getDataCenter(dc2);
+                            DataCenter ourDC = getProvider().getDataCenterServices().getDataCenter(dc2);
                             String regionId = "";
                             if (ourDC == null) {
                                 dc2 = dc2+"-a";
@@ -505,8 +482,8 @@ public class HardDisk extends AbstractVolumeSupport<PrivateCloud>{
             }
 
             //get .vmdk files
-            Collection<StoragePool> pools = provider.getDataCenterServices().listStoragePools();
-            Datacenter dc = provider.getDataCenterServices().getVmwareDatacenterFromVDCId(instance, ctx.getRegionId());
+            Collection<StoragePool> pools = getProvider().getDataCenterServices().listStoragePools();
+            Datacenter dc = getProvider().getDataCenterServices().getVmwareDatacenterFromVDCId(instance, getContext().getRegionId());
             String name = dc.getName();
             for (Datastore ds : dc.getDatastores()) {
                 String dataCenterId = null;
@@ -530,7 +507,7 @@ public class HardDisk extends AbstractVolumeSupport<PrivateCloud>{
                                     String filePath = file.getPath();
                                     if (filePath.endsWith(".vmdk") && !filePath.endsWith("-flat.vmdk")) {
                                         if (!fileNames.contains(file.getPath())) {
-                                            Volume d = toVolume(file, dataCenterId, ctx.getRegionId());
+                                            Volume d = toVolume(file, dataCenterId, getContext().getRegionId());
                                             if (d != null) {
                                                 d.setTag("filePath", r.getFolderPath()+d.getProviderVolumeId());
                                                 list.add(d);
@@ -567,12 +544,12 @@ public class HardDisk extends AbstractVolumeSupport<PrivateCloud>{
 
     @Override
     public boolean isSubscribed() throws CloudException, InternalException {
-        return (provider.getServiceInstance() != null);
+        return (getProvider().getServiceInstance() != null);
     }
 
     @Override
     public void remove(@Nonnull String volumeId) throws InternalException, CloudException {
-        APITrace.begin(provider, "HardDisk.remove");
+        APITrace.begin(getProvider(), "HardDisk.remove");
         try {
             Volume volume = null;
             Iterable<Volume> attachedVolumes = getAttachedVolumes();
@@ -585,9 +562,9 @@ public class HardDisk extends AbstractVolumeSupport<PrivateCloud>{
             volume = getVolume(volumeId);
 
             if (volume != null) {
-                ServiceInstance instance = provider.getServiceInstance();
+                ServiceInstance instance = getProvider().getServiceInstance();
 
-                Datacenter dc = provider.getDataCenterServices().getVmwareDatacenterFromVDCId(instance, provider.getContext().getRegionId());
+                Datacenter dc = getProvider().getDataCenterServices().getVmwareDatacenterFromVDCId(instance, getContext().getRegionId());
                 ManagedObjectReference mor = instance.getServiceContent().getFileManager();
                 if (mor.getType().equals("FileManager")) {
                     FileManager fileManager = new FileManager(instance.getServerConnection(), mor);
@@ -617,20 +594,17 @@ public class HardDisk extends AbstractVolumeSupport<PrivateCloud>{
     }
 
     private Iterable<Volume> getAttachedVolumes() throws InternalException, CloudException {
-        APITrace.begin(provider, "HardDisk.getAttachedVolumes");
+        APITrace.begin(getProvider(), "HardDisk.getAttachedVolumes");
         try {
-            List<Volume> list = new ArrayList<Volume>();
-            List<String> fileNames = new ArrayList<String>();
-            ProviderContext ctx = provider.getContext();
-            if (ctx != null) {
-                if (ctx.getRegionId() == null) {
-                    throw new CloudException("Region id is not set");
-                }
+            List<Volume> list = new ArrayList<>();
+            List<String> fileNames = new ArrayList<>();
+            if (getContext().getRegionId() == null) {
+                throw new CloudException("Region id is not set");
             }
 
             ServiceInstance instance = getServiceInstance();
 
-            Folder folder = provider.getVmFolder(instance);
+            Folder folder = getProvider().getVmFolder(instance);
 
             ManagedEntity[] mes;
 
@@ -663,7 +637,7 @@ public class HardDisk extends AbstractVolumeSupport<PrivateCloud>{
                         if( dc2 == null ) {
                             return Collections.emptyList();
                         }
-                        DataCenter ourDC = provider.getDataCenterServices().getDataCenter(dc2);
+                        DataCenter ourDC = getProvider().getDataCenterServices().getDataCenter(dc2);
                         String regionId = "";
                         if (ourDC == null) {
                             dc2 = dc2+"-a";
@@ -712,7 +686,7 @@ public class HardDisk extends AbstractVolumeSupport<PrivateCloud>{
         volume.setDeviceId(disk.getUnitNumber().toString());
         volume.setFormat(VolumeFormat.BLOCK);
         volume.setProviderVirtualMachineId(vmId);
-        volume.setSize(new Storage<Kilobyte>(disk.getCapacityInKB(), Storage.KILOBYTE));
+        volume.setSize(new Storage<>(disk.getCapacityInKB(), Storage.KILOBYTE));
         volume.setType(VolumeType.SSD);
 
         if (volume.getProviderVolumeId() == null) {
@@ -735,7 +709,7 @@ public class HardDisk extends AbstractVolumeSupport<PrivateCloud>{
         volume.setDeleteOnVirtualMachineTermination(true);
         volume.setFormat(VolumeFormat.BLOCK);
         if (disk.getFileSize() != null) {
-            volume.setSize(new Storage<org.dasein.util.uom.storage.Byte>(disk.getFileSize(), Storage.BYTE));
+            volume.setSize(new Storage<>(disk.getFileSize(), Storage.BYTE));
         }
         volume.setType(VolumeType.SSD);
         Calendar cal = disk.getModification();

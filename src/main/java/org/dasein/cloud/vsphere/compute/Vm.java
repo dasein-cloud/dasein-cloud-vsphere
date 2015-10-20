@@ -461,7 +461,7 @@ public class Vm extends AbstractVMSupport<PrivateCloud> {
                     config.setNumCoresPerSocket(cpuCount);
 
                     // record all networks we will end up with so that we can configure NICs correctly
-                    List<String> resultingNetworks = new ArrayList<String>();
+                    List<String> resultingNetworks = new ArrayList<>();
                     //networking section
                     //borrowed heavily from https://github.com/jedi4ever/jvspherecontrol
                     String vlan = options.getVlanId();
@@ -474,7 +474,7 @@ public class Vm extends AbstractVMSupport<PrivateCloud> {
 
                         Iterable<VLAN> accessibleNetworks = vlanSupport.listVlans();
                         boolean addNetwork = true;
-                        List<VirtualDeviceConfigSpec> machineSpecs = new ArrayList<VirtualDeviceConfigSpec>();
+                        List<VirtualDeviceConfigSpec> machineSpecs = new ArrayList<>();
                         VirtualDevice[] virtualDevices = template.getConfig().getHardware().getDevice();
                         VLAN targetVlan = null;
                         for(VirtualDevice virtualDevice : virtualDevices) {
@@ -773,11 +773,6 @@ public class Vm extends AbstractVMSupport<PrivateCloud> {
     private @Nonnull VirtualMachine defineFromScratch(@Nonnull VMLaunchOptions options) throws InternalException, CloudException {
         APITrace.begin(getProvider(), "Vm.define");
         try {
-            ProviderContext ctx = getProvider().getContext();
-
-            if( ctx == null ) {
-                throw new InternalException("No context was set for this request");
-            }
             ServiceInstance instance = getServiceInstance();
             try {
                 String hostName = validateName(options.getHostName());
@@ -790,7 +785,7 @@ public class Vm extends AbstractVMSupport<PrivateCloud> {
                 }
 
                 if( dataCenterId == null ) {
-                    String rid = ctx.getRegionId();
+                    String rid = getContext().getRegionId();
 
                     if( rid != null ) {
                         for( DataCenter dsdc : getProvider().getDataCenterServices().listDataCenters(rid) ) {
@@ -1217,12 +1212,12 @@ public class Vm extends AbstractVMSupport<PrivateCloud> {
             // get resource pools from cache or live
             Cache<org.dasein.cloud.dc.ResourcePool> cache = Cache.getInstance(
                     getProvider(), "resourcePools", org.dasein.cloud.dc.ResourcePool.class, CacheLevel.REGION_ACCOUNT,
-                    new TimePeriod<Minute>(15, TimePeriod.MINUTE));
+                    new TimePeriod<>(15, TimePeriod.MINUTE));
             Collection<org.dasein.cloud.dc.ResourcePool> rps = ( Collection<org.dasein.cloud.dc.ResourcePool> ) cache.get(getContext());
 
             if( rps == null ) {
                 Collection<DataCenter> dcs = getProvider().getDataCenterServices().listDataCenters(getContext().getRegionId());
-                rps = new ArrayList<org.dasein.cloud.dc.ResourcePool>();
+                rps = new ArrayList<>();
 
                 for( DataCenter dc : dcs ) {
                     Collection<org.dasein.cloud.dc.ResourcePool> pools = getProvider().getDataCenterServices().listResourcePools(dc.getProviderDataCenterId());

@@ -105,7 +105,7 @@ public class ImageSupportTest extends VsphereTestBase {
     public void testListImagesAllDebian() throws CloudException, InternalException {
         final ImageSupport imageSupport = new ImageSupport(vsphereMock);
 
-        Iterable<MachineImage> result = imageSupport.listImages(ImageFilterOptions.getInstance().onPlatform(Platform.UBUNTU));
+        Iterable<MachineImage> result = imageSupport.listImages(ImageFilterOptions.getInstance().onPlatform(Platform.DEBIAN));
 
         assertNotNull("return should not be null", result);
 
@@ -119,7 +119,7 @@ public class ImageSupportTest extends VsphereTestBase {
     public void testListImagesAllWindows() throws CloudException, InternalException {
         final ImageSupport imageSupport = new ImageSupport(vsphereMock);
 
-        Iterable<MachineImage> result = imageSupport.listImages(ImageFilterOptions.getInstance().onPlatform(Platform.UBUNTU));
+        Iterable<MachineImage> result = imageSupport.listImages(ImageFilterOptions.getInstance().onPlatform(Platform.WINDOWS));
 
         assertNotNull("return should not be null", result);
 
@@ -138,7 +138,7 @@ public class ImageSupportTest extends VsphereTestBase {
 
         assertEquals("ownerId", image.getProviderOwnerId());
         assertEquals("datacenter-21", image.getProviderRegionId());
-        assertEquals("debian7_64Guest", image.getProviderMachineImageId());
+        assertEquals("vm-1823", image.getProviderMachineImageId());
         assertEquals(ImageClass.MACHINE, image.getImageClass());
         assertEquals(MachineImageState.ACTIVE, image.getCurrentState());
         assertEquals("roger u debian", image.getName());
@@ -155,7 +155,7 @@ public class ImageSupportTest extends VsphereTestBase {
 
         assertEquals("ownerId", image.getProviderOwnerId());
         assertEquals("datacenter-21", image.getProviderRegionId());
-        assertEquals("ubuntu64Guest", image.getProviderMachineImageId());
+        assertEquals("vm-2093", image.getProviderMachineImageId());
         assertEquals(ImageClass.MACHINE, image.getImageClass());
         assertEquals(MachineImageState.ACTIVE, image.getCurrentState());
         assertEquals("ubuntu-twdemo-dcmagent", image.getName());
@@ -172,7 +172,7 @@ public class ImageSupportTest extends VsphereTestBase {
 
         assertEquals("ownerId", image.getProviderOwnerId());
         assertEquals("datacenter-21", image.getProviderRegionId());
-        assertEquals("windows8Server64Guest", image.getProviderMachineImageId());
+        assertEquals("vm-1955", image.getProviderMachineImageId());
         assertEquals(ImageClass.MACHINE, image.getImageClass());
         assertEquals(MachineImageState.ACTIVE, image.getCurrentState());
         assertEquals("dcm-agent-win2012", image.getName());

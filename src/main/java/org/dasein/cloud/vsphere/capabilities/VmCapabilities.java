@@ -30,7 +30,7 @@ public class VmCapabilities extends AbstractCapabilities<Vsphere> implements Vir
 
     @Override
     public boolean canAlter(@Nonnull VmState fromState) throws CloudException, InternalException {
-        return true;
+        return fromState.equals(VmState.STOPPED);
     }
 
     @Override
@@ -131,6 +131,12 @@ public class VmCapabilities extends AbstractCapabilities<Vsphere> implements Vir
     @Override
     public Requirement identifyImageRequirement(@Nonnull ImageClass cls) throws CloudException, InternalException {
         return (cls.equals(ImageClass.MACHINE) ? Requirement.REQUIRED : Requirement.NONE);
+    }
+
+    @Nonnull
+    @Override
+    public Requirement identifyUsernameRequirement() throws CloudException, InternalException {
+        return Requirement.NONE;
     }
 
     @Nonnull

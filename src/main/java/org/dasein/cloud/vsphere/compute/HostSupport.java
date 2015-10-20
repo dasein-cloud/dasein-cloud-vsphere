@@ -138,10 +138,12 @@ public class HostSupport extends AbstractAffinityGroupSupport<Vsphere> {
 
                             }
                             if (hostName != null) {
-                                AffinityGroup host = toAffinityGroup(mr.getValue(), hostName, status, "tempDC");
-                                if (host != null) {
-                                    temp.add(host);
-                                }
+                                String agDesc = "Affinity group for "+hostName;
+                                long created = 0;
+
+                                AffinityGroup host = AffinityGroup.getInstance(mr.getValue(), hostName, agDesc, "tempDC", created);
+                                host.setTag("status", status);
+                                temp.add(host);
                             }
                         }
                     }
@@ -186,16 +188,5 @@ public class HostSupport extends AbstractAffinityGroupSupport<Vsphere> {
     @Override
     public AffinityGroup modify(@Nonnull String affinityGroupId, @Nonnull AffinityGroupCreateOptions options) throws InternalException, CloudException {
         throw new OperationNotSupportedException("Unable to modify hosts in vSphere");
-    }
-
-    private AffinityGroup toAffinityGroup(@Nonnull String hostID, @Nonnull String hostName, @Nullable String status, @Nonnull String dataCenterID) {
-        String agID = hostID;
-        String agName = hostName;
-        String agDesc = "Affinity group for "+agName;
-        long created = 0;
-
-        AffinityGroup ag = AffinityGroup.getInstance(agID, agName, agDesc, dataCenterID, created);
-        ag.setTag("status", status);
-        return ag;
     }
 }

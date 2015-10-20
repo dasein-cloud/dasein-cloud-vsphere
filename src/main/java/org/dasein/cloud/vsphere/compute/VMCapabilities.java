@@ -152,6 +152,12 @@ public class VMCapabilities extends AbstractCapabilities<PrivateCloud> implement
 
     @Nonnull
     @Override
+    public Requirement identifyUsernameRequirement() throws CloudException, InternalException {
+        return Requirement.REQUIRED;
+    }
+
+    @Nonnull
+    @Override
     public Requirement identifyPasswordRequirement(Platform platform) throws CloudException, InternalException {
         return Requirement.REQUIRED;
     }

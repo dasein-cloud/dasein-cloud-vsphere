@@ -108,9 +108,15 @@ public class HostSupport extends AbstractAffinityGroupSupport<Vsphere> {
             Collection<AffinityGroup> hostList = (Collection<AffinityGroup>)cache.get(ctx);
 
             if( hostList != null ) {
-                return hostList;
+                List<AffinityGroup> filtered = new ArrayList<AffinityGroup>();
+                for (AffinityGroup a : hostList) {
+                    if (options.matches(a)) {
+                        filtered.add(a);
+                    }
+                }
+                return filtered;
             }
-            List<AffinityGroup> hosts = new ArrayList<AffinityGroup>();
+            List<AffinityGroup> allHosts = new ArrayList<AffinityGroup>();
 
             List<SelectionSpec> selectionSpecsArr = getHostSSpec();
             List<PropertySpec> pSpecs = getHostPSpec();
@@ -168,17 +174,23 @@ public class HostSupport extends AbstractAffinityGroupSupport<Vsphere> {
                     for (Map.Entry e : dcToHostMap.entrySet()) {
                         List<String> ids = (List<String>) e.getValue();
                         if (ids.contains(id)) {
+                            Map<String, String> tags = host.getTags();
                             host = AffinityGroup.getInstance(host.getAffinityGroupId(), host.getAffinityGroupName(), host.getDescription(), (String) e.getKey(), host.getCreationTimestamp());
-                            if (options.matches(host)) {
-                                hosts.add(host);
-                            }
+                            host.setTags(tags);
+                            allHosts.add(host);
                             break;
                         }
                     }
                 }
             }
-            cache.put(ctx, hosts);
-            return hosts;
+            cache.put(ctx, allHosts);
+            List<AffinityGroup> filtered = new ArrayList<AffinityGroup>();
+            for (AffinityGroup affinityGroup : allHosts) {
+                if (options.matches(affinityGroup)) {
+                    filtered.add(affinityGroup);
+                }
+            }
+            return filtered;
         }
         finally {
             APITrace.end();

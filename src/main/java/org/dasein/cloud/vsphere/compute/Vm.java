@@ -1203,6 +1203,11 @@ public class Vm extends AbstractVMSupport<PrivateCloud> {
     }
 
     @Override
+    public @Nonnull Iterable<VirtualMachineProduct> listAllProducts() throws InternalException, CloudException{
+        return listProducts(null, VirtualMachineProductFilterOptions.getInstance());
+    }
+
+    @Override
     public Iterable<VirtualMachineProduct> listProducts(
             /** ignored **/ @Nonnull String machineImageId,
             @Nullable VirtualMachineProductFilterOptions options) throws InternalException, CloudException {

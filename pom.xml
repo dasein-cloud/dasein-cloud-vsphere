@@ -4,7 +4,7 @@
 
   <groupId>org.dasein</groupId>
   <artifactId>dasein-cloud-vsphere</artifactId>
-  <version>2015.09-SNAPSHOT</version>
+  <version>2015.10-SNAPSHOT</version>
 
   <name>Dasein Cloud Vsphere</name>
   <description>
@@ -46,7 +46,7 @@
     <dependency>
       <groupId>org.dasein</groupId>
       <artifactId>dasein-cloud-core</artifactId>
-      <version>2015.09.1-SNAPSHOT</version>
+      <version>2015.10.2-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.dasein</groupId>
@@ -95,7 +95,7 @@
     <dependency>
       <groupId>org.dasein</groupId>
       <artifactId>dasein-cloud-test</artifactId>
-      <version>2015.09.1-SNAPSHOT</version>
+      <version>2015.10.3-SNAPSHOT</version>
     </dependency>
       <dependency>
           <groupId>org.jmockit</groupId>
@@ -109,16 +109,6 @@
       <version>4.9</version>
       <scope>test</scope>
     </dependency>
-
-    <!-- This should go away once tests are converted to jmocket -->
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-all</artifactId>
-      <version>1.9.5</version>
-      <scope>test</scope>
-    </dependency>
-
-
   </dependencies>
 
   <build>

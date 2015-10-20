@@ -118,7 +118,7 @@ public class Vsphere extends AbstractCloud {
 
     @Nullable
     @Override
-    public NetworkServices getNetworkServices() {
+    public VSphereNetworkServices getNetworkServices() {
         return new VSphereNetworkServices(this);
     }
 

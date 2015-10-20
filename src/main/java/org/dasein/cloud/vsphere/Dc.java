@@ -32,12 +32,7 @@ import org.dasein.cloud.CloudErrorType;
 import org.dasein.cloud.CloudException;
 import org.dasein.cloud.InternalException;
 import org.dasein.cloud.ProviderContext;
-import org.dasein.cloud.dc.DataCenter;
-import org.dasein.cloud.dc.DataCenterCapabilities;
-import org.dasein.cloud.dc.DataCenterServices;
-import org.dasein.cloud.dc.FolderType;
-import org.dasein.cloud.dc.Region;
-import org.dasein.cloud.dc.StoragePool;
+import org.dasein.cloud.dc.*;
 
 import com.vmware.vim25.mo.Datacenter;
 import com.vmware.vim25.mo.Datastore;
@@ -59,25 +54,14 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletResponse;
 
-public class Dc implements DataCenterServices {
+public class Dc extends AbstractDataCenterServices<PrivateCloud> {
 
-    private PrivateCloud provider;
-    
     Dc(@Nonnull PrivateCloud cloud) {
-        provider = cloud;
-    }
-    
-    private @Nonnull ProviderContext getContext() throws CloudException {
-        ProviderContext ctx = provider.getContext();
-        
-        if( ctx == null ) {
-            throw new CloudException("No context was set for this request");
-        }
-        return ctx;
+        super(cloud);
     }
     
     private @Nonnull ServiceInstance getServiceInstance() throws CloudException, InternalException {
-        ServiceInstance instance = provider.getServiceInstance();
+        ServiceInstance instance = getProvider().getServiceInstance();
         
         if( instance == null ) {
             throw new CloudException(CloudErrorType.AUTHENTICATION, HttpServletResponse.SC_UNAUTHORIZED, null, "Unauthorized");            
@@ -90,14 +74,14 @@ public class Dc implements DataCenterServices {
     @Override
     public DataCenterCapabilities getCapabilities() throws InternalException, CloudException {
         if( capabilities == null ) {
-            capabilities = new DCCapabilities(provider);
+            capabilities = new DCCapabilities(getProvider());
         }
         return capabilities;
     }
 
     @Override
     public @Nullable DataCenter getDataCenter(@Nonnull String dcId) throws InternalException, CloudException {
-        APITrace.begin(provider, "DC.getDataCenter");
+        APITrace.begin(getProvider(), "DC.getDataCenter");
         try {
             String regionId = getContext().getRegionId();
 
@@ -137,7 +121,7 @@ public class Dc implements DataCenterServices {
     }
 
     public @Nullable ResourcePool getResourcePoolFromClusterId(@Nonnull ServiceInstance service, @Nonnull String dcId) throws CloudException, InternalException {
-        APITrace.begin(provider, "DC.getResourcePoolFromClusterId");
+        APITrace.begin(getProvider(), "DC.getResourcePoolFromClusterId");
         try {
             ServiceInstance instance = getServiceInstance();
 
@@ -181,7 +165,7 @@ public class Dc implements DataCenterServices {
     }
 
     public @Nullable Datacenter getVmwareDatacenterFromVDCId(@Nonnull ServiceInstance service, @Nonnull String dcId) throws CloudException, InternalException {
-        APITrace.begin(provider, "DC.getVmwareDatacenterFromVDCId");
+        APITrace.begin(getProvider(), "DC.getVmwareDatacenterFromVDCId");
         try {
             Folder rootFolder = service.getRootFolder();
 
@@ -205,15 +189,15 @@ public class Dc implements DataCenterServices {
 
     @Override
     public @Nonnull Collection<DataCenter> listDataCenters(@Nonnull String regionId) throws InternalException, CloudException {
-        APITrace.begin(provider, "DC.listDataCenters");
+        APITrace.begin(getProvider(), "DC.listDataCenters");
         try {
-            Cache<DataCenter> cache = Cache.getInstance(provider, "dataCenters", DataCenter.class, CacheLevel.REGION_ACCOUNT, new TimePeriod<Minute>(15, TimePeriod.MINUTE));
-            Collection<DataCenter> dcs = (Collection<DataCenter>)cache.get(provider.getContext());
+            Cache<DataCenter> cache = Cache.getInstance(getProvider(), "dataCenters", DataCenter.class, CacheLevel.REGION_ACCOUNT, new TimePeriod<Minute>(15, TimePeriod.MINUTE));
+            Collection<DataCenter> dcs = (Collection<DataCenter>)cache.get(getContext());
 
             if( dcs == null ) {
                 dcs = listDataCentersFromClusters(regionId);
                 if (dcs != null && dcs.size() > 0) {
-                    cache.put(provider.getContext(), dcs);
+                    cache.put(getContext(), dcs);
                     return dcs;
                 }
                 else {
@@ -225,7 +209,7 @@ public class Dc implements DataCenterServices {
                     dc.setRegionId(regionId);
                     dc.setProviderDataCenterId(regionId+"-a");
                     dcs.add(dc);
-                    cache.put(provider.getContext(), dcs);
+                    cache.put(getContext(), dcs);
                     return Collections.singletonList(dc);
                 }
             }
@@ -237,7 +221,7 @@ public class Dc implements DataCenterServices {
     }
 
     private @Nonnull Collection<DataCenter> listDataCentersFromClusters(@Nonnull String regionId) throws InternalException, CloudException {
-        APITrace.begin(provider, "DC.listDataCentersFromClusters");
+        APITrace.begin(getProvider(), "DC.listDataCentersFromClusters");
         try {
             ArrayList<DataCenter> dataCenters = new ArrayList<DataCenter>();
             ServiceInstance instance = getServiceInstance();
@@ -284,11 +268,11 @@ public class Dc implements DataCenterServices {
 
     @Override
     public Collection<org.dasein.cloud.dc.ResourcePool> listResourcePools(String providerDataCenterId) throws InternalException, CloudException {
-        APITrace.begin(provider, "DC.listResourcePools");
+        APITrace.begin(getProvider(), "DC.listResourcePools");
         try {
             ArrayList<org.dasein.cloud.dc.ResourcePool> list = new ArrayList<org.dasein.cloud.dc.ResourcePool>();
             Iterable<ResourcePool> rps;
-            DataCenter ourDC = provider.getDataCenterServices().getDataCenter(providerDataCenterId);
+            DataCenter ourDC = getProvider().getDataCenterServices().getDataCenter(providerDataCenterId);
             if (ourDC != null) {
                 if (ourDC.getProviderDataCenterId().endsWith("-a")) {
                     rps = listResourcePoolsForDatacenter(ourDC.getRegionId());
@@ -311,7 +295,7 @@ public class Dc implements DataCenterServices {
     }
 
     private Collection<ResourcePool> listResourcePoolsForCluster(String providerDataCenterId) throws InternalException, CloudException {
-        APITrace.begin(provider, "DC.listResourcePoolsForCluster");
+        APITrace.begin(getProvider(), "DC.listResourcePoolsForCluster");
         try {
             ServiceInstance instance = getServiceInstance();
             DataCenter dsdc = getDataCenter(providerDataCenterId);
@@ -363,7 +347,7 @@ public class Dc implements DataCenterServices {
     }
 
     private void getChildren(ResourcePool[] pools, ArrayList<ResourcePool> list) throws CloudException, InternalException {
-        APITrace.begin(provider, "DC.getChildren(ResourcePool[])");
+        APITrace.begin(getProvider(), "DC.getChildren(ResourcePool[])");
         try {
             try {
                 for (ResourcePool r : pools) {
@@ -389,7 +373,7 @@ public class Dc implements DataCenterServices {
     }
 
     private void getFolderChildren(Folder folder, List<Folder> list) throws CloudException, InternalException {
-        APITrace.begin(provider, "DC.getFolderChildren(Folder)");
+        APITrace.begin(getProvider(), "DC.getFolderChildren(Folder)");
         try {
             try {
                 ManagedEntity[] children = folder.getChildEntity();
@@ -416,7 +400,7 @@ public class Dc implements DataCenterServices {
     }
 
     private Collection<ResourcePool> listResourcePoolsForDatacenter(String dataCenterId) throws InternalException, CloudException {
-        APITrace.begin(provider, "DC.listResourcePoolsForDatacenter");
+        APITrace.begin(getProvider(), "DC.listResourcePoolsForDatacenter");
         try {
             ServiceInstance instance = getServiceInstance();
             DataCenter dsdc = getDataCenter(dataCenterId);
@@ -459,7 +443,7 @@ public class Dc implements DataCenterServices {
 
     @Override
     public org.dasein.cloud.dc.ResourcePool getResourcePool(String providerResourcePoolId) throws InternalException, CloudException {
-        APITrace.begin(provider, "DC.getResourcePool");
+        APITrace.begin(getProvider(), "DC.getResourcePool");
         try {
             Iterable<DataCenter> dcs = listDataCenters(getContext().getRegionId());
 
@@ -480,17 +464,17 @@ public class Dc implements DataCenterServices {
 
     @Override
     public Collection<StoragePool> listStoragePools() throws InternalException, CloudException {
-        APITrace.begin(provider, "DC.listStoragePools");
+        APITrace.begin(getProvider(), "DC.listStoragePools");
         try {
-            Cache<StoragePool> cache = Cache.getInstance(provider, "storagePools", StoragePool.class, CacheLevel.REGION_ACCOUNT, new TimePeriod<Minute>(15, TimePeriod.MINUTE));
-            Collection<StoragePool> pools = (Collection<StoragePool>)cache.get(provider.getContext());
+            Cache<StoragePool> cache = Cache.getInstance(getProvider(), "storagePools", StoragePool.class, CacheLevel.REGION_ACCOUNT, new TimePeriod<Minute>(15, TimePeriod.MINUTE));
+            Collection<StoragePool> pools = (Collection<StoragePool>)cache.get(getContext());
 
             if( pools == null ) {
                 pools = new ArrayList<StoragePool>();
                 ArrayList<String> datastoreNames = new ArrayList<String>();
-                Host hostSupport = provider.getComputeServices().getAffinityGroupSupport();
+                Host hostSupport = getProvider().getComputeServices().getAffinityGroupSupport();
 
-                for (DataCenter dataCenter : listDataCenters(provider.getContext().getRegionId())) {
+                for (DataCenter dataCenter : listDataCenters(getContext().getRegionId())) {
                     boolean sameDC = false;
                     for (HostSystem host : hostSupport.listHostSystems(dataCenter.getProviderDataCenterId())) {
                         Iterable<Datastore> datastores = hostSupport.listDatastoresForHost(host);
@@ -514,7 +498,7 @@ public class Dc implements DataCenterServices {
                         sameDC = true;
                     }
                 }
-                cache.put(provider.getContext(), pools);
+                cache.put(getContext(), pools);
             }
             return pools;
         }
@@ -526,7 +510,7 @@ public class Dc implements DataCenterServices {
     @Nonnull
     @Override
     public StoragePool getStoragePool(String providerStoragePoolId) throws InternalException, CloudException {
-        APITrace.begin(provider, "DC.getStoragePool");
+        APITrace.begin(getProvider(), "DC.getStoragePool");
         try {
             Collection<StoragePool> pools = listStoragePools();
             for (StoragePool pool : pools) {
@@ -544,7 +528,7 @@ public class Dc implements DataCenterServices {
     @Nonnull
     @Override
     public Collection<org.dasein.cloud.dc.Folder> listVMFolders() throws InternalException, CloudException {
-        APITrace.begin(provider, "DC.listVMFolders");
+        APITrace.begin(getProvider(), "DC.listVMFolders");
         try {
             ProviderContext ctx = getContext();
             List<Folder> vsphereList = new ArrayList<Folder>();
@@ -585,7 +569,7 @@ public class Dc implements DataCenterServices {
     @Nonnull
     @Override
     public org.dasein.cloud.dc.Folder getVMFolder(String providerVMFolderId) throws InternalException, CloudException {
-        APITrace.begin(provider, "DC.getVMFolder");
+        APITrace.begin(getProvider(), "DC.getVMFolder");
         try {
             ProviderContext ctx = getContext();
             ServiceInstance instance = getServiceInstance();
@@ -620,7 +604,7 @@ public class Dc implements DataCenterServices {
     }
 
     public ResourcePool getVMWareResourcePool(String providerResourcePoolId) throws InternalException, CloudException {
-        APITrace.begin(provider, "DC.getVMWareResourcePool");
+        APITrace.begin(getProvider(), "DC.getVMWareResourcePool");
         try {
             Iterable<DataCenter> dcs = listDataCenters(getContext().getRegionId());
             Iterable<ResourcePool> rps;
@@ -645,7 +629,7 @@ public class Dc implements DataCenterServices {
     }
 
     private @Nonnull Collection<Region> listRegionsFromVDCs() throws InternalException, CloudException {
-        APITrace.begin(provider, "DC.listRegionsFromVDCs");
+        APITrace.begin(getProvider(), "DC.listRegionsFromVDCs");
         try {
             ArrayList<Region> regions = new ArrayList<Region>();
             ServiceInstance instance = getServiceInstance();
@@ -756,11 +740,11 @@ public class Dc implements DataCenterServices {
         return id;
     }
 
-    private StoragePool toStoragePool(Datastore ds, String hostName, String datacenter) {
+    private StoragePool toStoragePool(Datastore ds, String hostName, String datacenter) throws InternalException {
         StoragePool sp = new StoragePool();
         sp.setAffinityGroupId(hostName);
         sp.setDataCenterId(datacenter);
-        sp.setRegionId(provider.getContext().getRegionId());
+        sp.setRegionId(getContext().getRegionId());
         sp.setStoragePoolName(ds.getName());
         sp.setStoragePoolId(ds.getName());
 

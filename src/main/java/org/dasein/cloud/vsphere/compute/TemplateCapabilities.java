@@ -120,6 +120,11 @@ public class TemplateCapabilities extends AbstractCapabilities<PrivateCloud> imp
     }
 
     @Override
+    public boolean supportsImageRemoval() throws CloudException, InternalException {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
     public boolean supportsImageSharing() throws CloudException, InternalException {
         return false;
     }

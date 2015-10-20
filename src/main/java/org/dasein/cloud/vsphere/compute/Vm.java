@@ -18,6 +18,10 @@
 
 package org.dasein.cloud.vsphere.compute;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.rmi.RemoteException;
 import java.util.*;
 
@@ -55,8 +59,12 @@ import org.dasein.util.CalendarWrapper;
 import org.dasein.util.uom.storage.Gigabyte;
 import org.dasein.util.uom.storage.Megabyte;
 import org.dasein.util.uom.storage.Storage;
+import org.dasein.util.uom.time.Day;
 import org.dasein.util.uom.time.Minute;
 import org.dasein.util.uom.time.TimePeriod;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -454,8 +462,7 @@ public class Vm extends AbstractVMSupport<PrivateCloud> {
                     config.setNumCoresPerSocket(cpuCount);
 
                     // record all networks we will end up with so that we can configure NICs correctly
-                    List<String> resultingNetworks = new ArrayList<String>();
-
+                    List<String> resultingNetworks = new ArrayList<>();
                     //networking section
                     //borrowed heavily from https://github.com/jedi4ever/jvspherecontrol
                     String vlan = options.getVlanId();
@@ -465,9 +472,10 @@ public class Vm extends AbstractVMSupport<PrivateCloud> {
                         // we don't need to do network config if the selected network
                         // is part of the template config anyway
                         VLANSupport vlanSupport = getProvider().getNetworkServices().getVlanSupport();
+
                         Iterable<VLAN> accessibleNetworks = vlanSupport.listVlans();
                         boolean addNetwork = true;
-                        List<VirtualDeviceConfigSpec> machineSpecs = new ArrayList<VirtualDeviceConfigSpec>();
+                        List<VirtualDeviceConfigSpec> machineSpecs = new ArrayList<>();
                         VirtualDevice[] virtualDevices = template.getConfig().getHardware().getDevice();
                         VLAN targetVlan = null;
                         for(VirtualDevice virtualDevice : virtualDevices) {
@@ -476,7 +484,7 @@ public class Vm extends AbstractVMSupport<PrivateCloud> {
                                 if( veCard.getBacking() instanceof VirtualEthernetCardNetworkBackingInfo ) {
                                     boolean nicDeleted = false;
                                     VirtualEthernetCardNetworkBackingInfo nicBacking = (VirtualEthernetCardNetworkBackingInfo) veCard.getBacking();
-                                    if( vlan.equals(nicBacking.getNetwork().getVal()) && veCard.getKey() == 4000 ) {
+                                    if( vlan.equals(nicBacking.getNetwork().getVal()) && veCard.getKey() == 0 ) {
                                         addNetwork = false;
                                     }
                                     else {
@@ -489,11 +497,9 @@ public class Vm extends AbstractVMSupport<PrivateCloud> {
                                                 machineSpecs.add(nicSpec);
                                                 nicDeleted = true;
 
-                                                // re-add network into first nicAdapter
                                                 if( accessibleNetwork.getProviderVlanId().equals(vlan) ) {
                                                     targetVlan = accessibleNetwork;
                                                 }
-                                                // break;
                                             }
                                             else if( accessibleNetwork.getProviderVlanId().equals(vlan) ) {
                                                 targetVlan = accessibleNetwork;
@@ -509,7 +515,7 @@ public class Vm extends AbstractVMSupport<PrivateCloud> {
                                 }else if ( veCard.getBacking() instanceof VirtualEthernetCardDistributedVirtualPortBackingInfo ){
                                     boolean nicDeleted = false;
                                     VirtualEthernetCardDistributedVirtualPortBackingInfo nicBacking = (VirtualEthernetCardDistributedVirtualPortBackingInfo) veCard.getBacking();
-                                    if( vlan.equals(nicBacking.getPort().getPortgroupKey()) && veCard.getKey() == 4000 ) {
+                                    if( vlan.equals(nicBacking.getPort().getPortgroupKey()) && veCard.getKey() == 0 ) {
                                         addNetwork = false;
                                     }
                                     else {
@@ -522,7 +528,6 @@ public class Vm extends AbstractVMSupport<PrivateCloud> {
                                                 machineSpecs.add(nicSpec);
                                                 nicDeleted = true;
 
-                                                // re-add network into first nicAdapter
                                                 if( accessibleNetwork.getProviderVlanId().equals(vlan) ) {
                                                     targetVlan = accessibleNetwork;
                                                 }
@@ -645,9 +650,27 @@ public class Vm extends AbstractVMSupport<PrivateCloud> {
                             userData.setFullName(options.getWinOwnerName());
                             userData.setOrgName(options.getWinOrgName());
                             String serial = options.getWinProductSerialNum();
-                            if (serial == null || serial.trim().length() <= 0) {
+                            log.debug("Found win license key: "+serial);
+                            log.debug("Guest os version: "+ template.getConfig().getGuestFullName());
+                            String guestOS = template.getConfig().getGuestFullName();
+                            if (serial == null || serial.length() <= 0) {
                                 log.warn("Product license key not specified in launch options. Trying to get default.");
-                                serial = getWindowsProductLicenseForOSEdition(template.getConfig().getGuestFullName());
+                                CustomFieldValue[] customValues = template.getCustomValue();
+                                for (CustomFieldValue value : customValues) {
+                                    if (value instanceof CustomFieldStringValue) {
+                                        CustomFieldStringValue string = (CustomFieldStringValue) value;
+                                        if (string.getValue().contains("2k12r2")) {
+                                            guestOS = "Windows Server 2012 R2 Server Standard";
+                                            log.debug("Found custom value specifying "+string.getValue());
+                                            break;
+                                        }
+                                    }
+                                }
+                                serial = getWindowsProductLicenseForOSEdition(guestOS);
+                                log.debug("License key found for guest OS version: " + serial);
+                            }
+                            else {
+                                log.debug("Using the user provided key: " + serial);
                             }
                             userData.setProductId(serial);
                             sysprep.setUserData(userData);
@@ -763,11 +786,6 @@ public class Vm extends AbstractVMSupport<PrivateCloud> {
     private @Nonnull VirtualMachine defineFromScratch(@Nonnull VMLaunchOptions options) throws InternalException, CloudException {
         APITrace.begin(getProvider(), "Vm.define");
         try {
-            ProviderContext ctx = getProvider().getContext();
-
-            if( ctx == null ) {
-                throw new InternalException("No context was set for this request");
-            }
             ServiceInstance instance = getServiceInstance();
             try {
                 String hostName = validateName(options.getHostName());
@@ -780,7 +798,7 @@ public class Vm extends AbstractVMSupport<PrivateCloud> {
                 }
 
                 if( dataCenterId == null ) {
-                    String rid = ctx.getRegionId();
+                    String rid = getContext().getRegionId();
 
                     if( rid != null ) {
                         for( DataCenter dsdc : getProvider().getDataCenterServices().listDataCenters(rid) ) {
@@ -1136,12 +1154,7 @@ public class Vm extends AbstractVMSupport<PrivateCloud> {
     public @Nullable VirtualMachineProduct getProduct(@Nonnull String productId) throws InternalException, CloudException {
         APITrace.begin(getProvider(), "Vm.getProduct(String)");
         try {
-            for( VirtualMachineProduct product : listProducts(null, Architecture.I64) ) {
-                if( product.getProviderProductId().equals(productId) ) {
-                    return product;
-                }
-            }
-            for( VirtualMachineProduct product : listProducts(null, Architecture.I32) ) {
+            for( VirtualMachineProduct product : listProducts("ignoreme", null) ) {
                 if( product.getProviderProductId().equals(productId) ) {
                     return product;
                 }
@@ -1202,31 +1215,26 @@ public class Vm extends AbstractVMSupport<PrivateCloud> {
     }
 
     @Override
-    public @Nonnull Iterable<VirtualMachineProduct> listProducts(@Nonnull String machineImageId, @Nonnull VirtualMachineProductFilterOptions options) throws InternalException, CloudException {
-        MachineImageSupport support = getProvider().getComputeServices().getImageSupport();
-        if( support == null ) {
-            throw new CloudException( getProvider().getCloudName() + " does not implement image support services");
-        }
-        MachineImage image = support.getImage(machineImageId);
-        if( image == null ) {
-            throw new CloudException("Machine image " + machineImageId + " not found" );
-        }
-
-        return listProducts(options, image.getArchitecture());
+    public @Nonnull Iterable<VirtualMachineProduct> listAllProducts() throws InternalException, CloudException{
+        return listProducts(null, VirtualMachineProductFilterOptions.getInstance());
     }
 
     @Override
-    public Iterable<VirtualMachineProduct> listProducts(VirtualMachineProductFilterOptions options, Architecture architecture) throws InternalException, CloudException {
-        APITrace.begin(getProvider(), "Vm.listProducts(VirtualMachineProductFilterOptions, Architecture)");
-        try {
-            ArrayList<VirtualMachineProduct> allVirtualMachineProducts = new ArrayList<VirtualMachineProduct>();
+    public Iterable<VirtualMachineProduct> listProducts(
+            /** ignored **/ @Nonnull String machineImageId,
+            @Nullable VirtualMachineProductFilterOptions options) throws InternalException, CloudException {
 
-            Cache<org.dasein.cloud.dc.ResourcePool> cache = Cache.getInstance(getProvider(), "resourcePools", org.dasein.cloud.dc.ResourcePool.class, CacheLevel.REGION_ACCOUNT, new TimePeriod<Minute>(15, TimePeriod.MINUTE));
+        APITrace.begin(getProvider(), "Vm.listProducts(String, VirtualMachineProductFilterOptions)");
+        try {
+            // get resource pools from cache or live
+            Cache<org.dasein.cloud.dc.ResourcePool> cache = Cache.getInstance(
+                    getProvider(), "resourcePools", org.dasein.cloud.dc.ResourcePool.class, CacheLevel.REGION_ACCOUNT,
+                    new TimePeriod<>(15, TimePeriod.MINUTE));
             Collection<org.dasein.cloud.dc.ResourcePool> rps = ( Collection<org.dasein.cloud.dc.ResourcePool> ) cache.get(getContext());
 
             if( rps == null ) {
                 Collection<DataCenter> dcs = getProvider().getDataCenterServices().listDataCenters(getContext().getRegionId());
-                rps = new ArrayList<org.dasein.cloud.dc.ResourcePool>();
+                rps = new ArrayList<>();
 
                 for( DataCenter dc : dcs ) {
                     Collection<org.dasein.cloud.dc.ResourcePool> pools = getProvider().getDataCenterServices().listResourcePools(dc.getProviderDataCenterId());
@@ -1235,123 +1243,194 @@ public class Vm extends AbstractVMSupport<PrivateCloud> {
                 cache.put(getContext(), rps);
             }
 
-            if( architecture != null ) {
-                for( Architecture a : getCapabilities().listSupportedArchitectures() ) {
-                    if( a.equals(architecture) ) {
-                        if( a.equals(Architecture.I32) ) {
-                            for( int cpu : new int[]{1, 2} ) {
-                                for( int ram : new int[]{512, 1024, 2048} ) {
-                                    // add in product without pool
-                                    VirtualMachineProduct product = new VirtualMachineProduct();
+            List<VirtualMachineProduct> results = new ArrayList<VirtualMachineProduct>();
+            Iterable<VirtualMachineProduct> jsonProducts = listProductsJson();
+            // first add all matching products from vmproducts.json
+            for( VirtualMachineProduct product : jsonProducts ) {
+                if( options == null || options.matches(product) ) {
+                    results.add(product);
+                }
+            }
 
-                                    product.setCpuCount(cpu);
-                                    product.setDescription("Custom product " + architecture + " - " + cpu + " CPU, " + ram + "MB RAM");
-                                    product.setName(cpu + " CPU/" + ram + " MB RAM");
-                                    product.setRootVolumeSize(new Storage<Gigabyte>(1, Storage.GIGABYTE));
-                                    product.setProviderProductId(cpu + ":" + ram);
-                                    product.setRamSize(new Storage<Megabyte>(ram, Storage.MEGABYTE));
-                                    product.setArchitectures(a);
-                                    allVirtualMachineProducts.add(product);
+            // second add same products but augmented with the resource pool info, ordered by pool name
+            for( org.dasein.cloud.dc.ResourcePool pool : rps ) {
+                for( VirtualMachineProduct product : jsonProducts ) {
+                    VirtualMachineProduct tmp = new VirtualMachineProduct();
+                    tmp.setName("Pool " + pool.getName() + "/" + product.getName());
+                    tmp.setProviderProductId(pool.getProvideResourcePoolId() + ":" + product.getProviderProductId());
+                    tmp.setRootVolumeSize(product.getRootVolumeSize());
+                    tmp.setCpuCount(product.getCpuCount());
+                    tmp.setDescription(product.getDescription());
+                    tmp.setRamSize(product.getRamSize());
+                    tmp.setStandardHourlyRate(product.getStandardHourlyRate());
 
-                                    //resource pools
-                                    for( org.dasein.cloud.dc.ResourcePool pool : rps ) {
-                                        product = new VirtualMachineProduct();
-                                        product.setCpuCount(cpu);
-                                        product.setDescription("Custom product " + architecture + " - " + cpu + " CPU, " + ram + "MB RAM");
-                                        product.setName("Pool "+pool.getName()+"/"+cpu + " CPU/" + ram + " MB RAM");
-                                        product.setRootVolumeSize(new Storage<Gigabyte>(1, Storage.GIGABYTE));
-                                        product.setProviderProductId(pool.getProvideResourcePoolId() + ":" + cpu + ":" + ram);
-                                        product.setRamSize(new Storage<Megabyte>(ram, Storage.MEGABYTE));
-                                        allVirtualMachineProducts.add(product);
-                                    }
-                                }
-                            }
-                        }
-                        else {
-                            for( int cpu : new int[]{1, 2, 4, 8} ) {
-                                for( int ram : new int[]{1024, 2048, 4096, 10240, 20480} ) {
-                                    // add in product without pool
-                                    VirtualMachineProduct product = new VirtualMachineProduct();
-
-                                    product.setCpuCount(cpu);
-                                    product.setDescription("Custom product " + architecture + " - " + cpu + " CPU, " + ram + "MB RAM");
-                                    product.setName(cpu + " CPU/" + ram + " MB RAM");
-                                    product.setRootVolumeSize(new Storage<Gigabyte>(1, Storage.GIGABYTE));
-                                    product.setProviderProductId(cpu + ":" + ram);
-                                    product.setRamSize(new Storage<Megabyte>(ram, Storage.MEGABYTE));
-                                    product.setArchitectures(a);
-                                    allVirtualMachineProducts.add(product);
-
-                                    //resource pools
-                                    for( org.dasein.cloud.dc.ResourcePool pool : rps ) {
-                                        product = new VirtualMachineProduct();
-                                        product.setCpuCount(cpu);
-                                        product.setDescription("Custom product " + architecture + " - " + cpu + " CPU, " + ram + "MB RAM");
-                                        product.setName("Pool "+pool.getName()+"/"+cpu + " CPU/" + ram + " MB RAM");
-
-                                        product.setRootVolumeSize(new Storage<Gigabyte>(1, Storage.GIGABYTE));
-                                        product.setProviderProductId(pool.getProvideResourcePoolId() + ":" + cpu + ":" + ram);
-                                        product.setRamSize(new Storage<Megabyte>(ram, Storage.MEGABYTE));
-                                        allVirtualMachineProducts.add(product);
-                                    }
-                                }
-                            }
-                        }
+                    if( options == null || options.matches(product) ) {
+                        results.add(tmp);
                     }
                 }
             }
-            else {
-                for( int cpu : new int[]{1, 2, 4, 8} ) {
-                    for( int ram : new int[]{512, 1024, 2048, 4096, 10240, 20480} ) {
-                        // add in product without pool
-                        VirtualMachineProduct product = new VirtualMachineProduct();
-
-                        product.setCpuCount(cpu);
-                        product.setDescription("Custom product " + architecture + " - " + cpu + " CPU, " + ram + "MB RAM");
-                        product.setName(cpu + " CPU/" + ram + " MB RAM");
-                        product.setRootVolumeSize(new Storage<Gigabyte>(1, Storage.GIGABYTE));
-                        product.setProviderProductId(cpu + ":" + ram);
-                        product.setRamSize(new Storage<Megabyte>(ram, Storage.MEGABYTE));
-                        allVirtualMachineProducts.add(product);
-
-                        //resource pools
-                        for( org.dasein.cloud.dc.ResourcePool pool : rps ) {
-                            product = new VirtualMachineProduct();
-                            product.setCpuCount(cpu);
-                            product.setDescription("Custom product " + architecture + " - " + cpu + " CPU, " + ram + "MB RAM");
-                            product.setName("Pool "+pool.getName()+"/"+cpu + " CPU/" + ram + " MB RAM");
-
-                            product.setRootVolumeSize(new Storage<Gigabyte>(1, Storage.GIGABYTE));
-                            product.setProviderProductId(pool.getProvideResourcePoolId() + ":" + cpu + ":" + ram);
-                            product.setRamSize(new Storage<Megabyte>(ram, Storage.MEGABYTE));
-                            allVirtualMachineProducts.add(product);
-                        }
-                    }
-                }
-            }
-            if( options != null ) {
-                ArrayList<VirtualMachineProduct> filteredProducts = new ArrayList<VirtualMachineProduct>();
-                for( VirtualMachineProduct product : allVirtualMachineProducts ) {
-                    if( options.matches(product) ) {
-                        filteredProducts.add(product);
-                    }
-                }
-                return filteredProducts;
-            }
-            else {
-                return allVirtualMachineProducts;
-            }
+            return results;
         }
         finally {
             APITrace.end();
         }
     }
 
-    static private Collection<Architecture> architectures;
+    /**
+     * Load products list from vmproducts.json filtered by architecture if specified in the options.
+     * Uses a cache for one day.
+     * @return list of products
+     * @throws InternalException
+     */
+    private @Nonnull Iterable<VirtualMachineProduct> listProductsJson() throws InternalException {
+        APITrace.begin(getProvider(), "VM.listProducts");
+        try {
+            Cache<VirtualMachineProduct> cache = Cache.getInstance(getProvider(), "products", VirtualMachineProduct.class, CacheLevel.REGION_ACCOUNT, new TimePeriod<Day>(1, TimePeriod.DAY));
+            Iterable<VirtualMachineProduct> products = cache.get(getContext());
 
-    @Override
-    public Iterable<Architecture> listSupportedArchitectures() throws InternalException, CloudException {
-        return getCapabilities().listSupportedArchitectures();
+            if( products != null && products.iterator().hasNext() ) {
+                return products;
+            }
+
+            List<VirtualMachineProduct> list = new ArrayList<VirtualMachineProduct>();
+
+            try {
+                InputStream input = AbstractVMSupport.class.getResourceAsStream("/org/dasein/cloud/vsphere/vmproducts.json");
+
+                if( input == null ) {
+                    return Collections.emptyList();
+                }
+                BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+                StringBuilder json = new StringBuilder();
+                String line;
+
+                while( ( line = reader.readLine() ) != null ) {
+                    json.append(line);
+                    json.append("\n");
+                }
+                JSONArray arr = new JSONArray(json.toString());
+                JSONObject toCache = null;
+
+                for( int i = 0; i < arr.length(); i++ ) {
+                    JSONObject productSet = arr.getJSONObject(i);
+                    String cloud, provider;
+
+                    if( productSet.has("cloud") ) {
+                        cloud = productSet.getString("cloud");
+                    }
+                    else {
+                        continue;
+                    }
+                    if( productSet.has("provider") ) {
+                        provider = productSet.getString("provider");
+                    }
+                    else {
+                        continue;
+                    }
+                    if( !productSet.has("products") ) {
+                        continue;
+                    }
+                    if( toCache == null || ( provider.equals("vSphere") && cloud.equals("vSphere") ) ) {
+                        toCache = productSet;
+                    }
+                    if( provider.equalsIgnoreCase(getProvider().getProviderName()) && cloud.equalsIgnoreCase(getProvider().getCloudName()) ) {
+                        toCache = productSet;
+                        break;
+                    }
+                }
+                if( toCache == null ) {
+                    return Collections.emptyList();
+                }
+                JSONArray plist = toCache.getJSONArray("products");
+
+                for( int i = 0; i < plist.length(); i++ ) {
+                    JSONObject product = plist.getJSONObject(i);
+                    boolean supported = true;
+                    if( product.has("excludesRegions") ) {
+                        JSONArray regions = product.getJSONArray("excludesRegions");
+
+                        for( int j = 0; j < regions.length(); j++ ) {
+                            String r = regions.getString(j);
+
+                            if( r.equals(getContext().getRegionId()) ) {
+                                supported = false;
+                                break;
+                            }
+                        }
+                    }
+                    if( supported ) {
+                        list.add(toProduct(product));
+                    }
+                }
+                // save the products to cache
+                cache.put(getContext(), list);
+            } catch( IOException e ) {
+                throw new InternalException(e);
+            } catch( JSONException e ) {
+                throw new InternalException(e);
+            }
+            return list;
+        } finally {
+            APITrace.end();
+        }
+
+    }
+
+    private @Nullable VirtualMachineProduct toProduct( @Nonnull JSONObject json ) throws InternalException {
+        VirtualMachineProduct prd = new VirtualMachineProduct();
+
+        try {
+            if( json.has("id") ) {
+                prd.setProviderProductId(json.getString("id"));
+            }
+            else {
+                return null;
+            }
+            if( json.has("name") ) {
+                prd.setName(json.getString("name"));
+            }
+            else {
+                prd.setName(prd.getProviderProductId());
+            }
+            if( json.has("description") ) {
+                prd.setDescription(json.getString("description"));
+            }
+            else {
+                prd.setDescription(prd.getName());
+            }
+            if( json.has("cpuCount") ) {
+                prd.setCpuCount(json.getInt("cpuCount"));
+            }
+            else {
+                prd.setCpuCount(1);
+            }
+            if( json.has("rootVolumeSizeInGb") ) {
+                prd.setRootVolumeSize(new Storage<Gigabyte>(json.getInt("rootVolumeSizeInGb"), Storage.GIGABYTE));
+            }
+            else {
+                prd.setRootVolumeSize(new Storage<Gigabyte>(1, Storage.GIGABYTE));
+            }
+            if( json.has("ramSizeInMb") ) {
+                prd.setRamSize(new Storage<Megabyte>(json.getInt("ramSizeInMb"), Storage.MEGABYTE));
+            }
+            else {
+                prd.setRamSize(new Storage<Megabyte>(512, Storage.MEGABYTE));
+            }
+            if( json.has("standardHourlyRates") ) {
+                JSONArray rates = json.getJSONArray("standardHourlyRates");
+
+                for( int i = 0; i < rates.length(); i++ ) {
+                    JSONObject rate = rates.getJSONObject(i);
+
+                    if( rate.has("rate") ) {
+                        prd.setStandardHourlyRate(( float ) rate.getDouble("rate"));
+                    }
+                }
+            }
+        } catch( JSONException e ) {
+            throw new InternalException(e);
+        }
+        return prd;
     }
 
     @Override
@@ -1914,7 +1993,7 @@ public class Vm extends AbstractVMSupport<PrivateCloud> {
             }
 
             if ( vminfo.getHardware().getDevice() != null && vminfo.getHardware().getDevice().length > 0 ) {
-                VirtualDevice[] virtualDevices = vminfo.getHardware().getDevice();
+                VirtualDevice[] virtualDevices = vm.getConfig().getHardware().getDevice();
                 for(VirtualDevice virtualDevice : virtualDevices) {
                     if( virtualDevice instanceof VirtualEthernetCard ) {
                         VirtualEthernetCard veCard = ( VirtualEthernetCard ) virtualDevice;

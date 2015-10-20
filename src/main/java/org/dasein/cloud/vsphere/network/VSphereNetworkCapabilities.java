@@ -36,11 +36,9 @@ import java.util.Locale;
  * Time: 12:42
  */
 public class VSphereNetworkCapabilities extends AbstractCapabilities<PrivateCloud> implements VLANCapabilities {
-    private PrivateCloud provider;
 
     VSphereNetworkCapabilities(PrivateCloud provider) {
         super(provider);
-        this.provider = provider;
     }
 
     @Override
@@ -71,6 +69,11 @@ public class VSphereNetworkCapabilities extends AbstractCapabilities<PrivateClou
     @Override
     public boolean allowsMultipleTrafficTypesOverVlan() throws CloudException, InternalException {
         return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public boolean allowsDeletionOfReservedSubnets() throws CloudException, InternalException {
+        return false;
     }
 
     @Override

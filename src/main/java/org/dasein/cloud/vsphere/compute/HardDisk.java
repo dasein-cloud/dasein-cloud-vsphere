@@ -29,7 +29,6 @@ import java.util.List;
  * Time: 10:28
  */
 public class HardDisk extends AbstractVolumeSupport<Vsphere> {
-    private Vsphere provider;
     private List<PropertySpec> hardDiskPSpecs;
     private List<PropertySpec> rpPSpecs;
     private List<SelectionSpec> rpSSpecs;
@@ -40,7 +39,6 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
 
     public HardDisk(@Nonnull Vsphere provider) {
         super(provider);
-        this.provider = provider;
         dc = provider.getDataCenterServices();
     }
 
@@ -105,10 +103,10 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
 
     @Override
     public void attach(@Nonnull String volumeId, @Nonnull String toServer, @Nonnull String deviceId) throws InternalException, CloudException {
-        APITrace.begin(provider, "HardDisk.attach");
+        APITrace.begin(getProvider(), "HardDisk.attach");
         try {
             try {
-                Vm vmSupport = provider.getComputeServices().getVirtualMachineSupport();
+                Vm vmSupport = getProvider().getComputeServices().getVirtualMachineSupport();
                 VirtualMachine vm = vmSupport.getVirtualMachine(toServer);
                 if (vm == null) {
                     throw new CloudException("Unable to find vm with id "+toServer);
@@ -120,7 +118,7 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
                 }
 
                 List<PropertySpec> pSpecs = getHardDiskPSpec();
-                RetrieveResult props = retrieveObjectList(provider, "vmFolder", null, pSpecs);
+                RetrieveResult props = retrieveObjectList(getProvider(), "vmFolder", null, pSpecs);
 
                 List<VirtualDeviceConfigSpec> machineSpecs = null;
                 Object deviceObject = getVMProperty(props, toServer, "config.hardware.device");
@@ -181,7 +179,7 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
                 CloudException lastError = null;
                 ManagedObjectReference taskmor = vmSupport.reconfigVMTask(vmRef, spec);
 
-                VsphereMethod method = new VsphereMethod(provider);
+                VsphereMethod method = new VsphereMethod(getProvider());
                 TimePeriod interval = new TimePeriod<Second>(15, TimePeriod.SECOND);
 
                 if( taskmor != null && !method.getOperationComplete(taskmor, interval, 4) ) {
@@ -208,14 +206,14 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
             if (options.getProviderVirtualMachineId() == null) {
                 throw new CloudException("Volumes can only be created in the context of a vm for "+getProvider().getCloudName()+". ProviderVirtualMachineId cannot be null");
             }
-            Vm vmSupport = provider.getComputeServices().getVirtualMachineSupport();
+            Vm vmSupport = getProvider().getComputeServices().getVirtualMachineSupport();
             VirtualMachine vm = vmSupport.getVirtualMachine(options.getProviderVirtualMachineId());
             if( vm == null ) {
                 throw new CloudException("Unable to find vm with id " + options.getProviderVirtualMachineId());
             }
 
             List<PropertySpec> pSpecs = getHardDiskPSpec();
-            RetrieveResult props = retrieveObjectList(provider, "vmFolder", null, pSpecs);
+            RetrieveResult props = retrieveObjectList(getProvider(), "vmFolder", null, pSpecs);
 
             try {
                 List<VirtualDeviceConfigSpec> machineSpecs = null;
@@ -290,7 +288,7 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
                 CloudException lastError;
                 ManagedObjectReference taskmor = vmSupport.reconfigVMTask(vmRef, spec);
 
-                VsphereMethod method = new VsphereMethod(provider);
+                VsphereMethod method = new VsphereMethod(getProvider());
                 TimePeriod interval = new TimePeriod<Second>(15, TimePeriod.SECOND);
 
                 if( method.getOperationComplete(taskmor, interval, 4) ) {
@@ -300,7 +298,7 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
                         try { Thread.sleep(10000L); }
                         catch( InterruptedException ignore ) { }
 
-                        props = retrieveObjectList(provider, "vmFolder", null, pSpecs);
+                        props = retrieveObjectList(getProvider(), "vmFolder", null, pSpecs);
                         array = (ArrayOfVirtualDevice) getVMProperty(props, options.getProviderVirtualMachineId(), "config.hardware.device");;
                         devices = array.getVirtualDevice();
 
@@ -337,7 +335,7 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
 
     @Override
     public void detach(@Nonnull String volumeId, boolean force) throws InternalException, CloudException {
-        APITrace.begin(provider, "HardDisk.detach");
+        APITrace.begin(getProvider(), "HardDisk.detach");
         try {
             Volume volume = getVolume(volumeId);
             if (volume == null ) {
@@ -347,14 +345,14 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
                 throw new CloudException("Volume not currently attached");
             }
 
-            Vm vmSupport = provider.getComputeServices().getVirtualMachineSupport();
+            Vm vmSupport = getProvider().getComputeServices().getVirtualMachineSupport();
             VirtualMachine vm = vmSupport.getVirtualMachine(volume.getProviderVirtualMachineId());
             if (vm == null) {
                 throw new CloudException("Vm not found with id " + volume.getProviderVirtualMachineId());
             }
 
             List<PropertySpec> pSpecs = getHardDiskPSpec();
-            RetrieveResult props = retrieveObjectList(provider, "vmFolder", null, pSpecs);
+            RetrieveResult props = retrieveObjectList(getProvider(), "vmFolder", null, pSpecs);
 
             try {
                 List<VirtualDeviceConfigSpec> machineSpecs = new ArrayList<VirtualDeviceConfigSpec>();
@@ -406,7 +404,7 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
                     CloudException lastError = null;
                     ManagedObjectReference taskmor = vmSupport.reconfigVMTask(vmRef, spec);
 
-                    VsphereMethod method = new VsphereMethod(provider);
+                    VsphereMethod method = new VsphereMethod(getProvider());
                     TimePeriod interval = new TimePeriod<Second>(15, TimePeriod.SECOND);
 
                     if( !method.getOperationComplete(taskmor, interval, 4) ) {
@@ -433,7 +431,7 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
     @Override
     public VolumeCapabilities getCapabilities() throws CloudException, InternalException {
         if( capabilities == null ) {
-            capabilities = new HardDiskCapabilities(provider);
+            capabilities = new HardDiskCapabilities(getProvider());
         }
         return capabilities;
     }
@@ -441,14 +439,14 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
     @Nonnull
     @Override
     public Iterable<Volume> listVolumes() throws InternalException, CloudException {
-        APITrace.begin(provider, "HardDisk.listVolumes");
+        APITrace.begin(getProvider(), "HardDisk.listVolumes");
         try {
-            VsphereMethod method = new VsphereMethod(provider);
+            VsphereMethod method = new VsphereMethod(getProvider());
             TimePeriod interval = new TimePeriod<Second>(15, TimePeriod.SECOND);
 
             List<Volume> list = new ArrayList<Volume>();
             List<String> fileNames = new ArrayList<String>();
-            ProviderContext ctx = provider.getContext();
+            ProviderContext ctx = getProvider().getContext();
             if (ctx == null) {
                 throw new NoContextException();
             }
@@ -458,7 +456,7 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
 
             //get attached volumes
             List<PropertySpec> pSpecs = getHardDiskPSpec();
-            RetrieveResult listobcont = retrieveObjectList(provider, "vmFolder", null, pSpecs);
+            RetrieveResult listobcont = retrieveObjectList(getProvider(), "vmFolder", null, pSpecs);
 
             if (listobcont != null) {
                 Iterable<ResourcePool> rps = getAllResourcePoolsIncludingRoot();//return all resourcePools
@@ -542,7 +540,7 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
             // get .vmdk files
             List<PropertySpec> dsPSpecs = getDatastorePropertySpec();
 
-            RetrieveResult dsListobcont = retrieveObjectList(provider, "datastoreFolder", null, dsPSpecs);
+            RetrieveResult dsListobcont = retrieveObjectList(getProvider(), "datastoreFolder", null, dsPSpecs);
             if (dsListobcont != null) {
                 Iterable<StoragePool> pools = listStoragePools();
                 String dataCenterId;
@@ -573,7 +571,7 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
 
                     if (dsName != null && hostDatastoreBrowser != null) {
                         try {
-                            ManagedObjectReference taskmor = searchDatastores(provider, hostDatastoreBrowser, "[" + dsName + "]", null);
+                            ManagedObjectReference taskmor = searchDatastores(getProvider(), hostDatastoreBrowser, "[" + dsName + "]", null);
                             if (taskmor != null && method.getOperationComplete(taskmor, interval, 4)) {
                                 PropertyChange taskResult = method.getTaskResult();
                                 if (taskResult != null && taskResult.getVal() != null) {
@@ -620,7 +618,7 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
 
     @Override
     public void remove(@Nonnull String volumeId) throws InternalException, CloudException {
-        APITrace.begin(provider, "HardDisk.remove");
+        APITrace.begin(getProvider(), "HardDisk.remove");
         try {
             Volume volume = getVolume(volumeId);
             if (volume == null ) {
@@ -630,7 +628,7 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
                 throw new CloudException("Volume is attached to vm " + volume.getProviderVirtualMachineId() + " - removing not allowed");
             }
 
-            VsphereConnection vsphereConnection = provider.getServiceInstance();
+            VsphereConnection vsphereConnection = getProvider().getServiceInstance();
             ManagedObjectReference fileManager = vsphereConnection.getServiceContent().getFileManager();
             ManagedObjectReference searchIndex = vsphereConnection.getServiceContent().getSearchIndex();
             VimPortType vimPortType = vsphereConnection.getVimPort();
@@ -664,7 +662,7 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
             List<SelectionSpec> selectionSpecsArr = getResourcePoolSelectionSpec();
             List<PropertySpec> pSpecs = getResourcePoolPropertySpec();
 
-            RetrieveResult listobcont = retrieveObjectList(provider, "hostFolder", selectionSpecsArr, pSpecs);
+            RetrieveResult listobcont = retrieveObjectList(getProvider(), "hostFolder", selectionSpecsArr, pSpecs);
 
             if (listobcont != null) {
                 for (ObjectContent oc : listobcont.getObjects()) {

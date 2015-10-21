@@ -17,11 +17,9 @@ import java.util.Locale;
  * Time: 12:34
  */
 public class VSphereNetworkCapabilities extends AbstractCapabilities<Vsphere> implements VLANCapabilities {
-    private Vsphere provider;
 
     VSphereNetworkCapabilities(Vsphere provider) {
         super(provider);
-        this.provider = provider;
     }
 
     @Override

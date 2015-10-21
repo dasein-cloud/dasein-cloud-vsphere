@@ -38,13 +38,11 @@ import java.util.*;
 public class HostSupport extends AbstractAffinityGroupSupport<Vsphere> {
     static private final Logger logger = Vsphere.getLogger(HostSupport.class);
 
-    private Vsphere provider;
     public List<PropertySpec> hostPSpec;
     public List<SelectionSpec> hostSSpec;
 
     public HostSupport(@Nonnull Vsphere provider) {
         super(provider);
-        this.provider = provider;
     }
 
     public RetrieveResult retrieveObjectList(Vsphere provider, @Nonnull String baseFolder, @Nullable List<SelectionSpec> selectionSpecsArr, @Nonnull List<PropertySpec> pSpecs) throws InternalException, CloudException {
@@ -98,13 +96,13 @@ public class HostSupport extends AbstractAffinityGroupSupport<Vsphere> {
     @Nonnull
     @Override
     public Iterable<AffinityGroup> list(@Nonnull AffinityGroupFilterOptions options) throws InternalException, CloudException {
-        APITrace.begin(provider, "Host.list");
+        APITrace.begin(getProvider(), "Host.list");
         try {
-            ProviderContext ctx = provider.getContext();
+            ProviderContext ctx = getProvider().getContext();
             if( ctx == null ) {
                 throw new NoContextException();
             }
-            Cache<AffinityGroup> cache = Cache.getInstance(provider, "affinityGroups", AffinityGroup.class, CacheLevel.REGION_ACCOUNT, new TimePeriod<Day>(1, TimePeriod.DAY));
+            Cache<AffinityGroup> cache = Cache.getInstance(getProvider(), "affinityGroups", AffinityGroup.class, CacheLevel.REGION_ACCOUNT, new TimePeriod<Day>(1, TimePeriod.DAY));
             Collection<AffinityGroup> hostList = (Collection<AffinityGroup>)cache.get(ctx);
 
             if( hostList != null ) {
@@ -121,7 +119,7 @@ public class HostSupport extends AbstractAffinityGroupSupport<Vsphere> {
             List<SelectionSpec> selectionSpecsArr = getHostSSpec();
             List<PropertySpec> pSpecs = getHostPSpec();
 
-            RetrieveResult listobcont = retrieveObjectList(provider, "hostFolder", selectionSpecsArr, pSpecs);
+            RetrieveResult listobcont = retrieveObjectList(getProvider(), "hostFolder", selectionSpecsArr, pSpecs);
 
             if (listobcont != null) {
                 List<AffinityGroup> temp = new ArrayList<AffinityGroup>();

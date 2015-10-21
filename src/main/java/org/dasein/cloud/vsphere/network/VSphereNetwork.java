@@ -27,14 +27,12 @@ import java.util.Locale;
  * Date: 21/09/2015
  * Time: 12:34
  */
-public class VSphereNetwork extends AbstractVLANSupport {
-    private Vsphere provider;
+public class VSphereNetwork extends AbstractVLANSupport<Vsphere> {
     private List<PropertySpec> networkPSpec;
     static private final Logger log = Vsphere.getLogger(VSphereNetwork.class);
 
     public VSphereNetwork(Vsphere provider) {
         super(provider);
-        this.provider = provider;
     }
 
     public RetrieveResult retrieveObjectList(Vsphere provider, @Nonnull String baseFolder, @Nullable List<SelectionSpec> selectionSpecsArr, @Nonnull List<PropertySpec> pSpecs) throws InternalException, CloudException {
@@ -54,7 +52,7 @@ public class VSphereNetwork extends AbstractVLANSupport {
     @Override
     public VLANCapabilities getCapabilities() throws CloudException, InternalException {
         if( capabilities == null ) {
-            capabilities = new VSphereNetworkCapabilities(provider);
+            capabilities = new VSphereNetworkCapabilities(getProvider());
         }
         return capabilities;
     }
@@ -85,13 +83,13 @@ public class VSphereNetwork extends AbstractVLANSupport {
     @Nonnull
     @Override
     public Iterable<VLAN> listVlans() throws CloudException, InternalException {
-        APITrace.begin(provider, "VSphereNetwork.listVlans");
+        APITrace.begin(getProvider(), "VSphereNetwork.listVlans");
         try {
-            ProviderContext ctx = provider.getContext();
+            ProviderContext ctx = getProvider().getContext();
             if( ctx == null ) {
                 throw new NoContextException();
             }
-            Cache<VLAN> cache = Cache.getInstance(provider, "networks", VLAN.class, CacheLevel.REGION_ACCOUNT, new TimePeriod<Day>(1, TimePeriod.DAY));
+            Cache<VLAN> cache = Cache.getInstance(getProvider(), "networks", VLAN.class, CacheLevel.REGION_ACCOUNT, new TimePeriod<Day>(1, TimePeriod.DAY));
             Collection<VLAN> netList = (Collection<VLAN>)cache.get(ctx);
 
             if( netList != null ) {
@@ -101,7 +99,7 @@ public class VSphereNetwork extends AbstractVLANSupport {
             List<VLAN> list = new ArrayList<VLAN>();
             List<PropertySpec> pSpecs = getNetworkPSpec();
 
-            RetrieveResult listobcont = retrieveObjectList(provider, "networkFolder", null, pSpecs);
+            RetrieveResult listobcont = retrieveObjectList(getProvider(), "networkFolder", null, pSpecs);
 
             if (listobcont != null) {
                 List<ObjectContent> objectContents = listobcont.getObjects();

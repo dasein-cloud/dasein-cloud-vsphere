@@ -62,19 +62,17 @@ import org.dasein.util.uom.time.TimePeriod;
  *
  */
 public class ImageSupport extends AbstractImageSupport<Vsphere> {
-    private Vsphere provider;
     private VsphereImageCapabilities capabilities;
     static private final Logger logger = Vsphere.getLogger(ImageSupport.class);
 
     public ImageSupport(@Nonnull Vsphere provider) {
         super(provider);
-        this.provider = provider;
     }
 
     @Override
     public VsphereImageCapabilities getCapabilities() throws CloudException, InternalException {
         if (capabilities == null) {
-            capabilities = new VsphereImageCapabilities(provider);
+            capabilities = new VsphereImageCapabilities(getProvider());
         }
         return capabilities;
     }
@@ -111,7 +109,7 @@ public class ImageSupport extends AbstractImageSupport<Vsphere> {
     public Iterable<MachineImage> listImages(@Nullable ImageFilterOptions opts) throws CloudException, InternalException {
         APITrace.begin(getProvider(), "ImageSupport.listImages");
 
-        VsphereConnection vsphereConnection = provider.getServiceInstance();
+        VsphereConnection vsphereConnection = getProvider().getServiceInstance();
         VimPortType vimPort = vsphereConnection.getVimPort();
         ServiceContent serviceContent = vsphereConnection.getServiceContent();
 
@@ -201,7 +199,7 @@ public class ImageSupport extends AbstractImageSupport<Vsphere> {
         // TODO Auto-generated method stub  capture vm to template
         APITrace.begin(getProvider(), "ImageSupport.listImages");
 
-        VsphereConnection vsphereConnection = provider.getServiceInstance();
+        VsphereConnection vsphereConnection = getProvider().getServiceInstance();
         VimPortType vimPort = vsphereConnection.getVimPort();
         ServiceContent serviceContent = vsphereConnection.getServiceContent();
         try {
@@ -221,10 +219,10 @@ public class ImageSupport extends AbstractImageSupport<Vsphere> {
 
         // INPUTS
         options.getDescription(); // <- description for clone.
-        
-        
 
-        VsphereConnection vsphereConnection = provider.getServiceInstance();
+
+
+        VsphereConnection vsphereConnection = getProvider().getServiceInstance();
         VimPortType vimPort = vsphereConnection.getVimPort();
         ServiceContent serviceContent = vsphereConnection.getServiceContent();
 
@@ -264,7 +262,7 @@ public class ImageSupport extends AbstractImageSupport<Vsphere> {
 
             ManagedObjectReference vmRef = vimPort.findByInventoryPath(serviceContent.getSearchIndex(), vmPathName);
             ManagedObjectReference cloneTask = vimPort.cloneVMTask(vmRef, vmFolderRef, options.getName(), cloneSpec);
-            VsphereMethod method = new VsphereMethod(provider);
+            VsphereMethod method = new VsphereMethod(getProvider());
             TimePeriod<Second> interval = new TimePeriod<Second>(10, TimePeriod.SECOND);
             method.getOperationComplete(cloneTask, interval, 20);
         } catch ( Exception e ) {
@@ -282,7 +280,7 @@ public class ImageSupport extends AbstractImageSupport<Vsphere> {
     }
 
     List<ObjectContent> retrievePropertiesAllObjects(List<PropertyFilterSpec> listpfs) throws RuntimeFaultFaultMsg, InvalidPropertyFaultMsg, CloudException, InternalException {
-        VsphereConnection vsphereConnection = provider.getServiceInstance();
+        VsphereConnection vsphereConnection = getProvider().getServiceInstance();
         VimPortType vimPort = vsphereConnection.getVimPort();
         ServiceContent serviceContent = vsphereConnection.getServiceContent();
 
@@ -314,7 +312,7 @@ public class ImageSupport extends AbstractImageSupport<Vsphere> {
     public void remove(String providerImageId, boolean checkState) throws CloudException, InternalException {
         APITrace.begin(getProvider(), "ImageSupport.remove");
 
-        VsphereConnection vsphereConnection = provider.getServiceInstance();
+        VsphereConnection vsphereConnection = getProvider().getServiceInstance();
         VimPortType vimPort = vsphereConnection.getVimPort();
         ServiceContent serviceContent = vsphereConnection.getServiceContent();
         try {
@@ -340,7 +338,7 @@ public class ImageSupport extends AbstractImageSupport<Vsphere> {
 
                 if (providerImageId.equals(virtualMachineConfigSummary.getName()) && virtualMachineConfigSummary.isTemplate()) {
                     ManagedObjectReference taskmor = vimPort.destroyTask(templateToBeDeleted);
-                    VsphereMethod method = new VsphereMethod(provider);
+                    VsphereMethod method = new VsphereMethod(getProvider());
                     TimePeriod<Second> interval = new TimePeriod<Second>(5, TimePeriod.SECOND);
                     method.getOperationComplete(taskmor, interval, 20);
                     break;

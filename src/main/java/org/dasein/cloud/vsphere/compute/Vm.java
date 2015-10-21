@@ -58,12 +58,12 @@ public class Vm extends AbstractVMSupport<Vsphere> {
     }
 
     public List<PropertySpec> getVirtualMachinePSpec() {
-        virtualMachinePSpec = VsphereTraversalSpec.createPropertySpec(virtualMachinePSpec, "VirtualMachine", false, "runtime", "config", "parent", "resourcePool", "guest");
+        virtualMachinePSpec = VsphereTraversalSpec.createPropertySpec(virtualMachinePSpec, "VirtualMachine", false, "runtime", "config", "parent", "resourcePool", "guest", "datastore");
         return virtualMachinePSpec;
     }
 
     public List<PropertySpec> getLaunchVirtualMachinePSpec() {
-        virtualMachinePSpec = VsphereTraversalSpec.createPropertySpec(virtualMachinePSpec, "VirtualMachine", false, "config", "customValue", "parent");
+        virtualMachinePSpec = VsphereTraversalSpec.createPropertySpec(virtualMachinePSpec, "VirtualMachine", false, "config", "customValue");
         return virtualMachinePSpec;
     }
 
@@ -553,7 +553,6 @@ public class Vm extends AbstractVMSupport<Vsphere> {
             boolean foundTemplate = false;
             VirtualMachineConfigInfo templateConfigInfo = null;
             List<CustomFieldValue> templateCustomValue = null;
-            ManagedObjectReference vmFolder = null;
             ManagedObjectReference templateRef = null;
             if (listobcont != null) {
                 for (ObjectContent oc : listobcont.getObjects()) {
@@ -569,9 +568,6 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                                 case "customValue":
                                     ArrayOfCustomFieldValue ar = (ArrayOfCustomFieldValue) dp.getVal();
                                     templateCustomValue = ar.getCustomFieldValue();
-                                    break;
-                                case "parent":
-                                    vmFolder = (ManagedObjectReference) dp.getVal();
                                     break;
                             }
                         }
@@ -613,6 +609,22 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                     rpRef.setValue(options.getResourcePoolId());
                 }
 
+                ManagedObjectReference vmFolder = new ManagedObjectReference();
+                vmFolder.setType("Folder");
+                if (options.getVmFolderId() != null) {
+                    vmFolder.setValue(options.getVmFolderId());
+                }
+                else {
+                    //find the root vm folder
+                    Collection<Folder> folders = dc.listVMFolders();
+                    for (Folder folder : folders) {
+                        if (folder.getParent() == null) {
+                            vmFolder.setValue(folder.getId());
+                            break;
+                        }
+                    }
+                }
+
                 VirtualMachineConfigSpec config = new VirtualMachineConfigSpec();
                 String[] vmInfo = options.getStandardProductId().split(":");
                 int cpuCount;
@@ -629,7 +641,6 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                 config.setAnnotation(options.getMachineImageId());
                 config.setMemoryMB(memory);
                 config.setNumCPUs(cpuCount);
-                config.setCpuHotAddEnabled(true);
                 config.setNumCoresPerSocket(cpuCount);
 
                 VirtualMachineRelocateSpec location = new VirtualMachineRelocateSpec();
@@ -712,7 +723,6 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                                     resultingNetworks.add(nicBacking.getPort().getPortgroupKey());
                                 }
                             }
-
                         }
                     }
 
@@ -753,7 +763,7 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                         machineSpecs.add(nicSpec);
                         resultingNetworks.add(vlan);
                     }
-                    location.getDeviceChange().addAll(machineSpecs);
+                    config.getDeviceChange().addAll(machineSpecs);
                     // end networking section
                 }
 
@@ -767,8 +777,8 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                 if (options.getStoragePoolId() != null) {
                     String locationId = options.getStoragePoolId();
                     ManagedObjectReference dsRef = new ManagedObjectReference();
-                    dsRef.setType(locationId);
-                    dsRef.setValue("Datastore");
+                    dsRef.setType("Datastore");
+                    dsRef.setValue(locationId);
                     location.setDatastore(dsRef);
                 }
                 location.setPool(rpRef);
@@ -874,9 +884,8 @@ public class Vm extends AbstractVMSupport<Vsphere> {
 
                 VirtualMachineCloneSpec spec = new VirtualMachineCloneSpec();
                 spec.setLocation(location);
-                spec.setPowerOn(true);
+                spec.setPowerOn(false);
                 spec.setTemplate(false);
-                //spec.setConfig(config);
                 if (isCustomised) {
                     spec.setCustomization(customizationSpec);
                 }
@@ -908,13 +917,13 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                 }
                 VsphereMethod method = new VsphereMethod(getProvider());
                 TimePeriod interval = new TimePeriod<Second>(15, TimePeriod.SECOND);
-                if (method.getOperationComplete(taskMor, interval, 4)) {
+                if (method.getOperationComplete(taskMor, interval, 20)) {
                     PropertyChange pChange = method.getTaskResult();
                     ManagedObjectReference newVmRef = (ManagedObjectReference) pChange.getVal();
 
                     //reconfig vm call as of vsphere api v6.0
                     taskMor = reconfigVMTask(newVmRef, config);
-                    if (method.getOperationComplete(taskMor, interval, 4)) {
+                    if (method.getOperationComplete(taskMor, interval, 20)) {
                         long timeout = System.currentTimeMillis() + (CalendarWrapper.MINUTE * 20L);
 
                         while (System.currentTimeMillis() < timeout) {
@@ -923,8 +932,10 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                             } catch (InterruptedException ignore) {
                             }
 
+                            start(newVmRef.getValue());
+
                             for (VirtualMachine s : listVirtualMachines()) {
-                                if (s.getName().equals(hostName)) {
+                                if (s.getProviderVirtualMachineId().equals(newVmRef.getValue())) {
                                     if (isCustomised && s.getPlatform().equals(Platform.WINDOWS)) {
                                         s.setRootPassword(options.getBootstrapPassword());
                                     }
@@ -932,15 +943,13 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                                 }
                             }
                         }
+                        lastError = new CloudException("Unable to find newly created vm");
                     }
-                    lastError = new CloudException("Unable to identify newly created server.");
-                } else {
+                }
+                if (lastError == null) {
                     lastError = new CloudException("Failed to create VM: " + method.getTaskError().getVal());
                 }
-                if (lastError != null) {
-                    throw lastError;
-                }
-                throw new CloudException("No server and no error");
+                throw lastError;
             }
         }
         finally {
@@ -982,6 +991,7 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                     String dataCenterId = null, vmFolderName = null;
                     GuestInfo guestInfo = null;
                     VirtualMachineRuntimeInfo vmRuntimeInfo = null;
+                    List<ManagedObjectReference> datastores = null;
                     label:
                     for (DynamicProperty dp : dps) {
                         switch (dp.getName()) {
@@ -1017,10 +1027,14 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                                     }
                                 }
                                 break;
+                            case "datastore":
+                                ArrayOfManagedObjectReference array = (ArrayOfManagedObjectReference) dp.getVal();
+                                datastores = array.getManagedObjectReference();
+                                break;
                         }
                     }
                     if (!isTemplate) {
-                        VirtualMachine vm = toVirtualMachine(vmId, vmInfo, guestInfo, vmRuntimeInfo);
+                        VirtualMachine vm = toVirtualMachine(vmId, vmInfo, guestInfo, vmRuntimeInfo, datastores);
                         if (vm != null) {
                             if (dataCenterId != null) {
                                 DataCenter ourDC = getProvider().getDataCenterServices().getDataCenter(dataCenterId);
@@ -1321,14 +1335,13 @@ public class Vm extends AbstractVMSupport<Vsphere> {
         }
     }
 
-    private @Nullable VirtualMachine toVirtualMachine(String vmId, VirtualMachineConfigInfo vmInfo, GuestInfo guest, VirtualMachineRuntimeInfo runtime) throws InternalException, CloudException {
+    private @Nullable VirtualMachine toVirtualMachine(String vmId, VirtualMachineConfigInfo vmInfo, GuestInfo guest, VirtualMachineRuntimeInfo runtime, List<ManagedObjectReference> datastores) throws InternalException, CloudException {
         if( vmInfo == null ) {
             return null;
         }
         Map<String, String> properties = new HashMap<String, String>();
-        List<VirtualMachineConfigInfoDatastoreUrlPair> datastoreUrlList = vmInfo.getDatastoreUrl();
-        for( int i = 0; i < datastoreUrlList.size(); i++ ) {
-            properties.put("datastore" + i, datastoreUrlList.get(i).getName());
+        for( int i = 0; i < datastores.size(); i++ ) {
+            properties.put("datastore" + i, datastores.get(i).getValue());
         }
 
         VirtualMachineGuestOsIdentifier os = VirtualMachineGuestOsIdentifier.fromValue(vmInfo.getGuestId());

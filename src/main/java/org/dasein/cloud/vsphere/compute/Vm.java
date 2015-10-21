@@ -213,18 +213,6 @@ public class Vm extends AbstractVMSupport<Vsphere> {
             vmFolder.setType("Folder");
             vmFolder.setValue(vm.getTag("vmFolderId").toString());
 
-           /* VirtualMachineConfigSpec config = new VirtualMachineConfigSpec();
-            VirtualMachineProduct product = getProduct(vm.getProductId());
-            String[] sizeInfo = product.getProviderProductId().split(":");
-            int cpuCount = Integer.parseInt(sizeInfo[0]);
-            long memory = Long.parseLong(sizeInfo[1]);
-
-            config.setName(validateName(name));
-            config.setMemoryMB(memory);
-            config.setNumCPUs(cpuCount);
-            config.setCpuHotAddEnabled(true);
-            config.setNumCoresPerSocket(cpuCount); */
-
             VirtualMachineCloneSpec spec = new VirtualMachineCloneSpec();
             VirtualMachineRelocateSpec location = new VirtualMachineRelocateSpec();
 
@@ -275,11 +263,7 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                     PropertyChange pChange = method.getTaskResult();
                     ManagedObjectReference newVmRef = (ManagedObjectReference) pChange.getVal();
 
-                    /*//reconfig vm call as of vsphere api v6.0
-                    taskMor = reconfigVMTask(newVmRef, config);
-                    if (method.getOperationComplete(taskMor, interval, 4)) { */
-                        return getVirtualMachine(newVmRef.getValue());
-                    //}
+                    return getVirtualMachine(newVmRef.getValue());
                 }
                 throw new CloudException("Failed to create VM: " + method.getTaskError().getVal());
             }
@@ -979,7 +963,6 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                 throw new CloudException("Region id is not set");
             }
 
-            //get attached volumes
             List<PropertySpec> pSpecs = getVirtualMachinePSpec();
             RetrieveResult listobcont = retrieveObjectList(getProvider(), "vmFolder", null, pSpecs);
 

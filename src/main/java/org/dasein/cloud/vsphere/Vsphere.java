@@ -59,10 +59,13 @@ public class Vsphere extends AbstractCloud {
     private int sessionTimeout = 0;
     private String vimHostname;
     private VsphereConnection vsphereConnection;
+    private int apiMajorVersion;
 
     public String getVimHostname() {
         return vimHostname;
     }
+
+    public int getApiMajorVersion() { return apiMajorVersion; }
 
     static private final Logger log = getLogger(Vsphere.class);
 
@@ -173,6 +176,10 @@ public class Vsphere extends AbstractCloud {
             } catch (Exception e) {
                 throw new CloudException(e.getMessage());
             }
+
+            String apiVersion = serviceContent.getAbout().getApiVersion();
+            apiVersion = apiVersion.substring(0, apiVersion.indexOf("."));
+            apiMajorVersion = Integer.parseInt(apiVersion);
 
             vsphereConnection = new VsphereConnection(vimService, vimPortType, userSession, serviceContent);
         }

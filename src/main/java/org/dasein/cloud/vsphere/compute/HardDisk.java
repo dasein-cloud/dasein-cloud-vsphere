@@ -621,10 +621,11 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
         APITrace.begin(getProvider(), "HardDisk.remove");
         try {
             Volume volume = getVolume(volumeId);
-            if (volume == null ) {
-                throw new CloudException("Unable to find volume with id "+volumeId);
+
+            if (volume == null) {
+                throw new CloudException("Unable to find volume with id " + volumeId);
             }
-            if (volume.getProviderVirtualMachineId() == null) {
+            if (volume.getProviderVirtualMachineId() != null) {
                 throw new CloudException("Volume is attached to vm " + volume.getProviderVirtualMachineId() + " - removing not allowed");
             }
 
@@ -634,20 +635,34 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
             VimPortType vimPortType = vsphereConnection.getVimPort();
             Region r = dc.getRegion(volume.getProviderRegionId());
             String regionName = r.getName();
-            String pathToDC = "/"+regionName;
+            String pathToDC = "/" + regionName;
 
-            ManagedObjectReference datacenter = vimPortType.findByInventoryPath(searchIndex, pathToDC);
+            try {
+                ManagedObjectReference datacenter = vimPortType.findByInventoryPath(searchIndex, pathToDC);
+                ManagedObjectReference taskMor;
+                VsphereMethod method = new VsphereMethod(getProvider());
+                TimePeriod interval = new TimePeriod<Second>(15, TimePeriod.SECOND);
 
-            if (datacenter != null) {
-                String filePath = volume.getTag("filePath");
-                vimPortType.deleteDatastoreFileTask(fileManager, filePath, datacenter);
-                //also delete the flat file
-                String flatfile = filePath.substring(0, filePath.indexOf(".vmdk")) + "-flat.vmdk";
-                vimPortType.deleteDatastoreFileTask(fileManager, flatfile, datacenter);
+                if (datacenter != null) {
+                    String filePath = volume.getTag("filePath");
+                    taskMor = vimPortType.deleteDatastoreFileTask(fileManager, filePath, datacenter);
+                    if (method.getOperationComplete(taskMor, interval, 4)) {
+                        //also delete the flat file
+                        String flatfile = filePath.substring(0, filePath.indexOf(".vmdk")) + "-flat.vmdk";
+                        taskMor = vimPortType.deleteDatastoreFileTask(fileManager, flatfile, datacenter);
+                        if (method.getOperationComplete(taskMor, interval, 4)) {
+                            return;
+                        }
+                    }
+                    throw new CloudException("Error removing datastore file: " + method.getTaskError().getVal().toString());
+                }
+            } catch (FileFaultFaultMsg fileFaultFaultMsg) {
+                throw new CloudException("FileFaultFaultMsg while removing datastore file", fileFaultFaultMsg);
+            } catch (InvalidDatastoreFaultMsg invalidDatastoreFaultMsg) {
+                throw new CloudException("InvalidDatastoreFaultMsg while removing datastore file", invalidDatastoreFaultMsg);
+            } catch (RuntimeFaultFaultMsg runtimeFaultFaultMsg) {
+                throw new CloudException("RuntimeFaultFaultMsg while removing datastore file", runtimeFaultFaultMsg);
             }
-        }
-        catch (Exception e) {
-            throw new CloudException("Error in processing remove file request: " + e.getMessage());
         }
         finally {
             APITrace.end();

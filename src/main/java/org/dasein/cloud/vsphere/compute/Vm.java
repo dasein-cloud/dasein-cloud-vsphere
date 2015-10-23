@@ -233,30 +233,9 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                 spec.setPowerOn(powerOn);
                 spec.setTemplate(false);
 
-                VsphereConnection vsphereConnection = getProvider().getServiceInstance();
-                VimPortType vimPort = vsphereConnection.getVimPort();
                 ManagedObjectReference taskMor = null;
-                try {
-                    taskMor = vimPort.cloneVMTask(vmRef, vmFolder, name, spec);
-                } catch (FileFaultFaultMsg fileFaultFaultMsg) {
-                    throw new CloudException("FileFaultFaultMsg when cloning vm", fileFaultFaultMsg);
-                } catch (InsufficientResourcesFaultFaultMsg insufficientResourcesFaultFaultMsg) {
-                    throw new CloudException("InsufficientResourcesFaultFaultMsg when cloning vm", insufficientResourcesFaultFaultMsg);
-                } catch (InvalidStateFaultMsg invalidStateFaultMsg) {
-                    throw new CloudException("InvalidStateFaultMsg when cloning vm", invalidStateFaultMsg);
-                } catch (RuntimeFaultFaultMsg runtimeFaultFaultMsg) {
-                    throw new CloudException("RuntimeFaultFaultMsg when cloning vm", runtimeFaultFaultMsg);
-                } catch (TaskInProgressFaultMsg taskInProgressFaultMsg) {
-                    throw new CloudException("TaskInProgressFaultMsg when cloning vm", taskInProgressFaultMsg);
-                } catch (VmConfigFaultFaultMsg vmConfigFaultFaultMsg) {
-                    throw new CloudException("VmConfigFaultFaultMsg when cloning vm", vmConfigFaultFaultMsg);
-                } catch (CustomizationFaultFaultMsg customizationFaultFaultMsg) {
-                    throw new CloudException("CustomizationFaultFaultMsg when cloning vm", customizationFaultFaultMsg);
-                } catch (InvalidDatastoreFaultMsg invalidDatastoreFaultMsg) {
-                    throw new CloudException("InvalidDatastoreFaultMsg when cloning vm", invalidDatastoreFaultMsg);
-                } catch (MigrationFaultFaultMsg migrationFaultFaultMsg) {
-                    throw new CloudException("MigrationFaultFaultMsg when cloning vm", migrationFaultFaultMsg);
-                }
+                taskMor = cloneVmTask(vmRef, vmFolder, name, spec);
+
                 VsphereMethod method = new VsphereMethod(getProvider());
                 TimePeriod interval = new TimePeriod<Second>(15, TimePeriod.SECOND);
                 if (method.getOperationComplete(taskMor, interval, 4)) {
@@ -580,20 +559,19 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                 throw new CloudException("No such template: " + options.getMachineImageId());
             }
             if (templateConfigInfo != null) {
+                int apiMajorVersion = getProvider().getApiMajorVersion();
                 String hostName = validateName(options.getHostName());
                 String dataCenterId = options.getDataCenterId();
-                String resourceProductStr = options.getStandardProductId();
-                String[] items = resourceProductStr.split(":");
-                if (items.length == 3) {
-                    options.withResourcePoolId(items[0]);
-                }
-
                 if (dataCenterId == null) {
                     String rid = ctx.getRegionId();
                     dataCenterId = getProvider().getDataCenterServices().listDataCenters(rid).iterator().next().getProviderDataCenterId();
                 }
 
-                CloudException lastError = null;
+                String resourceProductStr = options.getStandardProductId();
+                String[] items = resourceProductStr.split(":");
+                if (items.length == 3) {
+                    options.withResourcePoolId(items[0]);
+                }
                 ManagedObjectReference rpRef = new ManagedObjectReference();
                 rpRef.setType("ResourcePool");
                 if (options.getResourcePoolId() == null) {
@@ -625,6 +603,22 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                     }
                 }
 
+                VirtualMachineRelocateSpec location = new VirtualMachineRelocateSpec();
+                if (options.getAffinityGroupId() != null) {
+                    ManagedObjectReference hostRef = new ManagedObjectReference();
+                    hostRef.setValue(options.getAffinityGroupId());
+                    hostRef.setType("HostSystem");
+                    location.setHost(hostRef);
+                }
+                if (options.getStoragePoolId() != null) {
+                    String locationId = options.getStoragePoolId();
+                    ManagedObjectReference dsRef = new ManagedObjectReference();
+                    dsRef.setType("Datastore");
+                    dsRef.setValue(locationId);
+                    location.setDatastore(dsRef);
+                }
+                location.setPool(rpRef);
+
                 VirtualMachineConfigSpec config = new VirtualMachineConfigSpec();
                 String[] vmInfo = options.getStandardProductId().split(":");
                 int cpuCount;
@@ -643,7 +637,6 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                 config.setNumCPUs(cpuCount);
                 config.setNumCoresPerSocket(cpuCount);
 
-                VirtualMachineRelocateSpec location = new VirtualMachineRelocateSpec();
                 // record all networks we will end up with so that we can configure NICs correctly
                 List<String> resultingNetworks = new ArrayList<String>();
                 //networking section
@@ -661,13 +654,14 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                     List<VirtualDeviceConfigSpec> machineSpecs = new ArrayList<VirtualDeviceConfigSpec>();
                     List<VirtualDevice> virtualDevices = templateConfigInfo.getHardware().getDevice();
                     VLAN targetVlan = null;
+                    boolean isFirstNic = true;
                     for (VirtualDevice virtualDevice : virtualDevices) {
                         if (virtualDevice instanceof VirtualEthernetCard) {
                             VirtualEthernetCard veCard = (VirtualEthernetCard) virtualDevice;
                             if (veCard.getBacking() instanceof VirtualEthernetCardNetworkBackingInfo) {
                                 boolean nicDeleted = false;
                                 VirtualEthernetCardNetworkBackingInfo nicBacking = (VirtualEthernetCardNetworkBackingInfo) veCard.getBacking();
-                                if (vlan.equals(nicBacking.getNetwork().getValue()) && veCard.getKey() == 0) {
+                                if (vlan.equals(nicBacking.getNetwork().getValue()) && isFirstNic) {
                                     addNetwork = false;
                                 } else {
                                     for (VLAN accessibleNetwork : accessibleNetworks) {
@@ -696,7 +690,7 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                             } else if (veCard.getBacking() instanceof VirtualEthernetCardDistributedVirtualPortBackingInfo) {
                                 boolean nicDeleted = false;
                                 VirtualEthernetCardDistributedVirtualPortBackingInfo nicBacking = (VirtualEthernetCardDistributedVirtualPortBackingInfo) veCard.getBacking();
-                                if (vlan.equals(nicBacking.getPort().getPortgroupKey()) && veCard.getKey() == 0) {
+                                if (vlan.equals(nicBacking.getPort().getPortgroupKey()) && isFirstNic) {
                                     addNetwork = false;
                                 } else {
                                     for (VLAN accessibleNetwork : accessibleNetworks) {
@@ -723,6 +717,7 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                                     resultingNetworks.add(nicBacking.getPort().getPortgroupKey());
                                 }
                             }
+                            isFirstNic = false;
                         }
                     }
 
@@ -763,25 +758,14 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                         machineSpecs.add(nicSpec);
                         resultingNetworks.add(vlan);
                     }
-                    config.getDeviceChange().addAll(machineSpecs);
+                    if (apiMajorVersion >= 6) {
+                        location.getDeviceChange().addAll(machineSpecs);
+                    }
+                    else {
+                        config.getDeviceChange().addAll(machineSpecs);
+                    }
                     // end networking section
                 }
-
-
-                if (options.getAffinityGroupId() != null) {
-                    ManagedObjectReference hostRef = new ManagedObjectReference();
-                    hostRef.setValue(options.getAffinityGroupId());
-                    hostRef.setType("HostSystem");
-                    location.setHost(hostRef);
-                }
-                if (options.getStoragePoolId() != null) {
-                    String locationId = options.getStoragePoolId();
-                    ManagedObjectReference dsRef = new ManagedObjectReference();
-                    dsRef.setType("Datastore");
-                    dsRef.setValue(locationId);
-                    location.setDatastore(dsRef);
-                }
-                location.setPool(rpRef);
 
                 boolean isCustomised = false;
                 if (options.getPrivateIp() != null) {
@@ -884,67 +868,61 @@ public class Vm extends AbstractVMSupport<Vsphere> {
 
                 VirtualMachineCloneSpec spec = new VirtualMachineCloneSpec();
                 spec.setLocation(location);
-                spec.setPowerOn(false);
                 spec.setTemplate(false);
                 if (isCustomised) {
                     spec.setCustomization(customizationSpec);
                 }
-
-                VsphereConnection vsphereConnection = getProvider().getServiceInstance();
-                VimPortType vimPortType = vsphereConnection.getVimPort();
-                ManagedObjectReference taskMor = null;
-                try {
-                    taskMor = vimPortType.cloneVMTask(templateRef, vmFolder, hostName, spec);
-
-                } catch (FileFaultFaultMsg fileFaultFaultMsg) {
-                    throw new CloudException("FileFaultFaultMsg when cloning vm", fileFaultFaultMsg);
-                } catch (InsufficientResourcesFaultFaultMsg insufficientResourcesFaultFaultMsg) {
-                    throw new CloudException("InsufficientResourcesFaultFaultMsg when cloning vm", insufficientResourcesFaultFaultMsg);
-                } catch (InvalidStateFaultMsg invalidStateFaultMsg) {
-                    throw new CloudException("InvalidStateFaultMsg when cloning vm", invalidStateFaultMsg);
-                } catch (RuntimeFaultFaultMsg runtimeFaultFaultMsg) {
-                    throw new CloudException("RuntimeFaultFaultMsg when cloning vm", runtimeFaultFaultMsg);
-                } catch (TaskInProgressFaultMsg taskInProgressFaultMsg) {
-                    throw new CloudException("TaskInProgressFaultMsg when cloning vm", taskInProgressFaultMsg);
-                } catch (VmConfigFaultFaultMsg vmConfigFaultFaultMsg) {
-                    throw new CloudException("VmConfigFaultFaultMsg when cloning vm", vmConfigFaultFaultMsg);
-                } catch (CustomizationFaultFaultMsg customizationFaultFaultMsg) {
-                    throw new CloudException("CustomizationFaultFaultMsg when cloning vm", customizationFaultFaultMsg);
-                } catch (InvalidDatastoreFaultMsg invalidDatastoreFaultMsg) {
-                    throw new CloudException("InvalidDatastoreFaultMsg when cloning vm", invalidDatastoreFaultMsg);
-                } catch (MigrationFaultFaultMsg migrationFaultFaultMsg) {
-                    throw new CloudException("MigrationFaultFaultMsg when cloning vm", migrationFaultFaultMsg);
+                if (apiMajorVersion >= 6) {
+                    spec.setPowerOn(false);
                 }
+                else {
+                    spec.setPowerOn(true);
+                    spec.setConfig(config);
+                }
+
+                CloudException lastError = null;
+                ManagedObjectReference taskMor = null;
+                taskMor = cloneVmTask(templateRef, vmFolder, hostName, spec);
+
                 VsphereMethod method = new VsphereMethod(getProvider());
                 TimePeriod interval = new TimePeriod<Second>(15, TimePeriod.SECOND);
                 if (method.getOperationComplete(taskMor, interval, 20)) {
                     PropertyChange pChange = method.getTaskResult();
                     ManagedObjectReference newVmRef = (ManagedObjectReference) pChange.getVal();
 
-                    //reconfig vm call as of vsphere api v6.0
-                    taskMor = reconfigVMTask(newVmRef, config);
-                    if (method.getOperationComplete(taskMor, interval, 20)) {
-                        long timeout = System.currentTimeMillis() + (CalendarWrapper.MINUTE * 20L);
-
-                        while (System.currentTimeMillis() < timeout) {
+                    if (apiMajorVersion >= 6) {
+                        //reconfig vm call as of vsphere api v6.0
+                        taskMor = reconfigVMTask(newVmRef, config);
+                        if (method.getOperationComplete(taskMor, interval, 20)) {
                             try {
                                 Thread.sleep(10000L);
                             } catch (InterruptedException ignore) {
                             }
 
                             start(newVmRef.getValue());
+                        }
+                        else {
+                            throw new CloudException("Failed to reconfigure VM: " + method.getTaskError().getVal());
+                        }
+                    }
 
-                            for (VirtualMachine s : listVirtualMachines()) {
-                                if (s.getProviderVirtualMachineId().equals(newVmRef.getValue())) {
-                                    if (isCustomised && s.getPlatform().equals(Platform.WINDOWS)) {
-                                        s.setRootPassword(options.getBootstrapPassword());
-                                    }
-                                    return s;
+                    long timeout = System.currentTimeMillis() + (CalendarWrapper.MINUTE * 20L);
+                    while (System.currentTimeMillis() < timeout) {
+                        try {
+                            Thread.sleep(10000L);
+                        } catch (InterruptedException ignore) {
+                        }
+
+                        for (VirtualMachine s : listVirtualMachines()) {
+                            if (s.getProviderVirtualMachineId().equals(newVmRef.getValue()) && s.getCurrentState().equals(VmState.RUNNING)) {
+                                if (isCustomised && s.getPlatform().equals(Platform.WINDOWS)) {
+                                    s.setRootPassword(options.getBootstrapPassword());
                                 }
+                                return s;
                             }
                         }
-                        lastError = new CloudException("Unable to find newly created vm");
                     }
+                    lastError = new CloudException("Unable to find newly created vm");
                 }
                 if (lastError == null) {
                     lastError = new CloudException("Failed to create VM: " + method.getTaskError().getVal());
@@ -1335,6 +1313,32 @@ public class Vm extends AbstractVMSupport<Vsphere> {
         }
     }
 
+    public ManagedObjectReference cloneVmTask(ManagedObjectReference vmRef, ManagedObjectReference vmFolder, String name, VirtualMachineCloneSpec spec) throws CloudException, InternalException {
+        VsphereConnection vsphereConnection = getProvider().getServiceInstance();
+        VimPortType vimPort = vsphereConnection.getVimPort();
+        try {
+            return vimPort.cloneVMTask(vmRef, vmFolder, name, spec);
+        } catch (FileFaultFaultMsg fileFaultFaultMsg) {
+            throw new CloudException("FileFaultFaultMsg when cloning vm", fileFaultFaultMsg);
+        } catch (InsufficientResourcesFaultFaultMsg insufficientResourcesFaultFaultMsg) {
+            throw new CloudException("InsufficientResourcesFaultFaultMsg when cloning vm", insufficientResourcesFaultFaultMsg);
+        } catch (InvalidStateFaultMsg invalidStateFaultMsg) {
+            throw new CloudException("InvalidStateFaultMsg when cloning vm", invalidStateFaultMsg);
+        } catch (RuntimeFaultFaultMsg runtimeFaultFaultMsg) {
+            throw new CloudException("RuntimeFaultFaultMsg when cloning vm", runtimeFaultFaultMsg);
+        } catch (TaskInProgressFaultMsg taskInProgressFaultMsg) {
+            throw new CloudException("TaskInProgressFaultMsg when cloning vm", taskInProgressFaultMsg);
+        } catch (VmConfigFaultFaultMsg vmConfigFaultFaultMsg) {
+            throw new CloudException("VmConfigFaultFaultMsg when cloning vm", vmConfigFaultFaultMsg);
+        } catch (CustomizationFaultFaultMsg customizationFaultFaultMsg) {
+            throw new CloudException("CustomizationFaultFaultMsg when cloning vm", customizationFaultFaultMsg);
+        } catch (InvalidDatastoreFaultMsg invalidDatastoreFaultMsg) {
+            throw new CloudException("InvalidDatastoreFaultMsg when cloning vm", invalidDatastoreFaultMsg);
+        } catch (MigrationFaultFaultMsg migrationFaultFaultMsg) {
+            throw new CloudException("MigrationFaultFaultMsg when cloning vm", migrationFaultFaultMsg);
+        }
+    }
+
     private @Nullable VirtualMachine toVirtualMachine(String vmId, VirtualMachineConfigInfo vmInfo, GuestInfo guest, VirtualMachineRuntimeInfo runtime, List<ManagedObjectReference> datastores) throws InternalException, CloudException {
         if( vmInfo == null ) {
             return null;
@@ -1456,14 +1460,12 @@ public class Vm extends AbstractVMSupport<Vsphere> {
             }
             else {
                 server.setLastPauseTimestamp(suspend.toGregorianCalendar().getTimeInMillis());
-                server.setCreationTimestamp(server.getLastPauseTimestamp());
             }
             if( time == null || time.toGregorianCalendar().getTimeInMillis() < 1L ) {
                 server.setLastBootTimestamp(0L);
             }
             else {
                 server.setLastBootTimestamp(time.toGregorianCalendar().getTimeInMillis());
-                server.setCreationTimestamp(server.getLastBootTimestamp());
             }
         }
         server.setProviderOwnerId(getContext().getAccountNumber());

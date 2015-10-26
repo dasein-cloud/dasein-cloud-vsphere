@@ -1521,8 +1521,9 @@ public class Vm extends AbstractVMSupport<Vsphere> {
         }
     }
 
-    @Nonnull Architecture getArchitecture(@Nonnull VirtualMachineGuestOsIdentifier os) {
-        if( os.name().contains("64") ) {
+    @Nonnull
+    public Architecture getArchitecture(@Nonnull VirtualMachineGuestOsIdentifier os) {
+        if( os.value().contains("64") ) {
             return Architecture.I64;
         }
         else {

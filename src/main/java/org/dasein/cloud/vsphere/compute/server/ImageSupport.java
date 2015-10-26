@@ -2,58 +2,31 @@ package org.dasein.cloud.vsphere.compute.server;
 
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import com.vmware.vim25.*;
 import org.apache.log4j.Logger;
 import org.dasein.cloud.AsynchronousTask;
 import org.dasein.cloud.CloudException;
 import org.dasein.cloud.InternalException;
+import org.dasein.cloud.ProviderContext;
 import org.dasein.cloud.compute.AbstractImageSupport;
 import org.dasein.cloud.compute.Architecture;
 import org.dasein.cloud.compute.ImageClass;
-import org.dasein.cloud.compute.ImageCopyOptions;
 import org.dasein.cloud.compute.ImageCreateOptions;
 import org.dasein.cloud.compute.ImageFilterOptions;
 import org.dasein.cloud.compute.MachineImage;
 import org.dasein.cloud.compute.MachineImageState;
 import org.dasein.cloud.compute.Platform;
-import org.dasein.cloud.vsphere.Vsphere;
-import org.dasein.cloud.vsphere.VsphereConnection;
-import org.dasein.cloud.vsphere.VsphereMethod;
-import org.dasein.cloud.vsphere.VsphereTraversalSpec;
+import org.dasein.cloud.compute.VirtualMachine;
+import org.dasein.cloud.vsphere.*;
 import org.dasein.cloud.vsphere.capabilities.VsphereImageCapabilities;
 
-import com.vmware.vim25.CustomizationFaultFaultMsg;
-import com.vmware.vim25.CustomizationSpec;
-import com.vmware.vim25.DynamicProperty;
-import com.vmware.vim25.FileFaultFaultMsg;
-import com.vmware.vim25.InsufficientResourcesFaultFaultMsg;
-import com.vmware.vim25.InvalidDatastoreFaultMsg;
-import com.vmware.vim25.InvalidPropertyFaultMsg;
-import com.vmware.vim25.InvalidStateFaultMsg;
-import com.vmware.vim25.ManagedEntityStatus;
-import com.vmware.vim25.ManagedObjectReference;
-import com.vmware.vim25.MigrationFaultFaultMsg;
-import com.vmware.vim25.ObjectContent;
-import com.vmware.vim25.PropertyFilterSpec;
-import com.vmware.vim25.RetrieveOptions;
-import com.vmware.vim25.RetrieveResult;
-import com.vmware.vim25.RuntimeFaultFaultMsg;
-import com.vmware.vim25.SelectionSpec;
-import com.vmware.vim25.ServiceContent;
-import com.vmware.vim25.TaskInProgressFaultMsg;
-import com.vmware.vim25.VimPortType;
-import com.vmware.vim25.VirtualMachineCloneSpec;
-import com.vmware.vim25.VirtualMachineConfigSpec;
-import com.vmware.vim25.VirtualMachineConfigSummary;
-import com.vmware.vim25.VirtualMachineRelocateSpec;
-import com.vmware.vim25.VmConfigFaultFaultMsg;
-
 import org.dasein.cloud.util.APITrace;
+import org.dasein.cloud.vsphere.compute.Vm;
 import org.dasein.util.uom.time.Second;
 import org.dasein.util.uom.time.TimePeriod;
 
@@ -64,6 +37,7 @@ import org.dasein.util.uom.time.TimePeriod;
 public class ImageSupport extends AbstractImageSupport<Vsphere> {
     private VsphereImageCapabilities capabilities;
     static private final Logger logger = Vsphere.getLogger(ImageSupport.class);
+    private List<PropertySpec> templatePSpec;
 
     public ImageSupport(@Nonnull Vsphere provider) {
         super(provider);
@@ -80,7 +54,6 @@ public class ImageSupport extends AbstractImageSupport<Vsphere> {
     @Override
     public MachineImage getImage(String providerImageId) throws CloudException, InternalException {
         ImageFilterOptions options = ImageFilterOptions.getInstance(true, providerImageId);
-        // TODO Auto-generated method stub
         Iterable<MachineImage> images = listImages(options);
 
         return images.iterator().next();
@@ -91,27 +64,19 @@ public class ImageSupport extends AbstractImageSupport<Vsphere> {
         return true;
     }
 
-    public List<PropertyFilterSpec> getlistImagesPropertyFilterSpec(ServiceContent serviceContent, VimPortType vimPort) throws RuntimeFaultFaultMsg, CloudException, InternalException {
-        ManagedObjectReference viewManager = serviceContent.getViewManager();
-        ManagedObjectReference rootFolder = serviceContent.getRootFolder();
+    public RetrieveResult retrieveObjectList(Vsphere provider, @Nonnull String baseFolder, @Nullable List<SelectionSpec> selectionSpecsArr, @Nonnull List<PropertySpec> pSpecs) throws InternalException, CloudException {
+        VsphereInventoryNavigation nav = new VsphereInventoryNavigation();
+        return nav.retrieveObjectList(provider, baseFolder, selectionSpecsArr, pSpecs);
+    }
 
-        ManagedObjectReference cViewRef = vimPort.createContainerView(viewManager, rootFolder, Collections.singletonList("VirtualMachine"), true);
-
-        VsphereTraversalSpec vsphereTraversalSpec 
-            = new VsphereTraversalSpec("traverseEntities", "view", "ContainerView", false)
-        .withObjectSpec(cViewRef, false)
-        .withPropertySpec("VirtualMachine", "summary.config", "summary.overallStatus").finalizeTraversalSpec();
-        return vsphereTraversalSpec.getPropertyFilterSpecList();
-
+    public List<PropertySpec> getTemplatePSpec() {
+        templatePSpec = VsphereTraversalSpec.createPropertySpec(templatePSpec, "VirtualMachine", false, "summary.config", "summary.overallStatus");
+        return templatePSpec;
     }
 
     @Override
     public Iterable<MachineImage> listImages(@Nullable ImageFilterOptions opts) throws CloudException, InternalException {
         APITrace.begin(getProvider(), "ImageSupport.listImages");
-
-        VsphereConnection vsphereConnection = getProvider().getServiceInstance();
-        VimPortType vimPort = vsphereConnection.getVimPort();
-        ServiceContent serviceContent = vsphereConnection.getServiceContent();
 
         final ImageFilterOptions options;
 
@@ -124,68 +89,53 @@ public class ImageSupport extends AbstractImageSupport<Vsphere> {
         ArrayList<MachineImage> machineImages = new ArrayList<MachineImage>();
 
         try {
-            String regionId = getProvider().getContext().getRegionId();
+            ProviderContext ctx = getProvider().getContext();
+            if (ctx == null) {
+                throw new NoContextException();
+            }
+            if (ctx.getRegionId() == null) {
+                throw new CloudException("Region id is not set");
+            }
 
-            List<PropertyFilterSpec> fSpecList = getlistImagesPropertyFilterSpec(serviceContent, vimPort);
+            String regionId = ctx.getRegionId();
+
+            List<PropertySpec> pSpecs = getTemplatePSpec();
 
             // get the data from the server
-            RetrieveResult props = null;
-            try {
-                props = vimPort.retrievePropertiesEx(serviceContent.getPropertyCollector(), fSpecList, new RetrieveOptions());
-            } catch ( InvalidPropertyFaultMsg e ) {
-                throw new CloudException(e);
-            }
+            RetrieveResult props = retrieveObjectList(getProvider(), "vmFolder", null, pSpecs);
 
             if (props != null) {
                 for (ObjectContent oc : props.getObjects()) {
                     ManagedObjectReference templateRef = oc.getObj();
-                    Platform platform = null;
-                    String name = null;
-                    String description = null;
-                    String imageId = null;
                     MachineImageState state = MachineImageState.ERROR;
                     Architecture architecture = Architecture.I64;
 
                     VirtualMachineConfigSummary virtualMachineConfigSummary = null;
                     List<DynamicProperty> dps = oc.getPropSet();
                     if (dps != null) {
-                         for (DynamicProperty dp : dps) {
-                              if (dp.getName().equals("summary.config")) {
-                                 virtualMachineConfigSummary = (VirtualMachineConfigSummary) dp.getVal();
-                             } else if (dp.getName().equals("summary.overallStatus")) {
-                                 ManagedEntityStatus s = (ManagedEntityStatus) dp.getVal();
-                                 if (s.equals(ManagedEntityStatus.GREEN)) {
-                                     state = MachineImageState.ACTIVE;
-                                 }
-                             }
-                         }
-                         name = virtualMachineConfigSummary.getName();
-                         description = virtualMachineConfigSummary.getGuestFullName();
-                         imageId = templateRef.getValue();
-                         platform = Platform.guess(virtualMachineConfigSummary.getGuestFullName());
-                         ImageClass imageClass = ImageClass.MACHINE;
-
-                         if (virtualMachineConfigSummary.isTemplate()) { 
-                            MachineImage machineImage = MachineImage.getInstance(
-                                     "ownerId",
-                                     regionId,
-                                     imageId,
-                                     imageClass,
-                                     state,
-                                     name,
-                                     description,
-                                     architecture,
-                                     platform);
-                            if (options.matches(machineImage)) {
-                                machineImages.add(machineImage);
+                        for (DynamicProperty dp : dps) {
+                            if (dp.getName().equals("summary.config")) {
+                                virtualMachineConfigSummary = (VirtualMachineConfigSummary) dp.getVal();
+                            } else if (dp.getName().equals("summary.overallStatus")) {
+                                ManagedEntityStatus s = (ManagedEntityStatus) dp.getVal();
+                                if (s.equals(ManagedEntityStatus.GREEN)) {
+                                    state = MachineImageState.ACTIVE;
+                                }
                             }
-                         }
-                     }
-                 }
-             }
-        } catch ( RuntimeFaultFaultMsg e ) {
-            throw new CloudException(e);
-        } catch ( Exception e ) {
+                        }
+                        if (virtualMachineConfigSummary != null) {
+
+                            if (virtualMachineConfigSummary.isTemplate()) {
+                                MachineImage machineImage = toMachineImage(templateRef.getValue(), virtualMachineConfigSummary, regionId, state);
+                                if (options.matches(machineImage)) {
+                                    machineImages.add(machineImage);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
             throw new CloudException(e);
         } finally {
             APITrace.end();
@@ -196,158 +146,141 @@ public class ImageSupport extends AbstractImageSupport<Vsphere> {
 
     @Override
     protected MachineImage capture(@Nonnull ImageCreateOptions options, @Nullable AsynchronousTask<MachineImage> task) throws CloudException, InternalException {
-        // TODO Auto-generated method stub  capture vm to template
-        APITrace.begin(getProvider(), "ImageSupport.listImages");
-
-        VsphereConnection vsphereConnection = getProvider().getServiceInstance();
-        VimPortType vimPort = vsphereConnection.getVimPort();
-        ServiceContent serviceContent = vsphereConnection.getServiceContent();
+        APITrace.begin(getProvider(), "Image.capture");
         try {
+            String vmId = options.getVirtualMachineId();
 
-        } finally {
-            APITrace.end();
-        }
-
-        return null;
-    }
-
-    // WIP - not yet working.
-    @Override
-    public @Nonnull String copyImage(@Nonnull ImageCopyOptions options) throws CloudException, InternalException {
-        // TODO Auto-generated method stub - copy template to template
-        APITrace.begin(getProvider(), "ImageSupport.listImages");
-
-        // INPUTS
-        options.getDescription(); // <- description for clone.
-
-
-
-        VsphereConnection vsphereConnection = getProvider().getServiceInstance();
-        VimPortType vimPort = vsphereConnection.getVimPort();
-        ServiceContent serviceContent = vsphereConnection.getServiceContent();
-
-        try {
-            // VMClone.java
-
-            VirtualMachineCloneSpec cloneSpec = new VirtualMachineCloneSpec();
-            VirtualMachineRelocateSpec relocSpec = new VirtualMachineRelocateSpec();
-            ManagedObjectReference arg0 = null;
-            relocSpec.setPool(arg0);
-            relocSpec.setHost(arg0);
-            relocSpec.setFolder(arg0);
-            relocSpec.setDatastore(arg0);
-                cloneSpec.setLocation(relocSpec);
-                cloneSpec.setPowerOn(false);
-                cloneSpec.setTemplate(true);
-                    //VirtualMachineConfigSpec virtualMachineConfigSpec = new VirtualMachineConfigSpec();
-                    //--nothing here unless you want to change the template vm requirements...
-                    //cloneSpec.setConfig(virtualMachineConfigSpec);
-                    //CustomizationSpec customizationSpec = new CustomizationSpec();
-                    //-- cant set description here...
-                    //cloneSpec.setCustomization(customizationSpec);
-            ManagedObjectReference datacenterRef = vimPort.findByInventoryPath(serviceContent.getSearchIndex(), options.getTargetRegionId());
-
-
-
-
-            //TODO check DM code for something to return a folder ref
-            ManagedObjectReference vmFolderRef = null; //getDynamicProperty(datacenterRef, "vmFolder");
-
-
-
-
-
-
-            String vmPathName = null; //options.getProviderImageId();options.getTargetRegionId(); // <- image to clone -- HOW TO CONVERT TO --> vmPathName
-
-            ManagedObjectReference vmRef = vimPort.findByInventoryPath(serviceContent.getSearchIndex(), vmPathName);
-            ManagedObjectReference cloneTask = vimPort.cloneVMTask(vmRef, vmFolderRef, options.getName(), cloneSpec);
-            VsphereMethod method = new VsphereMethod(getProvider());
-            TimePeriod<Second> interval = new TimePeriod<Second>(10, TimePeriod.SECOND);
-            method.getOperationComplete(cloneTask, interval, 20);
-        } catch ( Exception e ) {
-            throw new CloudException(e);
-        } finally {
-            APITrace.end();
-        }
-        return options.getName();
-    }
-
-    SelectionSpec getSelectionSpec(String name) {
-        SelectionSpec genericSpec = new SelectionSpec();
-        genericSpec.setName(name);
-        return genericSpec;
-    }
-
-    List<ObjectContent> retrievePropertiesAllObjects(List<PropertyFilterSpec> listpfs) throws RuntimeFaultFaultMsg, InvalidPropertyFaultMsg, CloudException, InternalException {
-        VsphereConnection vsphereConnection = getProvider().getServiceInstance();
-        VimPortType vimPort = vsphereConnection.getVimPort();
-        ServiceContent serviceContent = vsphereConnection.getServiceContent();
-
-        RetrieveOptions propObjectRetrieveOpts = new RetrieveOptions();
-        List<ObjectContent> listobjcontent = new ArrayList<ObjectContent>();
-        RetrieveResult rslts = vimPort.retrievePropertiesEx(serviceContent.getPropertyCollector(), listpfs, propObjectRetrieveOpts);
-        if (rslts != null && rslts.getObjects() != null && !rslts.getObjects().isEmpty()) {
-            listobjcontent.addAll(rslts.getObjects());
-        }
-        String token = null;
-        if (rslts != null && rslts.getToken() != null) {
-            token = rslts.getToken();
-        }
-
-        while (token != null && !token.isEmpty()) {
-            rslts = vimPort.continueRetrievePropertiesEx(serviceContent.getPropertyCollector(), token);
-            token = null;
-            if (rslts != null) {
-                token = rslts.getToken();
-                if (rslts.getObjects() != null && !rslts.getObjects().isEmpty()) {
-                    listobjcontent.addAll(rslts.getObjects());
-                }
+            if( vmId == null ) {
+                throw new CloudException("You must specify a virtual machine to capture");
             }
+            VirtualMachine vm = getProvider().getComputeServices().getVirtualMachineSupport().getVirtualMachine(vmId);
+
+            if( vm == null ) {
+                throw new CloudException("No such virtual machine for imaging: " + vmId);
+            }
+
+            ManagedObjectReference templateRef = new ManagedObjectReference();
+            templateRef.setType("VirtualMachine");
+            templateRef.setValue(vmId);
+
+            ManagedObjectReference vmFolderRef = new ManagedObjectReference();
+            vmFolderRef.setType("Folder");
+            vmFolderRef.setValue(vm.getTag("vmFolderId").toString());
+
+            ManagedObjectReference hostRef = new ManagedObjectReference();
+            hostRef.setType("HostSystem");
+            hostRef.setValue(vm.getAffinityGroupId());
+
+            ManagedObjectReference rpRef = new ManagedObjectReference();
+            rpRef.setType("ResourcePool");
+            rpRef.setValue(vm.getResourcePoolId());
+
+            VirtualMachineRelocateSpec location = new VirtualMachineRelocateSpec();
+            location.setHost(hostRef);
+            location.setPool(rpRef);
+
+            VirtualMachineCloneSpec spec = new VirtualMachineCloneSpec();
+            spec.setLocation(location);
+            spec.setPowerOn(false);
+            spec.setTemplate(true);
+
+            MachineImage img = null;
+            ManagedObjectReference taskMor = getProvider().getComputeServices().getVirtualMachineSupport().cloneVmTask(templateRef, vmFolderRef, options.getName(), spec);
+            VsphereMethod method = new VsphereMethod(getProvider());
+            TimePeriod interval = new TimePeriod<Second>(15, TimePeriod.SECOND);
+            if (method.getOperationComplete(taskMor, interval, 4)) {
+                PropertyChange pChange = method.getTaskResult();
+                ManagedObjectReference newVmRef = (ManagedObjectReference) pChange.getVal();
+
+                img =  getImage(newVmRef.getValue());
+            }
+            else {
+                throw new CloudException("Failed to capture image: " + method.getTaskError().getVal());
+            }
+
+            if( task != null ) {
+                task.completeWithResult(img);
+            }
+            return img;
         }
-        return listobjcontent;
+        finally {
+            APITrace.end();
+        }
     }
 
     @Override
     public void remove(String providerImageId, boolean checkState) throws CloudException, InternalException {
         APITrace.begin(getProvider(), "ImageSupport.remove");
 
+        MachineImage image = getImage(providerImageId);
+        if (image == null) {
+            logger.info("Machine image does not exist, removal unnecessary");
+            return;
+        }
+
         VsphereConnection vsphereConnection = getProvider().getServiceInstance();
         VimPortType vimPort = vsphereConnection.getVimPort();
-        ServiceContent serviceContent = vsphereConnection.getServiceContent();
+
+        ManagedObjectReference templateToBeDeleted = new ManagedObjectReference();
+        templateToBeDeleted.setType("VirtualMachine");
+        templateToBeDeleted.setValue(providerImageId);
+
         try {
-            VsphereTraversalSpec vsphereTraversalSpec = new VsphereTraversalSpec("traverseEntities", "view", "ContainerView", false)
-                .withObjectSpec(vimPort.createContainerView(serviceContent.getViewManager(),
-                                                            serviceContent.getRootFolder(),
-                                                            Collections.singletonList("VirtualMachine"),
-                                                            true), false)
-                .withPropertySpec("VirtualMachine", "summary.config").finalizeTraversalSpec();
-
-            RetrieveResult props = null;
-            try {
-                props = vimPort.retrievePropertiesEx(serviceContent.getPropertyCollector(), vsphereTraversalSpec.getPropertyFilterSpecList(), new RetrieveOptions());
-            } catch ( InvalidPropertyFaultMsg e ) {
-                throw new CloudException(e);
-            }
-
-            for (ObjectContent oc : props.getObjects()) {
-                ManagedObjectReference templateToBeDeleted = oc.getObj();
-
-                DynamicProperty dp = (DynamicProperty)(oc.getPropSet().iterator().next());
-                VirtualMachineConfigSummary virtualMachineConfigSummary = (VirtualMachineConfigSummary)dp.getVal();
-
-                if (providerImageId.equals(virtualMachineConfigSummary.getName()) && virtualMachineConfigSummary.isTemplate()) {
-                    ManagedObjectReference taskmor = vimPort.destroyTask(templateToBeDeleted);
-                    VsphereMethod method = new VsphereMethod(getProvider());
-                    TimePeriod<Second> interval = new TimePeriod<Second>(5, TimePeriod.SECOND);
-                    method.getOperationComplete(taskmor, interval, 20);
-                    break;
-                }
-            }
-        } catch ( Exception e ) {
-            throw new CloudException(e);
-        } finally {
+            ManagedObjectReference taskmor = vimPort.destroyTask(templateToBeDeleted);
+            VsphereMethod method = new VsphereMethod(getProvider());
+            TimePeriod<Second> interval = new TimePeriod<Second>(5, TimePeriod.SECOND);
+            method.getOperationComplete(taskmor, interval, 20);
+        }
+        catch (RuntimeFaultFaultMsg runtimeFaultFaultMsg) {
+            throw new CloudException("RuntimeFaultFaultMsg when deleting image", runtimeFaultFaultMsg);
+        } catch (VimFaultFaultMsg vimFaultFaultMsg) {
+            throw new CloudException("VimFaultFaultMsg when deleting image", vimFaultFaultMsg);
+        }
+        finally {
             APITrace.end();
+        }
+    }
+
+    private MachineImage toMachineImage(String imageId, VirtualMachineConfigSummary imageInfo, String regionId, MachineImageState state) {
+        VirtualMachineGuestOsIdentifier os;
+        Platform platform;
+        Architecture arch;
+
+        try {
+            os = VirtualMachineGuestOsIdentifier.fromValue(imageInfo.getGuestId());
+            platform = Platform.guess(imageInfo.getGuestFullName());
+        }
+        catch( IllegalArgumentException e ) {
+            System.out.println("DEBUG: No such guest in enum: " + imageInfo.getGuestId());
+            os = null;
+            platform = Platform.guess(imageInfo.getGuestId());
+        }
+        if( os == null ) {
+            arch = (imageInfo.getGuestId().contains("64") ? Architecture.I64 : Architecture.I32);
+        }
+        else {
+            arch = getArchitecture(os);
+        }
+
+        return MachineImage.getInstance(
+                getProvider().getContext().getAccountNumber(),
+                regionId,
+                imageId,
+                ImageClass.MACHINE,
+                state,
+                imageInfo.getName(),
+                imageInfo.getGuestFullName(),
+                arch,
+                platform);
+    }
+
+    @Nonnull
+    public Architecture getArchitecture(@Nonnull VirtualMachineGuestOsIdentifier os) {
+        if( os.value().contains("64") ) {
+            return Architecture.I64;
+        }
+        else {
+            return Architecture.I32;
         }
     }
 }

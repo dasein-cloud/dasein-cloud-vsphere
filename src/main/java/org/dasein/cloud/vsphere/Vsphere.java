@@ -29,7 +29,6 @@ import org.dasein.cloud.CloudException;
 import org.dasein.cloud.ContextRequirements;
 import org.dasein.cloud.InternalException;
 import org.dasein.cloud.ProviderContext;
-import org.dasein.cloud.network.NetworkServices;
 import org.dasein.cloud.vsphere.compute.VsphereCompute;
 
 import com.vmware.vim25.ManagedObjectReference;
@@ -45,9 +44,7 @@ import org.dasein.util.CalendarWrapper;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.xml.ws.BindingProvider;
-import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
 
 
 /**
@@ -104,7 +101,7 @@ public class Vsphere extends AbstractCloud {
     @Override
     public @Nonnull String getCloudName() {
         ProviderContext ctx = getContext();
-        String name = (ctx == null ? null : ctx.getCloudName());
+        String name = (ctx == null ? null : ctx.getCloud().getCloudName());
 
         return (name == null ? "vSphere" : name);
     }
@@ -128,10 +125,10 @@ public class Vsphere extends AbstractCloud {
     public @Nonnull VsphereConnection getServiceInstance() throws CloudException, InternalException {
         if (vsphereConnection == null ) {
             ProviderContext ctx = getContext();
-            ServiceContent serviceContent =  null;
-            VimService vimService = null;
-            VimPortType vimPortType = null;
-            UserSession userSession = null;
+            ServiceContent serviceContent;
+            VimService vimService;
+            VimPortType vimPortType;
+            UserSession userSession;
             try {
                 SSLContext sc = SSLContext.getInstance("SSL");
                 sc.getServerSessionContext().setSessionTimeout(sessionTimeout);
@@ -148,7 +145,7 @@ public class Vsphere extends AbstractCloud {
                 vimPortType = vimService.getVimPort();
                 Map<String, Object> ctxt = ((BindingProvider) vimPortType).getRequestContext();
 
-                ctxt.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, ctx.getEndpoint());
+                ctxt.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, ctx.getCloud().getEndpoint());
                 ctxt.put(BindingProvider.SESSION_MAINTAIN_PROPERTY, true);
 
                 serviceContent = vimPortType.retrieveServiceContent(servicesInstance);
@@ -202,7 +199,7 @@ public class Vsphere extends AbstractCloud {
     @Override
     public @Nonnull String getProviderName() {
         ProviderContext ctx = getContext();
-        String name = (ctx == null ? null : ctx.getProviderName());
+        String name = (ctx == null ? null : ctx.getCloud().getProviderName());
 
         return (name == null ? "vSphere" : name);
     }
@@ -221,7 +218,7 @@ public class Vsphere extends AbstractCloud {
             }
 
             try {
-                VsphereConnection connection = getServiceInstance();
+                getServiceInstance();
             } catch (Exception e) {
                 return null;
             }

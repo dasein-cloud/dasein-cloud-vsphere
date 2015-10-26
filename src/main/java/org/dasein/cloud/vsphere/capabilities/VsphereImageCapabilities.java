@@ -45,22 +45,24 @@ public class VsphereImageCapabilities extends AbstractCapabilities<Vsphere> impl
     }
 
     @Override
-    public boolean canBundle(VmState fromState) throws CloudException, InternalException {
+    public boolean canBundle(@Nonnull VmState fromState) throws CloudException, InternalException {
         return true;
     }
 
     @Override
-    public boolean canImage(VmState fromState) throws CloudException, InternalException {
+    public boolean canImage(@Nonnull VmState fromState) throws CloudException, InternalException {
         return true;
     }
 
+    @Nonnull
     @Override
-    public String getProviderTermForImage(Locale locale, ImageClass cls) {
+    public String getProviderTermForImage(@Nonnull Locale locale, @Nonnull ImageClass cls) {
         return "template";
     }
 
+    @Nonnull
     @Override
-    public String getProviderTermForCustomImage(Locale locale, ImageClass cls) {
+    public String getProviderTermForCustomImage(@Nonnull Locale locale, @Nonnull ImageClass cls) {
         return "snapshot";
     }
 
@@ -69,12 +71,14 @@ public class VsphereImageCapabilities extends AbstractCapabilities<Vsphere> impl
         return VisibleScope.ACCOUNT_DATACENTER;
     }
 
+    @Nonnull
     @Override
     public Requirement identifyLocalBundlingRequirement() throws CloudException, InternalException {
         // totall guess here...
         return Requirement.REQUIRED;
     }
 
+    @Nonnull
     @Override
     public Iterable<MachineImageFormat> listSupportedFormats() throws CloudException, InternalException {
         List<MachineImageFormat> supportedFormats = new ArrayList<MachineImageFormat>();
@@ -82,6 +86,7 @@ public class VsphereImageCapabilities extends AbstractCapabilities<Vsphere> impl
         return supportedFormats;
     }
 
+    @Nonnull
     @Override
     public Iterable<MachineImageFormat> listSupportedFormatsForBundling() throws CloudException, InternalException {
         List<MachineImageFormat> supportedFormats = new ArrayList<MachineImageFormat>();
@@ -89,11 +94,13 @@ public class VsphereImageCapabilities extends AbstractCapabilities<Vsphere> impl
         return supportedFormats;
     }
 
+    @Nonnull
     @Override
     public Iterable<ImageClass> listSupportedImageClasses() throws CloudException, InternalException {
         return Collections.unmodifiableList(Collections.singletonList(ImageClass.MACHINE));
     }
 
+    @Nonnull
     @Override
     public Iterable<MachineImageType> listSupportedImageTypes() throws CloudException, InternalException {
         return Collections.unmodifiableList(Collections.singletonList(MachineImageType.STORAGE));
@@ -106,7 +113,7 @@ public class VsphereImageCapabilities extends AbstractCapabilities<Vsphere> impl
     }
 
     @Override
-    public boolean supportsImageCapture(MachineImageType type) throws CloudException, InternalException {
+    public boolean supportsImageCapture(@Nonnull MachineImageType type) throws CloudException, InternalException {
         return true;
     }
 
@@ -136,7 +143,7 @@ public class VsphereImageCapabilities extends AbstractCapabilities<Vsphere> impl
     }
 
     @Override
-    public boolean supportsPublicLibrary(ImageClass cls) throws CloudException, InternalException {
+    public boolean supportsPublicLibrary(@Nonnull ImageClass cls) throws CloudException, InternalException {
         return true;
     }
 
@@ -145,6 +152,7 @@ public class VsphereImageCapabilities extends AbstractCapabilities<Vsphere> impl
         return false;
     }
 
+    @Nonnull
     @Override
     public NamingConstraints getImageNamingConstraints() throws CloudException, InternalException {
         return NamingConstraints.getAlphaNumeric(1, 80).withRegularExpression(".{1,80}");

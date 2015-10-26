@@ -48,7 +48,7 @@ public class VsphereInventoryNavigation {
 
         traversalSpec.finalizeTraversalSpec();
 
-        ServiceContent vimServiceContent = null;
+        ServiceContent vimServiceContent;
         try {
             ManagedObjectReference ref = new ManagedObjectReference();
             ref.setType(VIMSERVICEINSTANCETYPE);
@@ -58,7 +58,7 @@ public class VsphereInventoryNavigation {
             throw new CloudException(e);
         }
 
-        RetrieveResult props = null;
+        RetrieveResult props;
         try {
             props = vimPortType.retrievePropertiesEx(vimServiceContent.getPropertyCollector(), traversalSpec.getPropertyFilterSpecList(), new RetrieveOptions());
         } catch ( InvalidPropertyFaultMsg e ) {
@@ -70,15 +70,6 @@ public class VsphereInventoryNavigation {
         }
 
         return props;
-    }
-
-    private  @Nonnull TraversalSpec getFolderTraversalSpec(@Nonnull String baseFolder) {
-        // Create a traversal spec that starts from the 'root' objects
-
-        VsphereTraversalSpec tSpec = new VsphereTraversalSpec("VisitFolders", "childEntity", "Folder", false)
-            .withSelectionSpec("VisitFolders", "DataCenterTo" + baseFolder, "Datacenter", baseFolder, false);
-
-        return tSpec.getTraversalSpec();
     }
 
     public ManagedObjectReference searchDatastores(Vsphere provider, @Nonnull ManagedObjectReference hostDatastoreBrowser, @Nonnull String datastoreFolder, @Nullable HostDatastoreBrowserSearchSpec searchSpec) throws CloudException, InternalException{

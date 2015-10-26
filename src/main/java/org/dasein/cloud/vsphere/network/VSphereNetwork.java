@@ -6,7 +6,6 @@ import org.dasein.cloud.CloudException;
 import org.dasein.cloud.InternalException;
 import org.dasein.cloud.ProviderContext;
 import org.dasein.cloud.VisibleScope;
-import org.dasein.cloud.compute.AffinityGroup;
 import org.dasein.cloud.network.*;
 import org.dasein.cloud.util.APITrace;
 import org.dasein.cloud.util.Cache;
@@ -29,7 +28,6 @@ import java.util.Locale;
  */
 public class VSphereNetwork extends AbstractVLANSupport<Vsphere> {
     private List<PropertySpec> networkPSpec;
-    static private final Logger log = Vsphere.getLogger(VSphereNetwork.class);
 
     public VSphereNetwork(Vsphere provider) {
         super(provider);
@@ -145,7 +143,7 @@ public class VSphereNetwork extends AbstractVLANSupport<Vsphere> {
         }
     }
 
-    private VLAN toVlan(@Nonnull String id, @Nonnull String name, @Nullable boolean available, @Nullable String switchID) throws InternalException, CloudException {
+    private VLAN toVlan(@Nonnull String id, @Nonnull String name, boolean available, @Nullable String switchID) throws InternalException, CloudException {
         VLAN vlan = new VLAN();
         vlan.setName(name);
         vlan.setDescription(name + " ("+id+")");

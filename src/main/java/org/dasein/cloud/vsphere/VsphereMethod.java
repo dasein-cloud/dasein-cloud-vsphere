@@ -7,7 +7,6 @@ import javax.annotation.Nonnull;
 
 import com.vmware.vim25.*;
 
-import org.apache.log4j.Logger;
 import org.dasein.cloud.CloudException;
 import org.dasein.cloud.InternalException;
 import org.dasein.cloud.util.APITrace;
@@ -15,7 +14,6 @@ import org.dasein.util.uom.time.Second;
 import org.dasein.util.uom.time.TimePeriod;
 
 public class VsphereMethod {
-    static private final Logger logger = Vsphere.getLogger(Vsphere.class);
 
     private Vsphere provider;
 
@@ -27,7 +25,7 @@ public class VsphereMethod {
         this.provider = provider;
     }
 
-    public @Nonnull boolean getOperationComplete(ManagedObjectReference taskmor, TimePeriod interval, int repetions) throws CloudException, InternalException {
+    public boolean getOperationComplete(ManagedObjectReference taskmor, TimePeriod interval, int repetions) throws CloudException, InternalException {
         APITrace.begin(provider, "VsphereMethod.getOperationComplete");
         Long intervalSeconds = ((TimePeriod<Second>)interval.convertTo(TimePeriod.SECOND)).longValue();
         try {
@@ -45,12 +43,12 @@ public class VsphereMethod {
         }
     }
 
-    public @Nonnull boolean getOperationCurrentStatus(ManagedObjectReference taskmor) throws CloudException, InternalException {
+    public boolean getOperationCurrentStatus(ManagedObjectReference taskmor) throws CloudException, InternalException {
         APITrace.begin(provider, "VsphereMethod.getOperationCurrentStatus");
 
         String version = "";
-        List<PropertyFilterUpdate> filtupary = null;
-        List<ObjectUpdate> objupary = null;
+        List<PropertyFilterUpdate> filtupary;
+        List<ObjectUpdate> objupary;
 
         VsphereConnection vsphereConnection = provider.getServiceInstance();
         VimPortType vimPort = vsphereConnection.getVimPort();
@@ -75,7 +73,6 @@ public class VsphereMethod {
             if (updateset == null || updateset.getFilterSet() == null) {
                 return false;
             }
-            version = updateset.getVersion();
             filtupary = updateset.getFilterSet();
 
             for (PropertyFilterUpdate filtup : filtupary) {
@@ -83,12 +80,16 @@ public class VsphereMethod {
                 for (ObjectUpdate objup : objupary) {
                     if (objup.getKind() == ObjectUpdateKind.MODIFY || objup.getKind() == ObjectUpdateKind.ENTER || objup.getKind() == ObjectUpdateKind.LEAVE) {
                         for (PropertyChange propchg : objup.getChangeSet()) {
-                            if (propchg.getName().equals("info.result")) {
-                                setTaskResult(propchg);
-                            } else if (propchg.getName().equals("info.state")) {
-                                setTaskState(propchg);
-                            } else if (propchg.getName().equals("info.error")) {
-                                setTaskError(propchg);
+                            switch (propchg.getName()) {
+                                case "info.result":
+                                    setTaskResult(propchg);
+                                    break;
+                                case "info.state":
+                                    setTaskState(propchg);
+                                    break;
+                                case "info.error":
+                                    setTaskError(propchg);
+                                    break;
                             }
                         }
                     }
@@ -104,10 +105,7 @@ public class VsphereMethod {
             }
             APITrace.end();
         }
-        if ((null != taskState) && (taskState.getVal().equals(TaskInfoState.SUCCESS))) {
-            return true;
-        }
-        return false;
+        return (null != taskState) && (taskState.getVal().equals(TaskInfoState.SUCCESS));
     }
 
     public PropertyChange getTaskResult() {

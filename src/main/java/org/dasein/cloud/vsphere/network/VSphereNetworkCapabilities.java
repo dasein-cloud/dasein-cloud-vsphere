@@ -146,6 +146,6 @@ public class VSphereNetworkCapabilities extends AbstractCapabilities<Vsphere> im
     @Nonnull
     @Override
     public NamingConstraints getVlanNamingConstraints() throws CloudException, InternalException {
-        return NamingConstraints.getAlphaNumeric(1, 30).constrainedBy(new char[] {'-'}).lowerCaseOnly();
+        return NamingConstraints.getAlphaNumeric(1, 30).constrainedBy('-').lowerCaseOnly();
     }
 }

@@ -26,7 +26,6 @@ import org.dasein.cloud.vsphere.*;
 import org.dasein.cloud.vsphere.capabilities.VsphereImageCapabilities;
 
 import org.dasein.cloud.util.APITrace;
-import org.dasein.cloud.vsphere.compute.Vm;
 import org.dasein.util.uom.time.Second;
 import org.dasein.util.uom.time.TimePeriod;
 
@@ -52,7 +51,7 @@ public class ImageSupport extends AbstractImageSupport<Vsphere> {
     }
 
     @Override
-    public MachineImage getImage(String providerImageId) throws CloudException, InternalException {
+    public MachineImage getImage(@Nonnull String providerImageId) throws CloudException, InternalException {
         ImageFilterOptions options = ImageFilterOptions.getInstance(true, providerImageId);
         Iterable<MachineImage> images = listImages(options);
 
@@ -74,6 +73,7 @@ public class ImageSupport extends AbstractImageSupport<Vsphere> {
         return templatePSpec;
     }
 
+    @Nonnull
     @Override
     public Iterable<MachineImage> listImages(@Nullable ImageFilterOptions opts) throws CloudException, InternalException {
         APITrace.begin(getProvider(), "ImageSupport.listImages");
@@ -108,7 +108,6 @@ public class ImageSupport extends AbstractImageSupport<Vsphere> {
                 for (ObjectContent oc : props.getObjects()) {
                     ManagedObjectReference templateRef = oc.getObj();
                     MachineImageState state = MachineImageState.ERROR;
-                    Architecture architecture = Architecture.I64;
 
                     VirtualMachineConfigSummary virtualMachineConfigSummary = null;
                     List<DynamicProperty> dps = oc.getPropSet();
@@ -118,13 +117,12 @@ public class ImageSupport extends AbstractImageSupport<Vsphere> {
                                 virtualMachineConfigSummary = (VirtualMachineConfigSummary) dp.getVal();
                             } else if (dp.getName().equals("summary.overallStatus")) {
                                 ManagedEntityStatus s = (ManagedEntityStatus) dp.getVal();
-                                if (s.equals(ManagedEntityStatus.GREEN)) {
+                                if (s.equals(ManagedEntityStatus.GREEN) || s.equals(ManagedEntityStatus.YELLOW)) {
                                     state = MachineImageState.ACTIVE;
                                 }
                             }
                         }
                         if (virtualMachineConfigSummary != null) {
-
                             if (virtualMachineConfigSummary.isTemplate()) {
                                 MachineImage machineImage = toMachineImage(templateRef.getValue(), virtualMachineConfigSummary, regionId, state);
                                 if (options.matches(machineImage)) {
@@ -184,7 +182,7 @@ public class ImageSupport extends AbstractImageSupport<Vsphere> {
             spec.setPowerOn(false);
             spec.setTemplate(true);
 
-            MachineImage img = null;
+            MachineImage img;
             ManagedObjectReference taskMor = getProvider().getComputeServices().getVirtualMachineSupport().cloneVmTask(templateRef, vmFolderRef, options.getName(), spec);
             VsphereMethod method = new VsphereMethod(getProvider());
             TimePeriod interval = new TimePeriod<Second>(15, TimePeriod.SECOND);
@@ -209,7 +207,7 @@ public class ImageSupport extends AbstractImageSupport<Vsphere> {
     }
 
     @Override
-    public void remove(String providerImageId, boolean checkState) throws CloudException, InternalException {
+    public void remove(@Nonnull String providerImageId, boolean checkState) throws CloudException, InternalException {
         APITrace.begin(getProvider(), "ImageSupport.remove");
 
         MachineImage image = getImage(providerImageId);

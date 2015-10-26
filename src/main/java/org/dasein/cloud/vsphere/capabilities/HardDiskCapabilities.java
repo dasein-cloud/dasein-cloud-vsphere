@@ -55,7 +55,7 @@ public class HardDiskCapabilities extends AbstractCapabilities<Vsphere> implemen
         return AbstractCapabilities.LIMIT_UNKNOWN;
     }
 
-    @Nullable
+    @Nonnull
     @Override
     public Storage<Gigabyte> getMaximumVolumeSize() throws InternalException, CloudException {
         return new Storage<Gigabyte>(2000, Storage.GIGABYTE);

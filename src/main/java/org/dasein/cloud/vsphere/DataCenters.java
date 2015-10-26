@@ -50,7 +50,6 @@ import java.util.*;
  * @since 2015.09
  */
 public class DataCenters extends AbstractDataCenterServices<Vsphere> {
-    static private final Logger logger = Vsphere.getLogger(DataCenters.class);
 
     public AffinityGroupSupport agSupport;
     public List<SelectionSpec>  rpSSpecs;
@@ -285,16 +284,18 @@ public class DataCenters extends AbstractDataCenterServices<Vsphere> {
                     List<DynamicProperty> dps = oc.getPropSet();
                     if (dps != null) {
                         for (DynamicProperty dp : dps) {
-                            if (dp.getName().equals("name")) {
-                                rpName = (String) dp.getVal();
-                            }
-                            else if (dp.getName().equals("owner")) {
-                                ManagedObjectReference clusterRef = (ManagedObjectReference) dp.getVal();
-                                owner = clusterRef.getValue();
-                            }
-                            else if (dp.getName().equals("runtime")) {
-                                ResourcePoolRuntimeInfo rpri = (ResourcePoolRuntimeInfo) dp.getVal();
-                                rpStatus = rpri.getOverallStatus().value();
+                            switch (dp.getName()) {
+                                case "name":
+                                    rpName = (String) dp.getVal();
+                                    break;
+                                case "owner":
+                                    ManagedObjectReference clusterRef = (ManagedObjectReference) dp.getVal();
+                                    owner = clusterRef.getValue();
+                                    break;
+                                case "runtime":
+                                    ResourcePoolRuntimeInfo rpri = (ResourcePoolRuntimeInfo) dp.getVal();
+                                    rpStatus = rpri.getOverallStatus().value();
+                                    break;
                             }
                         }
                     }
@@ -314,7 +315,7 @@ public class DataCenters extends AbstractDataCenterServices<Vsphere> {
     }
 
     @Override
-    public ResourcePool getResourcePool(String providerResourcePoolId) throws InternalException, CloudException {
+    public ResourcePool getResourcePool(@Nonnull String providerResourcePoolId) throws InternalException, CloudException {
         APITrace.begin(getProvider(), "DataCenters.getResourcePool");
         try {
             Iterable<org.dasein.cloud.dc.ResourcePool> rps = listResourcePools(null);
@@ -330,6 +331,7 @@ public class DataCenters extends AbstractDataCenterServices<Vsphere> {
         }
     }
 
+    @Nonnull
     @Override
     public Collection<StoragePool> listStoragePools() throws InternalException, CloudException {
         APITrace.begin(getProvider(), "listStoragePools");
@@ -419,7 +421,7 @@ public class DataCenters extends AbstractDataCenterServices<Vsphere> {
     }
 
     @Override
-    public StoragePool getStoragePool(String providerStoragePoolId) throws InternalException, CloudException {
+    public StoragePool getStoragePool(@Nonnull String providerStoragePoolId) throws InternalException, CloudException {
         APITrace.begin(getProvider(), "DataCenters.getStoragePool");
         try {
             Collection<StoragePool> pools = listStoragePools();
@@ -435,6 +437,7 @@ public class DataCenters extends AbstractDataCenterServices<Vsphere> {
         }
     }
 
+    @Nonnull
     @Override
     public Collection<Folder> listVMFolders() throws InternalException, CloudException {
         APITrace.begin(getProvider(), "listVMFolders");
@@ -467,28 +470,30 @@ public class DataCenters extends AbstractDataCenterServices<Vsphere> {
                     List<DynamicProperty> dps = oc.getPropSet();
                     if (dps != null) {
                         for (DynamicProperty dp : dps) {
-                            if (dp.getName().equals("name")) {
-                                folderName = (String) dp.getVal();
-                            }
-                            else if (dp.getName().equals("parent")) {
-                                ManagedObjectReference pRef = (ManagedObjectReference) dp.getVal();
-                                if (pRef.getType().equals("Folder")) {
-                                    folderParent = pRef.getValue();
-                                }
-                            }
-                            else if (dp.getName().equals("childEntity")) {
-                                ArrayOfManagedObjectReference cRefs = (ArrayOfManagedObjectReference) dp.getVal();
-                                List<ManagedObjectReference> list = cRefs.getManagedObjectReference();
-                                boolean firstTime = true;
-                                for (ManagedObjectReference item : list) {
-                                    if (item.getType().equals("Folder")) {
-                                        if (firstTime) {
-                                            folderChildren = new ArrayList<String>();
-                                            firstTime=false;
-                                        }
-                                        folderChildren.add(item.getValue());
+                            switch (dp.getName()) {
+                                case "name":
+                                    folderName = (String) dp.getVal();
+                                    break;
+                                case "parent":
+                                    ManagedObjectReference pRef = (ManagedObjectReference) dp.getVal();
+                                    if (pRef.getType().equals("Folder")) {
+                                        folderParent = pRef.getValue();
                                     }
-                                }
+                                    break;
+                                case "childEntity":
+                                    ArrayOfManagedObjectReference cRefs = (ArrayOfManagedObjectReference) dp.getVal();
+                                    List<ManagedObjectReference> list = cRefs.getManagedObjectReference();
+                                    boolean firstTime = true;
+                                    for (ManagedObjectReference item : list) {
+                                        if (item.getType().equals("Folder")) {
+                                            if (firstTime) {
+                                                folderChildren = new ArrayList<String>();
+                                                firstTime = false;
+                                            }
+                                            folderChildren.add(item.getValue());
+                                        }
+                                    }
+                                    break;
                             }
                         }
                         if (folderName != null) {
@@ -524,7 +529,7 @@ public class DataCenters extends AbstractDataCenterServices<Vsphere> {
     }
 
     @Override
-    public Folder getVMFolder(String providerVMFolderId) throws InternalException, CloudException {
+    public Folder getVMFolder(@Nonnull String providerVMFolderId) throws InternalException, CloudException {
         APITrace.begin(getProvider(), "DataCenters.getVMFolder");
         try {
             Collection<Folder> folders = listVMFolders();
@@ -551,12 +556,8 @@ public class DataCenters extends AbstractDataCenterServices<Vsphere> {
     }
 
     private @Nullable DataCenter toDataCenter(@Nonnull String dataCenterId, @Nonnull String datacenterName, @Nonnull String regionId, @Nonnull String status) {
-        boolean available = true;
-        if (status != null) {
-            available = (!status.equalsIgnoreCase("red"));
-        }
-        DataCenter dc = new DataCenter(dataCenterId, datacenterName, regionId, available, available);
-        return dc;
+        boolean available = (!status.equalsIgnoreCase("red"));
+        return new DataCenter(dataCenterId, datacenterName, regionId, available, available);
     }
 
     private ResourcePool toResourcePool(@Nonnull String resourcePoolId, @Nonnull String resourcePoolName, @Nonnull String providerDataCenterId, @Nullable String status) {

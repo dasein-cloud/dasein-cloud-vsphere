@@ -82,7 +82,6 @@ public class HostSupport extends AbstractAffinityGroupSupport<Vsphere> {
         throw new OperationNotSupportedException("Unable to delete physical hosts in vSphere");
     }
 
-    @Nonnull
     @Override
     public AffinityGroup get(@Nonnull String affinityGroupId) throws InternalException, CloudException {
         for (AffinityGroup ag : list(AffinityGroupFilterOptions.getInstance())) {
@@ -141,7 +140,7 @@ public class HostSupport extends AbstractAffinityGroupSupport<Vsphere> {
                                 }
 
                             }
-                            if (hostName != null) {
+                            if (hostName != null && status != null) {
                                 String agDesc = "Affinity group for "+hostName;
                                 long created = 0;
 

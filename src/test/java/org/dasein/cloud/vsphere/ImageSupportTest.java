@@ -34,7 +34,8 @@ public class ImageSupportTest extends VsphereTestBase {
     final PropertyChange cloneResult = om.readJsonFile("src/test/resources/ImageSupport/cloneResult.json", PropertyChange.class);
     final MachineImage newImage = om.readJsonFile("src/test/resources/ImageSupport/newImage.json", MachineImage.class);
     final RetrieveResult postRemoveImages = om.readJsonFile("src/test/resources/ImageSupport/postRemoveImages.json", RetrieveResult.class);
-
+    final RetrieveResult imageNoConfigProperty = om.readJsonFile("src/test/resources/ImageSupport/imagesNoSummaryConfigProperty.json", RetrieveResult.class);
+    final RetrieveResult vmList = om.readJsonFile("src/test/resources/ImageSupport/allVms.json", RetrieveResult.class);
 
     private ImageSupport img;
     private VsphereMethod method = null;
@@ -200,6 +201,128 @@ public class ImageSupportTest extends VsphereTestBase {
     }
 
     @Test
+    public void listImagesShouldReturnEmptyListIfCloudReturnsNullObject() throws CloudException, InternalException {
+        new Expectations(ImageSupport.class){
+            { img.retrieveObjectList(vsphereMock, "vmFolder", null, templatePSpec);
+                result = null;
+            }
+        };
+
+        Iterable<MachineImage> images = img.listImages(ImageFilterOptions.getInstance());
+        assertNotNull("List may be empty but should not be null", images);
+        assertFalse("Cloud returned null but image list is not empty", images.iterator().hasNext());
+    }
+
+    @Test
+    public void listImagesShouldReturnEmptyListIfCloudReturnsEmptyObject() throws CloudException, InternalException {
+        new Expectations(ImageSupport.class){
+            { img.retrieveObjectList(vsphereMock, "vmFolder", null, templatePSpec);
+                result = new RetrieveResult();
+            }
+        };
+
+        Iterable<MachineImage> images = img.listImages(ImageFilterOptions.getInstance());
+        assertNotNull("List may be empty but should not be null", images);
+        assertFalse("Cloud returned empty list but image list is not empty", images.iterator().hasNext());
+    }
+
+    @Test
+    public void listImagesShouldReturnEmptyListIfCloudReturnsEmptyPropertySet() throws CloudException, InternalException {
+        new Expectations(ImageSupport.class){
+            { img.retrieveObjectList(vsphereMock, "vmFolder", null, templatePSpec);
+                RetrieveResult rr = new RetrieveResult();
+                ObjectContent oc = new ObjectContent();
+                oc.setObj(new ManagedObjectReference());
+                rr.getObjects().add(oc);
+                result = rr;
+            }
+        };
+
+        Iterable<MachineImage> images = img.listImages(ImageFilterOptions.getInstance());
+        assertNotNull("List may be empty but should not be null", images);
+        assertFalse("Cloud returned empty property set but image list is not empty", images.iterator().hasNext());
+    }
+
+    @Test
+    public void listImagesShouldReturnEmptyListIfCloudDoesNotReturnConfigSummaryProperty() throws CloudException, InternalException {
+        new Expectations(ImageSupport.class){
+            { img.retrieveObjectList(vsphereMock, "vmFolder", null, templatePSpec);
+                result = imageNoConfigProperty;
+            }
+        };
+
+        Iterable<MachineImage> images = img.listImages(ImageFilterOptions.getInstance());
+        assertNotNull("List may be empty but should not be null", images);
+        assertFalse("Cloud did not return config property but image list is not empty", images.iterator().hasNext());
+    }
+
+    @Test
+    public void listImagesShouldReturnEmptyListIfAllObjectsReturnedAreNotTemplates() throws CloudException, InternalException {
+        new Expectations(ImageSupport.class){
+            { img.retrieveObjectList(vsphereMock, "vmFolder", null, templatePSpec);
+                result = vmList;
+            }
+        };
+
+        Iterable<MachineImage> images = img.listImages(ImageFilterOptions.getInstance());
+        assertNotNull("List may be empty but should not be null", images);
+        assertFalse("Cloud did not return any templates but image list is not empty", images.iterator().hasNext());
+    }
+
+    @Test
+    public void listImagesShouldReturnEmptyListIfNoObjectsMatchOptions() throws CloudException, InternalException {
+        new Expectations(ImageSupport.class){
+            { img.retrieveObjectList(vsphereMock, "vmFolder", null, templatePSpec);
+                result = images;
+            }
+        };
+
+        Iterable<MachineImage> images = img.listImages(ImageFilterOptions.getInstance(ImageClass.KERNEL));
+        assertNotNull("List may be empty but should not be null", images);
+        assertFalse("None of the templates match the filter options (all images are ImageClass.MACHINE) but image list is not empty", images.iterator().hasNext());
+    }
+
+    @Test
+    public void listImagesShouldReturnFullListIfFilterOptionsIsNull() throws CloudException, InternalException {
+        new Expectations(ImageSupport.class){
+            { img.retrieveObjectList(vsphereMock, "vmFolder", null, templatePSpec);
+                result = images;
+            }
+        };
+
+        Iterable<MachineImage> images = img.listImages((ImageFilterOptions) null);
+        assertNotNull("List should not be null", images);
+
+        int count = 0;
+        for (MachineImage image : images) {
+            count++;
+        }
+        assertTrue("found images should = 12, not " + count, 12 == count);
+    }
+
+    @Test(expected = NoContextException.class)
+    public void listImagesShouldThrowExceptionIfNullContext() throws CloudException, InternalException{
+        new Expectations(ImageSupport.class) {
+            {vsphereMock.getContext();
+                result = null;
+            }
+        };
+
+        img.listImages(ImageFilterOptions.getInstance());
+    }
+
+    @Test(expected = CloudException.class)
+    public void listImagesShouldThrowExceptionIfNullRegionId() throws CloudException, InternalException {
+        new Expectations(ImageSupport.class) {
+            {providerContextMock.getRegionId();
+                result = null;
+            }
+        };
+
+        img.listImages(ImageFilterOptions.getInstance());
+    }
+
+    @Test
     public void captureImage() throws CloudException, InternalException {
         new Expectations(ImageSupport.class){
             { img.getImage(anyString);
@@ -244,6 +367,68 @@ public class ImageSupportTest extends VsphereTestBase {
         assertEquals(Platform.UBUNTU, image.getPlatform());
     }
 
+    @Test(expected = CloudException.class)
+    public void captureImageShouldThrowExceptionIfNullVmId() throws CloudException, InternalException {
+        final ImageCreateOptions optionsMock = ImageCreateOptions.getInstance(vmForCapture, "name", "description");
+        new Expectations(ImageCreateOptions.class) {
+            {optionsMock.getVirtualMachineId();
+                result = null;
+            }
+        };
+
+        img.captureImage(optionsMock);
+    }
+
+    @Test(expected = CloudException.class)
+    public void captureImageShouldThrowExceptionIfNullVm() throws CloudException, InternalException {
+        final ImageCreateOptions optionsMock = ImageCreateOptions.getInstance(vmForCapture, "name", "description");
+
+        new NonStrictExpectations() {
+            {vsphereMock.getComputeServices();
+                result = computeMock;
+            }
+
+            {computeMock.getVirtualMachineSupport();
+                result = vmMock;
+            }
+
+            {vmMock.getVirtualMachine(anyString);
+                result = null;
+            }
+        };
+
+        img.captureImage(optionsMock);
+    }
+
+    @Test(expected = CloudException.class)
+    public void captureImageShouldThrowExceptionIfCaptureTaskIsNotSuccessful() throws CloudException, InternalException {
+        new NonStrictExpectations() {
+            {vsphereMock.getComputeServices();
+                result = computeMock;
+            }
+            {computeMock.getVirtualMachineSupport();
+                result = vmMock;
+            }
+            {vmMock.getVirtualMachine(anyString);
+                result = vmForCapture;
+            }
+            {vmMock.cloneVmTask((ManagedObjectReference) any, (ManagedObjectReference) any, anyString, (VirtualMachineCloneSpec) any);
+                result = task;
+            }
+        };
+
+        new Expectations(VsphereMethod.class) {
+            {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
+                result = false;
+            }
+            {method.getTaskError().getVal();
+                result = "Capture failed";
+            }
+        };
+
+        img.captureImage(ImageCreateOptions.getInstance(vmForCapture, "name", "description"));
+    }
+
     @Test
     public void removeImage() throws CloudException, InternalException, RuntimeFaultFaultMsg, VimFaultFaultMsg {
         new Expectations(ImageSupport.class){
@@ -268,5 +453,77 @@ public class ImageSupportTest extends VsphereTestBase {
         img.remove("vm-1823");
         MachineImage image = img.getImage("vm-1823");
         assertNull("Image deleted but still found", image);
+    }
+
+    @Test
+    public void removeImageShouldDoNothingIfImageNotFound() throws CloudException, InternalException, RuntimeFaultFaultMsg, VimFaultFaultMsg {
+        new Expectations(ImageSupport.class){
+            { img.retrieveObjectList(vsphereMock, "vmFolder", null, templatePSpec);
+                result = images;
+                times = 1;
+            }
+        };
+
+        new NonStrictExpectations() {
+            {vimPortMock.destroyTask((ManagedObjectReference) any);
+                times = 0;
+            }
+        };
+
+        new Expectations(VsphereMethod.class) {
+            {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
+                times = 0;
+            }
+        };
+
+        img.remove("MyFakeId");
+    }
+
+    @Test(expected = CloudException.class)
+    public void removeImageShouldThrowCloudExceptionIfDestroyTaskHasRuntimeFault() throws CloudException, InternalException, RuntimeFaultFaultMsg, VimFaultFaultMsg {
+        new Expectations(ImageSupport.class){
+            { img.retrieveObjectList(vsphereMock, "vmFolder", null, templatePSpec);
+                result = images;
+                times = 1;
+            }
+        };
+
+        new NonStrictExpectations() {
+            {vimPortMock.destroyTask((ManagedObjectReference) any);
+                result = new RuntimeFaultFaultMsg("test exception", new RuntimeFault());
+            }
+        };
+
+        new Expectations(VsphereMethod.class) {
+            {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
+                times = 0;
+            }
+        };
+
+        img.remove("vm-1823");
+    }
+
+    @Test(expected = CloudException.class)
+    public void removeImageShouldThrowExceptionIfDestroyTaskHasVimFault() throws CloudException, InternalException, RuntimeFaultFaultMsg, VimFaultFaultMsg {
+        new Expectations(ImageSupport.class){
+            { img.retrieveObjectList(vsphereMock, "vmFolder", null, templatePSpec);
+                result = images;
+                times = 1;
+            }
+        };
+
+        new NonStrictExpectations() {
+            {vimPortMock.destroyTask((ManagedObjectReference) any);
+                result = new VimFaultFaultMsg("test exception", new VimFault());
+            }
+        };
+
+        new Expectations(VsphereMethod.class) {
+            {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
+                times = 0;
+            }
+        };
+
+        img.remove("vm-1823");
     }
 }

@@ -90,15 +90,15 @@ public class ImageSupport extends AbstractImageSupport<Vsphere> {
 
         ArrayList<MachineImage> machineImages = new ArrayList<MachineImage>();
 
-        try {
-            ProviderContext ctx = getProvider().getContext();
-            if (ctx == null) {
-                throw new NoContextException();
-            }
-            if (ctx.getRegionId() == null) {
-                throw new CloudException("Region id is not set");
-            }
+        ProviderContext ctx = getProvider().getContext();
+        if (ctx == null) {
+            throw new NoContextException();
+        }
+        if (ctx.getRegionId() == null) {
+            throw new CloudException("Region id is not set");
+        }
 
+        try {
             String regionId = ctx.getRegionId();
 
             List<PropertySpec> pSpecs = getTemplatePSpec();

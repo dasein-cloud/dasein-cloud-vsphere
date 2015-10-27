@@ -54,8 +54,10 @@ public class ImageSupport extends AbstractImageSupport<Vsphere> {
     public MachineImage getImage(@Nonnull String providerImageId) throws CloudException, InternalException {
         ImageFilterOptions options = ImageFilterOptions.getInstance(true, providerImageId);
         Iterable<MachineImage> images = listImages(options);
-
-        return images.iterator().next();
+        if (images.iterator().hasNext()) {
+            return images.iterator().next();
+        }
+        return null;
     }
 
     @Override
@@ -152,7 +154,6 @@ public class ImageSupport extends AbstractImageSupport<Vsphere> {
                 throw new CloudException("You must specify a virtual machine to capture");
             }
             VirtualMachine vm = getProvider().getComputeServices().getVirtualMachineSupport().getVirtualMachine(vmId);
-
             if( vm == null ) {
                 throw new CloudException("No such virtual machine for imaging: " + vmId);
             }

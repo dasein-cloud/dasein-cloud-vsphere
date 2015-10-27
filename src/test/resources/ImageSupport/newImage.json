@@ -1,0 +1,27 @@
+{
+  "minimumDiskSizeGb" : 10,
+  "architecture" : "I64",
+  "creationTimestamp" : 0,
+  "currentState" : "ACTIVE",
+  "description" : "capture image unit test",
+  "imageClass" : "MACHINE",
+  "kernelImageId" : null,
+  "name" : "captureTest",
+  "platform" : "UBUNTU",
+  "providerDataCenterId" : null,
+  "providerMachineImageId" : "vm-2528",
+  "providerOwnerId" : "TESTACCOUNTNO",
+  "providerRegionId" : "datacenter-21",
+  "software" : "",
+  "storageFormat" : null,
+  "tags" : {
+    "type" : "java.util.HashMap"
+  },
+  "type" : "VOLUME",
+  "visibleScope" : null,
+  "volumes" : null,
+  "providerMetadata" : {
+    "type" : "java.util.HashMap"
+  },
+  "public" : false
+}

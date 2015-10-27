@@ -5,20 +5,17 @@ import static org.junit.Assert.*;
 import java.util.List;
 
 import com.vmware.vim25.*;
+import mockit.Expectations;
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
 
 import org.dasein.cloud.CloudException;
 import org.dasein.cloud.InternalException;
-import org.dasein.cloud.compute.Architecture;
-import org.dasein.cloud.compute.ImageClass;
-import org.dasein.cloud.compute.ImageFilterOptions;
-import org.dasein.cloud.compute.MachineImage;
-import org.dasein.cloud.compute.MachineImageState;
-import org.dasein.cloud.compute.Platform;
+import org.dasein.cloud.compute.*;
 import org.dasein.cloud.vsphere.compute.Vm;
 import org.dasein.cloud.vsphere.compute.VsphereCompute;
 import org.dasein.cloud.vsphere.compute.server.ImageSupport;
+import org.dasein.util.uom.time.TimePeriod;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,24 +29,38 @@ import org.junit.runners.JUnit4;
 public class ImageSupportTest extends VsphereTestBase {
     ObjectManagement om = new ObjectManagement();
     final RetrieveResult images = om.readJsonFile("src/test/resources/ImageSupport/propertiesEx.json", RetrieveResult.class);
+    final VirtualMachine vmForCapture = om.readJsonFile("src/test/resources/ImageSupport/vmForCapture.json", VirtualMachine.class);
+    final ManagedObjectReference task = om.readJsonFile("src/test/resources/ImageSupport/task.json", ManagedObjectReference.class);
+    final PropertyChange cloneResult = om.readJsonFile("src/test/resources/ImageSupport/cloneResult.json", PropertyChange.class);
+    final MachineImage newImage = om.readJsonFile("src/test/resources/ImageSupport/newImage.json", MachineImage.class);
+    final RetrieveResult postRemoveImages = om.readJsonFile("src/test/resources/ImageSupport/postRemoveImages.json", RetrieveResult.class);
+
 
     private ImageSupport img;
+    private VsphereMethod method = null;
     private List<PropertySpec> templatePSpec;
+
+    @Mocked
+    VsphereCompute computeMock;
+    @Mocked
+    Vm vmMock;
 
     @Before
     public void setUp() throws Exception {
         super.setUp();
         img = new ImageSupport(vsphereMock);
+        method = new VsphereMethod(vsphereMock);
         templatePSpec = img.getTemplatePSpec();
-        new NonStrictExpectations(ImageSupport.class){
-            { img.retrieveObjectList(vsphereMock, "vmFolder", null, templatePSpec);
-              result = images;
-            }
-        };
     }
 
     @Test
     public void testListImagesAll() throws CloudException, InternalException {
+        new Expectations(ImageSupport.class){
+            { img.retrieveObjectList(vsphereMock, "vmFolder", null, templatePSpec);
+                result = images;
+            }
+        };
+
         Iterable<MachineImage> result = img.listImages(ImageFilterOptions.getInstance());
 
         assertNotNull("return should not be null", result);
@@ -72,6 +83,12 @@ public class ImageSupportTest extends VsphereTestBase {
 
     @Test
     public void testListImagesAllUbuntu() throws CloudException, InternalException {
+        new Expectations(ImageSupport.class){
+            { img.retrieveObjectList(vsphereMock, "vmFolder", null, templatePSpec);
+                result = images;
+            }
+        };
+
         Iterable<MachineImage> result = img.listImages(ImageFilterOptions.getInstance().onPlatform(Platform.UBUNTU));
 
         assertNotNull("return should not be null", result);
@@ -84,6 +101,12 @@ public class ImageSupportTest extends VsphereTestBase {
     }
 
     public void testListImagesAllDebian() throws CloudException, InternalException {
+        new Expectations(ImageSupport.class){
+            { img.retrieveObjectList(vsphereMock, "vmFolder", null, templatePSpec);
+                result = images;
+            }
+        };
+
         Iterable<MachineImage> result = img.listImages(ImageFilterOptions.getInstance().onPlatform(Platform.DEBIAN));
 
         assertNotNull("return should not be null", result);
@@ -96,6 +119,12 @@ public class ImageSupportTest extends VsphereTestBase {
     }
 
     public void testListImagesAllWindows() throws CloudException, InternalException {
+        new Expectations(ImageSupport.class){
+            { img.retrieveObjectList(vsphereMock, "vmFolder", null, templatePSpec);
+                result = images;
+            }
+        };
+
         Iterable<MachineImage> result = img.listImages(ImageFilterOptions.getInstance().onPlatform(Platform.WINDOWS));
 
         assertNotNull("return should not be null", result);
@@ -109,6 +138,12 @@ public class ImageSupportTest extends VsphereTestBase {
 
     @Test
     public void getImageDebian() throws CloudException, InternalException {
+        new Expectations(ImageSupport.class){
+            { img.retrieveObjectList(vsphereMock, "vmFolder", null, templatePSpec);
+                result = images;
+            }
+        };
+
         MachineImage image = img.getImage("roger u debian");
 
         assertEquals("TESTACCOUNTNO", image.getProviderOwnerId());
@@ -124,6 +159,12 @@ public class ImageSupportTest extends VsphereTestBase {
 
     @Test
     public void getImageUbuntu() throws CloudException, InternalException {
+        new Expectations(ImageSupport.class){
+            { img.retrieveObjectList(vsphereMock, "vmFolder", null, templatePSpec);
+                result = images;
+            }
+        };
+
         MachineImage image = img.getImage("ubuntu-twdemo-dcmagent");
 
         assertEquals("TESTACCOUNTNO", image.getProviderOwnerId());
@@ -139,6 +180,12 @@ public class ImageSupportTest extends VsphereTestBase {
 
     @Test
     public void getImageWindows() throws CloudException, InternalException {
+        new Expectations(ImageSupport.class){
+            { img.retrieveObjectList(vsphereMock, "vmFolder", null, templatePSpec);
+                result = images;
+            }
+        };
+
         MachineImage image = img.getImage("dcm-agent-win2012");
 
         assertEquals("TESTACCOUNTNO", image.getProviderOwnerId());
@@ -150,5 +197,76 @@ public class ImageSupportTest extends VsphereTestBase {
         assertEquals("Microsoft Windows Server 2012 (64-bit)", image.getDescription());
         assertEquals(Architecture.I64, image.getArchitecture());
         assertEquals(Platform.WINDOWS, image.getPlatform());
+    }
+
+    @Test
+    public void captureImage() throws CloudException, InternalException {
+        new Expectations(ImageSupport.class){
+            { img.getImage(anyString);
+                result = newImage;
+            }
+        };
+
+        new NonStrictExpectations() {
+            {vsphereMock.getComputeServices();
+                result = computeMock;
+            }
+            {computeMock.getVirtualMachineSupport();
+                result = vmMock;
+            }
+            {vmMock.getVirtualMachine(anyString);
+                result = vmForCapture;
+            }
+            {vmMock.cloneVmTask((ManagedObjectReference) any, (ManagedObjectReference) any, anyString, (VirtualMachineCloneSpec) any);
+                result = task;
+            }
+        };
+
+        new Expectations(VsphereMethod.class) {
+            {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
+                result = true;
+            }
+            {method.getTaskResult();
+                result = cloneResult;
+            }
+        };
+
+        MachineImage image = img.captureImage(ImageCreateOptions.getInstance(vmForCapture, "captureTest", "capture image unit test"));
+        assertNotNull("No image found after capture operation", image);
+        assertEquals("captureTest", image.getName());
+        assertEquals("capture image unit test", image.getDescription());
+        assertEquals("TESTACCOUNTNO", image.getProviderOwnerId());
+        assertEquals("datacenter-21", image.getProviderRegionId());
+        assertEquals("vm-2528", image.getProviderMachineImageId());
+        assertEquals(ImageClass.MACHINE, image.getImageClass());
+        assertEquals(MachineImageState.ACTIVE, image.getCurrentState());
+        assertEquals(Architecture.I64, image.getArchitecture());
+        assertEquals(Platform.UBUNTU, image.getPlatform());
+    }
+
+    @Test
+    public void removeImage() throws CloudException, InternalException, RuntimeFaultFaultMsg, VimFaultFaultMsg {
+        new Expectations(ImageSupport.class){
+            { img.retrieveObjectList(vsphereMock, "vmFolder", null, templatePSpec);
+                result = images;
+                result = postRemoveImages;
+            }
+        };
+
+        new NonStrictExpectations() {
+            {vimPortMock.destroyTask((ManagedObjectReference) any);
+                result = task;
+            }
+        };
+
+        new Expectations(VsphereMethod.class) {
+            {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
+                result = true;
+            }
+        };
+
+        img.remove("vm-1823");
+        MachineImage image = img.getImage("vm-1823");
+        assertNull("Image deleted but still found", image);
     }
 }

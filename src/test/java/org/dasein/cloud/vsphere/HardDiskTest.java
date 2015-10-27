@@ -43,6 +43,7 @@ public class HardDiskTest extends VsphereTestBase {
     private final RetrieveResult hardDisksNoProperties = om.readJsonFile("src/test/resources/HardDisk/hardDiskNoProperties.json", RetrieveResult.class);
     private final RetrieveResult dcStoragePools = om.readJsonFile("src/test/resources/DataCenters/storagePools.json", RetrieveResult.class);
     private RetrieveResult newHardDisks = om.readJsonFile("src/test/resources/HardDisk/newHardDisks.json", RetrieveResult.class);
+    private PropertyChange postRemoveHardDisks = om.readJsonFile("src/test/resources/HardDisk/postRemoveHardDisks.json", PropertyChange.class);
 
     private HardDisk hd = null;
     private VsphereMethod method = null;
@@ -723,6 +724,64 @@ public class HardDiskTest extends VsphereTestBase {
         String newVolume = hd.createVolume(options);
         assertNotNull(newVolume);
         assertEquals("New volume id does not match expected", "myNewDisk.vmdk", newVolume);
+    }
+
+    @Test
+    public void removeVolume() throws CloudException, InternalException, RuntimeFaultFaultMsg, FileFaultFaultMsg, InvalidDatastoreFaultMsg {
+        new NonStrictExpectations() {
+            {serviceContentMock.getFileManager();
+                result = new ManagedObjectReference();
+            }
+            {vimPortMock.deleteDatastoreFileTask((ManagedObjectReference) any, anyString, (ManagedObjectReference) any);
+                result = task;
+                times = 2;
+            }
+        };
+
+        new Expectations(HardDisk.class) {
+            {hd.retrieveObjectList(vsphereMock, "vmFolder", null, hardDiskPSpec);
+                result = hardDisks;
+                times=2;
+            }
+            {hd.getAllResourcePoolsIncludingRoot();
+                result = resourcePools;
+
+            }
+            {hd.retrieveObjectList(vsphereMock, "datastoreFolder", null, datastorePSpec);
+                result = datastores;
+            }
+            {hd.listStoragePools();
+                result = storagePools;
+            }
+            {hd.searchDatastores(vsphereMock, (ManagedObjectReference) any, anyString, null);
+                result = task;
+            }
+        };
+
+        new Expectations(VsphereMethod.class) {
+            {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
+                result = true;
+                times=14;
+            }
+            {method.getTaskResult();
+                result = searchResult;
+                result = searchResult;
+                result = searchResult;
+                result = searchResult;
+                result = searchResult;
+                result = searchResult;
+                result = postRemoveHardDisks;
+                result = postRemoveHardDisks;
+                result = postRemoveHardDisks;
+                result = postRemoveHardDisks;
+                result = postRemoveHardDisks;
+                result = postRemoveHardDisks;
+            }
+        };
+
+        hd.remove("dmTesting7Oct_1.vmdk");
+        Volume v = hd.getVolume("dmTesting7Oct_1.vmdk");
+        assertNull("Volume was deleted, but object was still returned", v);
     }
 
     @Test(expected = NoContextException.class)

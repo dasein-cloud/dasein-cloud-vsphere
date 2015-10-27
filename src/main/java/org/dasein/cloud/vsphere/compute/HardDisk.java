@@ -631,14 +631,13 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
 
             VsphereConnection vsphereConnection = getProvider().getServiceInstance();
             ManagedObjectReference fileManager = vsphereConnection.getServiceContent().getFileManager();
-            ManagedObjectReference searchIndex = vsphereConnection.getServiceContent().getSearchIndex();
             VimPortType vimPortType = vsphereConnection.getVimPort();
-            Region r = dc.getRegion(volume.getProviderRegionId());
-            String regionName = r.getName();
-            String pathToDC = "/" + regionName;
 
             try {
-                ManagedObjectReference datacenter = vimPortType.findByInventoryPath(searchIndex, pathToDC);
+                ManagedObjectReference datacenter = new ManagedObjectReference();
+                datacenter.setValue(volume.getProviderRegionId());
+                datacenter.setType("Datacenter");
+
                 ManagedObjectReference taskMor;
                 VsphereMethod method = new VsphereMethod(getProvider());
                 TimePeriod interval = new TimePeriod<Second>(15, TimePeriod.SECOND);

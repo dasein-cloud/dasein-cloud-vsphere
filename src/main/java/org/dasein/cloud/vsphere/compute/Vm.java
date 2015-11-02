@@ -354,6 +354,12 @@ public class Vm extends AbstractVMSupport<Vsphere> {
         }
     }
 
+    @Nonnull
+    @Override
+    public Iterable<VirtualMachineProduct> listAllProducts() throws InternalException, CloudException {
+        return listProducts("ignore", VirtualMachineProductFilterOptions.getInstance());
+    }
+
     /**
      * Load products list from vmproducts.json filtered by architecture if specified in the options.
      * Uses a cache for one day.
@@ -758,11 +764,13 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                         machineSpecs.add(nicSpec);
                         resultingNetworks.add(vlan);
                     }
-                    if (apiMajorVersion >= 6) {
-                        location.getDeviceChange().addAll(machineSpecs);
-                    }
-                    else {
-                        config.getDeviceChange().addAll(machineSpecs);
+                    if (!machineSpecs.isEmpty()) {
+                        if (apiMajorVersion >= 6) {
+                            location.getDeviceChange().addAll(machineSpecs);
+                        }
+                        else {
+                            config.getDeviceChange().addAll(machineSpecs);
+                        }
                     }
                     // end networking section
                 }
@@ -848,6 +856,7 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                         CustomizationAdapterMapping adapterMap = new CustomizationAdapterMapping();
                         CustomizationIPSettings adapter = new CustomizationIPSettings();
                         adapter.setDnsDomain(options.getDnsDomain());
+                        adapter.getDnsServerList().addAll(Arrays.asList(options.getDnsServerList()));
                         adapter.getGateway().addAll(Arrays.asList(options.getGatewayList()));
                         CustomizationFixedIp fixedIp = new CustomizationFixedIp();
                         fixedIp.setIpAddress(options.getPrivateIp());
@@ -885,7 +894,7 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                 taskMor = cloneVmTask(templateRef, vmFolder, hostName, spec);
 
                 VsphereMethod method = new VsphereMethod(getProvider());
-                TimePeriod interval = new TimePeriod<Second>(15, TimePeriod.SECOND);
+                TimePeriod interval = new TimePeriod<Second>(30, TimePeriod.SECOND);
                 if (method.getOperationComplete(taskMor, interval, 20)) {
                     PropertyChange pChange = method.getTaskResult();
                     ManagedObjectReference newVmRef = (ManagedObjectReference) pChange.getVal();

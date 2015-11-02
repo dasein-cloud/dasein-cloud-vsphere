@@ -115,16 +115,24 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
             if (volume == null) {
                 throw new CloudException("Unable to find volume with id "+volumeId);
             }
+            if (volume.getProviderVirtualMachineId() != null)
+                throw new CloudException("Volume is already attached");
 
             List<PropertySpec> pSpecs = getHardDiskPSpec();
             RetrieveResult props = retrieveObjectList(getProvider(), "vmFolder", null, pSpecs);
 
             List<VirtualDeviceConfigSpec> machineSpecs = null;
+            List<VirtualDevice> devices = new ArrayList<VirtualDevice>();
             Object deviceObject = getVMProperty(props, toServer, "config.hardware.device");
-            ArrayOfVirtualDevice array = (ArrayOfVirtualDevice) deviceObject;
-            List<VirtualDevice> devices = array.getVirtualDevice();
+            if (deviceObject != null) {
+                ArrayOfVirtualDevice array = (ArrayOfVirtualDevice) deviceObject;
+                devices = array.getVirtualDevice();
+            }
 
             Object vmMor = getVMProperty(props, toServer, "MOR");
+            if (vmMor == null) {
+                throw new CloudException("Unable to find vm reference for attach task");
+            }
             ManagedObjectReference vmRef = (ManagedObjectReference) vmMor;
 
             int cKey = 1000;
@@ -284,7 +292,7 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
             TimePeriod interval = new TimePeriod<Second>(15, TimePeriod.SECOND);
 
             if( method.getOperationComplete(taskmor, interval, 4) ) {
-                long timeout = System.currentTimeMillis() + (CalendarWrapper.MINUTE * 20L);
+                long timeout = System.currentTimeMillis() + (CalendarWrapper.MINUTE * 5L);
 
                 while( System.currentTimeMillis() < timeout ) {
                     try { Thread.sleep(10000L); }
@@ -625,19 +633,17 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
                 VsphereMethod method = new VsphereMethod(getProvider());
                 TimePeriod interval = new TimePeriod<Second>(15, TimePeriod.SECOND);
 
-                if (datacenter != null) {
-                    String filePath = volume.getTag("filePath");
-                    taskMor = vimPortType.deleteDatastoreFileTask(fileManager, filePath, datacenter);
+                String filePath = volume.getTag("filePath");
+                taskMor = vimPortType.deleteDatastoreFileTask(fileManager, filePath, datacenter);
+                if (method.getOperationComplete(taskMor, interval, 4)) {
+                    //also delete the flat file
+                    String flatfile = filePath.substring(0, filePath.indexOf(".vmdk")) + "-flat.vmdk";
+                    taskMor = vimPortType.deleteDatastoreFileTask(fileManager, flatfile, datacenter);
                     if (method.getOperationComplete(taskMor, interval, 4)) {
-                        //also delete the flat file
-                        String flatfile = filePath.substring(0, filePath.indexOf(".vmdk")) + "-flat.vmdk";
-                        taskMor = vimPortType.deleteDatastoreFileTask(fileManager, flatfile, datacenter);
-                        if (method.getOperationComplete(taskMor, interval, 4)) {
-                            return;
-                        }
+                        return;
                     }
-                    throw new CloudException("Error removing datastore file: " + method.getTaskError().getVal().toString());
                 }
+                throw new CloudException("Error removing datastore file: " + method.getTaskError().getVal().toString());
             } catch (FileFaultFaultMsg fileFaultFaultMsg) {
                 throw new CloudException("FileFaultFaultMsg while removing datastore file", fileFaultFaultMsg);
             } catch (InvalidDatastoreFaultMsg invalidDatastoreFaultMsg) {
@@ -692,21 +698,19 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
 
     private Object getVMProperty(@Nonnull RetrieveResult rr, @Nonnull String vmId, @Nonnull String propertyName) throws CloudException, InternalException {
         Object object = null;
-        if (rr != null) {
-            List<ObjectContent> objectContentList = rr.getObjects();
-            for (ObjectContent obj : objectContentList) {
-                ManagedObjectReference vmRef = obj.getObj();
-                String id = vmRef.getValue();
-                if (vmId.equals(id)) {
-                    if (propertyName.equals("MOR")) {
-                        return vmRef;
-                    }
-                    List<DynamicProperty> dps = obj.getPropSet();
-                    for (DynamicProperty dp : dps) {
-                        if (dp.getName().equals(propertyName)) {
-                            object = dp.getVal();
-                            break;
-                        }
+        List<ObjectContent> objectContentList = rr.getObjects();
+        for (ObjectContent obj : objectContentList) {
+            ManagedObjectReference vmRef = obj.getObj();
+            String id = vmRef.getValue();
+            if (vmId.equals(id)) {
+                if (propertyName.equals("MOR")) {
+                    return vmRef;
+                }
+                List<DynamicProperty> dps = obj.getPropSet();
+                for (DynamicProperty dp : dps) {
+                    if (dp.getName().equals(propertyName)) {
+                        object = dp.getVal();
+                        break;
                     }
                 }
             }

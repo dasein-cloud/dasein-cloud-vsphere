@@ -72,7 +72,7 @@ public class HardDiskTest extends VsphereTestBase {
     }
 
     @Test
-    public void listHardDisks() throws CloudException, InternalException {
+    public void listVolumes() throws CloudException, InternalException {
         new Expectations(HardDisk.class) {
             {hd.retrieveObjectList(vsphereMock, "vmFolder", null, hardDiskPSpec);
                 result = hardDisks;
@@ -128,7 +128,7 @@ public class HardDiskTest extends VsphereTestBase {
     }
 
     @Test
-    public void getHardDisk() throws CloudException, InternalException {
+    public void getVolume() throws CloudException, InternalException {
         new Expectations(HardDisk.class) {
             {hd.retrieveObjectList(vsphereMock, "vmFolder", null, hardDiskPSpec);
                 result = hardDisks;
@@ -175,7 +175,7 @@ public class HardDiskTest extends VsphereTestBase {
     }
 
     @Test
-    public void getFakeHardDiskShouldReturnNull() throws CloudException, InternalException {
+    public void getFakeVolumeShouldReturnNull() throws CloudException, InternalException {
         new Expectations(HardDisk.class) {
             {hd.retrieveObjectList(vsphereMock, "vmFolder", null, hardDiskPSpec);
                 result = hardDisks;
@@ -584,6 +584,24 @@ public class HardDiskTest extends VsphereTestBase {
         assertEquals("Number of attached volumes is incorrect", 11, count);
     }
 
+    @Test(expected = NoContextException.class)
+    public void listVolumesShouldThrowExceptionIfNullContext() throws CloudException, InternalException {
+        new Expectations(HardDisk.class) {
+            { vsphereMock.getContext(); result = null; }
+        };
+
+        hd.listVolumes();
+    }
+
+    @Test(expected = CloudException.class)
+    public void listVolumesShouldThrowExceptionIfNullRegion() throws CloudException, InternalException {
+        new Expectations(HardDisk.class) {
+            { providerContextMock.getRegionId(); result = null; }
+        };
+
+        hd.listVolumes();
+    }
+
     @Test
     public void attachVolume() throws CloudException, InternalException {
         new NonStrictExpectations() {
@@ -628,6 +646,98 @@ public class HardDiskTest extends VsphereTestBase {
             {method.getTaskResult();
                 result = searchResult;
                 times=6;
+            }
+        };
+
+        hd.attach("dmTesting7Oct_1.vmdk", "vm-2318", "1");
+    }
+
+    @Test(expected = CloudException.class)
+    public void attachVolumeShouldThrowCloudExceptionIfVmIsNull() throws CloudException, InternalException {
+        new NonStrictExpectations() {
+            {vsphereMock.getComputeServices();
+                result = vsphereComputeMock;
+            }
+            {vsphereComputeMock.getVirtualMachineSupport();
+                result = vmMock;
+            }
+            {vmMock.getVirtualMachine(anyString);
+                result = null;
+            }
+        };
+
+        hd.attach("dmTesting7Oct_1.vmdk", "vm-0001", "1");
+    }
+
+    @Test(expected = CloudException.class)
+    public void attachVolumeShouldThrowCloudExceptionIfVolumeIsNull() throws CloudException, InternalException {
+        new NonStrictExpectations() {
+            {vsphereMock.getComputeServices();
+                result = vsphereComputeMock;
+            }
+            {vsphereComputeMock.getVirtualMachineSupport();
+                result = vmMock;
+            }
+            {vmMock.getVirtualMachine(anyString);
+                result = new VirtualMachine();
+            }
+        };
+
+        hd.attach("MyFakeVolume", "vm-2318", "1");
+    }
+
+    @Test(expected = CloudException.class)
+    public void attachVolumeShouldThrowCloudExceptionIfOperationIsNoSuccessful() throws CloudException, InternalException {
+        new NonStrictExpectations() {
+            {vsphereMock.getComputeServices();
+                result = vsphereComputeMock;
+            }
+            {vsphereComputeMock.getVirtualMachineSupport();
+                result = vmMock;
+            }
+            {vmMock.getVirtualMachine(anyString);
+                result = new VirtualMachine();
+            }
+            {vmMock.reconfigVMTask((ManagedObjectReference) any, (VirtualMachineConfigSpec) any);
+                result = new ManagedObjectReference();
+            }
+        };
+
+        new Expectations(HardDisk.class) {
+            {hd.retrieveObjectList(vsphereMock, "vmFolder", null, hardDiskPSpec);
+                result = hardDisks;
+                times=2;
+            }
+            {hd.getAllResourcePoolsIncludingRoot();
+                result = resourcePools;
+            }
+            {hd.retrieveObjectList(vsphereMock, "datastoreFolder", null, datastorePSpec);
+                result = datastores;
+            }
+            {hd.listStoragePools();
+                result = storagePools;
+            }
+            {hd.searchDatastores(vsphereMock, (ManagedObjectReference) any, anyString, null);
+                result = task;
+            }
+        };
+
+        new Expectations(VsphereMethod.class) {
+            {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
+                result = true;
+                result = true;
+                result = true;
+                result = true;
+                result = true;
+                result = true;
+                result = false;
+            }
+            {method.getTaskResult();
+                result = searchResult;
+                times=6;
+            }
+            {method.getTaskError().getVal();
+                result = "Attach failed";
             }
         };
 
@@ -784,21 +894,5 @@ public class HardDiskTest extends VsphereTestBase {
         assertNull("Volume was deleted, but object was still returned", v);
     }
 
-    @Test(expected = NoContextException.class)
-    public void listVolumesShouldThrowExceptionIfNullContext() throws CloudException, InternalException {
-        new Expectations(HardDisk.class) {
-            { vsphereMock.getContext(); result = null; }
-        };
 
-        hd.listVolumes();
-    }
-
-    @Test(expected = CloudException.class)
-    public void listVolumesShouldThrowExceptionIfNullRegion() throws CloudException, InternalException {
-        new Expectations(HardDisk.class) {
-            { providerContextMock.getRegionId(); result = null; }
-        };
-
-        hd.listVolumes();
-    }
 }

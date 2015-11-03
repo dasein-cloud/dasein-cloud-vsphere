@@ -14,7 +14,7 @@ import org.dasein.cloud.InternalException;
 import org.dasein.cloud.compute.*;
 import org.dasein.cloud.vsphere.compute.Vm;
 import org.dasein.cloud.vsphere.compute.VsphereCompute;
-import org.dasein.cloud.vsphere.compute.server.ImageSupport;
+import org.dasein.cloud.vsphere.compute.ImageSupport;
 import org.dasein.util.uom.time.TimePeriod;
 import org.junit.Before;
 import org.junit.Test;

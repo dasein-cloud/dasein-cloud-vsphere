@@ -1,4 +1,4 @@
-package org.dasein.cloud.vsphere.compute.server;
+package org.dasein.cloud.vsphere.compute;
 
 
 import java.util.ArrayList;

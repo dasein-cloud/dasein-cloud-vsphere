@@ -718,14 +718,6 @@
       }
     }, {
       "type" : "com.vmware.vim25.DynamicProperty",
-      "name" : "resourcePool",
-      "val" : {
-        "type" : "com.vmware.vim25.ManagedObjectReference",
-        "value" : "resgroup-46",
-        "type" : "ResourcePool"
-      }
-    }, {
-      "type" : "com.vmware.vim25.DynamicProperty",
       "name" : "runtime",
       "val" : {
         "type" : "com.vmware.vim25.VirtualMachineRuntimeInfo",
@@ -1595,14 +1587,6 @@
         "type" : "com.vmware.vim25.ManagedObjectReference",
         "value" : "group-v3",
         "type" : "Folder"
-      }
-    }, {
-      "type" : "com.vmware.vim25.DynamicProperty",
-      "name" : "resourcePool",
-      "val" : {
-        "type" : "com.vmware.vim25.ManagedObjectReference",
-        "value" : "resgroup-46",
-        "type" : "ResourcePool"
       }
     }, {
       "type" : "com.vmware.vim25.DynamicProperty",
@@ -2642,14 +2626,6 @@
         "type" : "com.vmware.vim25.ManagedObjectReference",
         "value" : "group-v89",
         "type" : "Folder"
-      }
-    }, {
-      "type" : "com.vmware.vim25.DynamicProperty",
-      "name" : "resourcePool",
-      "val" : {
-        "type" : "com.vmware.vim25.ManagedObjectReference",
-        "value" : "resgroup-46",
-        "type" : "ResourcePool"
       }
     }, {
       "type" : "com.vmware.vim25.DynamicProperty",
@@ -4080,14 +4056,6 @@
         "type" : "com.vmware.vim25.ManagedObjectReference",
         "value" : "group-v89",
         "type" : "Folder"
-      }
-    }, {
-      "type" : "com.vmware.vim25.DynamicProperty",
-      "name" : "resourcePool",
-      "val" : {
-        "type" : "com.vmware.vim25.ManagedObjectReference",
-        "value" : "resgroup-46",
-        "type" : "ResourcePool"
       }
     }, {
       "type" : "com.vmware.vim25.DynamicProperty",

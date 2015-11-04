@@ -2,6 +2,8 @@ package org.dasein.cloud.vsphere.compute;
 
 import com.vmware.vim25.*;
 import org.apache.log4j.Logger;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.SerializationConfig;
 import org.dasein.cloud.CloudException;
 import org.dasein.cloud.InternalException;
 import org.dasein.cloud.OperationNotSupportedException;
@@ -42,12 +44,13 @@ import java.util.*;
 
 public class Vm extends AbstractVMSupport<Vsphere> {
     static private final Logger logger = Vsphere.getLogger(Vm.class);
+    private ObjectManagement om = new ObjectManagement();
     private List<PropertySpec> virtualMachinePSpec;
     private List<PropertySpec> rpPSpecs;
     private List<SelectionSpec> rpSSpecs;
     private DataCenters dc;
 
-    protected Vm(Vsphere provider) {
+    public Vm(Vsphere provider) {
         super(provider);
         dc = provider.getDataCenterServices();
     }
@@ -268,8 +271,8 @@ public class Vm extends AbstractVMSupport<Vsphere> {
             VirtualMachineProduct product = new VirtualMachineProduct();
             product.setCpuCount(Integer.parseInt(parts[0]));
             product.setRamSize(new Storage<Megabyte>(Integer.parseInt(parts[1]), Storage.MEGABYTE));
-            product.setDescription("Custom product " + parts[0] + " CPU, " + parts[1] + " RAM");
-            product.setName(parts[0] + " CPU/" + parts[1] + " MB RAM");
+            product.setDescription("Custom product - " + parts[0] + " CPU, " + parts[1] + "MB RAM");
+            product.setName(parts[0] + " CPU/" + parts[1] + "MB RAM");
             product.setRootVolumeSize(new Storage<Gigabyte>(1, Storage.GIGABYTE));
             product.setProviderProductId(parts[0] + ":" + parts[1]);
             return product;
@@ -291,8 +294,8 @@ public class Vm extends AbstractVMSupport<Vsphere> {
 
             product = new VirtualMachineProduct();
             product.setCpuCount(cpu);
-            product.setDescription("Custom product " + cpu + " CPU, " + ram + " RAM");
-            product.setName(cpu + " CPU/" + ram + " MB RAM");
+            product.setDescription("Custom product - " + cpu + " CPU, " + ram + "MB RAM");
+            product.setName(cpu + " CPU/" + ram + "MB RAM");
             product.setRootVolumeSize(new Storage<Gigabyte>(disk, Storage.GIGABYTE));
             product.setProviderProductId(cpu + ":" + ram);
         }
@@ -1034,8 +1037,10 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                                     vm.setProviderRegionId(dataCenterId);
                                 }
                                 if (vm.getProviderDataCenterId() != null) {
-                                    vm.setTag("vmFolder", vmFolderName);
-                                    vm.setTag("vmFolderId", parentRef.getValue());
+                                    if (vmFolderName != null) {
+                                        vm.setTag("vmFolder", vmFolderName);
+                                        vm.setTag("vmFolderId", parentRef.getValue());
+                                    }
                                     vm.setResourcePoolId(rpRef.getValue());
                                     list.add(vm);
                                 }
@@ -1349,7 +1354,7 @@ public class Vm extends AbstractVMSupport<Vsphere> {
     }
 
     private @Nullable VirtualMachine toVirtualMachine(String vmId, VirtualMachineConfigInfo vmInfo, GuestInfo guest, VirtualMachineRuntimeInfo runtime, List<ManagedObjectReference> datastores) throws InternalException, CloudException {
-        if( vmInfo == null ) {
+        if( vmInfo == null || vmId == null || guest == null || runtime == null || datastores == null ) {
             return null;
         }
         Map<String, String> properties = new HashMap<String, String>();
@@ -1406,76 +1411,72 @@ public class Vm extends AbstractVMSupport<Vsphere> {
             }
         }
 
-        if( guest != null ) {
-            if( guest.getHostName() != null ) {
-                server.setPrivateDnsAddress(guest.getHostName());
-            }
-            if( guest.getIpAddress() != null ) {
-                server.setProviderAssignedIpAddressId(guest.getIpAddress());
-            }
-            List<GuestNicInfo> nicInfoArray = guest.getNet();
-            if( nicInfoArray != null && nicInfoArray.size() > 0 ) {
-                List<RawAddress> pubIps = new ArrayList<RawAddress>();
-                List<RawAddress> privIps = new ArrayList<RawAddress>();
-                for( GuestNicInfo nicInfo : nicInfoArray ) {
-                    List<String> ipAddresses = nicInfo.getIpAddress();
-                    if( ipAddresses != null ) {
-                        for( String ip : ipAddresses ) {
-                            if( ip != null ) {
-                                if( isPublicIpAddress(ip) ) {
-                                    pubIps.add(new RawAddress(ip));
-                                }
-                                else {
-                                    privIps.add(new RawAddress(ip));
-                                }
+        if( guest.getHostName() != null ) {
+            server.setPrivateDnsAddress(guest.getHostName());
+        }
+        if( guest.getIpAddress() != null ) {
+            server.setProviderAssignedIpAddressId(guest.getIpAddress());
+        }
+        List<GuestNicInfo> nicInfoArray = guest.getNet();
+        if( nicInfoArray != null && nicInfoArray.size() > 0 ) {
+            List<RawAddress> pubIps = new ArrayList<RawAddress>();
+            List<RawAddress> privIps = new ArrayList<RawAddress>();
+            for( GuestNicInfo nicInfo : nicInfoArray ) {
+                List<String> ipAddresses = nicInfo.getIpAddress();
+                if( ipAddresses != null ) {
+                    for( String ip : ipAddresses ) {
+                        if( ip != null ) {
+                            if( isPublicIpAddress(ip) ) {
+                                pubIps.add(new RawAddress(ip));
+                            }
+                            else {
+                                privIps.add(new RawAddress(ip));
                             }
                         }
-
                     }
+
                 }
-                if( privIps.size() > 0 ) {
-                    RawAddress[] rawPriv = privIps.toArray(new RawAddress[privIps.size()]);
-                    server.setPrivateAddresses(rawPriv);
-                }
-                if( pubIps.size() > 0 ) {
-                    RawAddress[] rawPub = pubIps.toArray(new RawAddress[pubIps.size()]);
-                    server.setPublicAddresses(rawPub);
-                }
+            }
+            if( privIps.size() > 0 ) {
+                RawAddress[] rawPriv = privIps.toArray(new RawAddress[privIps.size()]);
+                server.setPrivateAddresses(rawPriv);
+            }
+            if( pubIps.size() > 0 ) {
+                RawAddress[] rawPub = pubIps.toArray(new RawAddress[pubIps.size()]);
+                server.setPublicAddresses(rawPub);
             }
         }
 
-        if( runtime != null ) {
-            VirtualMachinePowerState state = runtime.getPowerState();
+        VirtualMachinePowerState state = runtime.getPowerState();
 
-            if( server.getCurrentState() == null ) {
-                switch( state ) {
-                    case SUSPENDED:
-                        server.setCurrentState(VmState.SUSPENDED);
-                        break;
-                    case POWERED_OFF:
-                        server.setCurrentState(VmState.STOPPED);
-                        break;
-                    case POWERED_ON:
-                        server.setCurrentState(VmState.RUNNING);
-                        server.setRebootable(true);
-                        break;
-                }
+        if( server.getCurrentState() == null ) {
+            switch( state ) {
+                case SUSPENDED:
+                    server.setCurrentState(VmState.SUSPENDED);
+                    break;
+                case POWERED_OFF:
+                    server.setCurrentState(VmState.STOPPED);
+                    break;
+                case POWERED_ON:
+                    server.setCurrentState(VmState.RUNNING);
+                    server.setRebootable(true);
+                    break;
             }
-            XMLGregorianCalendar suspend = runtime.getSuspendTime();
-            XMLGregorianCalendar time = runtime.getBootTime();
+        }
+        XMLGregorianCalendar suspend = runtime.getSuspendTime();
+        XMLGregorianCalendar time = runtime.getBootTime();
 
-            if( suspend == null || suspend.toGregorianCalendar().getTimeInMillis() < 1L ) {
-                server.setLastPauseTimestamp(-1L);
-            }
-            else {
-                server.setLastPauseTimestamp(suspend.toGregorianCalendar().getTimeInMillis());
-            }
-            if( time == null || time.toGregorianCalendar().getTimeInMillis() < 1L ) {
-                server.setLastBootTimestamp(0L);
-            }
-            else {
-                server.setLastBootTimestamp(time.toGregorianCalendar().getTimeInMillis());
-            }
+        if( suspend == null || suspend.toGregorianCalendar().getTimeInMillis() < 1L ) {
+            server.setLastPauseTimestamp(-1L);
+        }
+        else {
+            server.setLastPauseTimestamp(suspend.toGregorianCalendar().getTimeInMillis());
+        }
+        if( time == null || time.toGregorianCalendar().getTimeInMillis() < 1L ) {
+            server.setLastBootTimestamp(0L);
+        }
+        else {
+            server.setLastBootTimestamp(time.toGregorianCalendar().getTimeInMillis());
         }
         server.setProviderOwnerId(getContext().getAccountNumber());
         server.setTags(properties);

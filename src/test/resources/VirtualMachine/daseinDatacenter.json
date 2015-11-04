@@ -1,0 +1,9 @@
+{
+  "active" : true,
+  "available" : true,
+  "name" : "dev1",
+  "providerDataCenterId" : "domain-c45",
+  "regionId" : "datacenter-2",
+  "compute" : true,
+  "storage" : false
+}

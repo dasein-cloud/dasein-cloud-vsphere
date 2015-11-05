@@ -178,10 +178,7 @@ public class Vm extends AbstractVMSupport<Vsphere> {
             else {
                 lastError = new CloudException("Failed to update VM: " + method.getTaskError().getVal());
             }
-            if( lastError != null ) {
-                throw lastError;
-            }
-            throw new CloudException("No server and no error");
+            throw lastError;
         }
         finally {
             APITrace.end();
@@ -202,13 +199,25 @@ public class Vm extends AbstractVMSupport<Vsphere> {
             vmRef.setType("VirtualMachine");
             vmRef.setValue(vmId);
 
-            ManagedObjectReference rpRef = new ManagedObjectReference();
+            ManagedObjectReference rpRef = null;
             Collection<ResourcePool> rpList = dc.listResourcePools(intoDcId);
             for (ResourcePool rp : rpList) {
                 if (rp.isAvailable()) {
+                    rpRef = new ManagedObjectReference();
                     rpRef.setValue(rp.getProvideResourcePoolId());
                     rpRef.setType("ResourcePool");
                     break;
+                }
+            }
+            if (rpRef == null) {
+                rpList = getResourcePools(true);
+                for (ResourcePool rp : rpList) {
+                    if (rp.getDataCenterId().equals(intoDcId)) {
+                        rpRef = new ManagedObjectReference();
+                        rpRef.setValue(rp.getProvideResourcePoolId());
+                        rpRef.setType("ResourcePool");
+                        break;
+                    }
                 }
             }
 
@@ -219,17 +228,18 @@ public class Vm extends AbstractVMSupport<Vsphere> {
             VirtualMachineCloneSpec spec = new VirtualMachineCloneSpec();
             VirtualMachineRelocateSpec location = new VirtualMachineRelocateSpec();
 
-            ManagedObjectReference host = new ManagedObjectReference();
+            ManagedObjectReference host = null;
             Iterable<AffinityGroup> agList = getProvider().getComputeServices().getAffinityGroupSupport().list(AffinityGroupFilterOptions.getInstance().withDataCenterId(intoDcId));
             for (AffinityGroup ag : agList) {
                 if (ag.getTag("status").toString().equalsIgnoreCase("green")) {
+                    host = new ManagedObjectReference();
                     host.setType("HostSystem");
                     host.setValue(ag.getAffinityGroupId());
                     break;
                 }
             }
 
-            if (host != null && rpRef != null && vmFolder != null) {
+            if (host != null && rpRef != null) {
                 location.setHost(host);
                 location.setPool(rpRef);
                 spec.setLocation(location);

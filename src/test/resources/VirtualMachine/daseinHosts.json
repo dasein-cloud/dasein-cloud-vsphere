@@ -1,0 +1,45 @@
+[ {
+  "type" : "org.dasein.cloud.compute.AffinityGroup",
+  "affinityGroupId" : "host-136",
+  "affinityGroupName" : "10.5.6.149",
+  "description" : "Affinity group for 10.5.6.149",
+  "dataCenterId" : "domain-c34",
+  "creationTimestamp" : 0,
+  "tags" : {
+    "type" : "java.util.HashMap",
+    "status" : "green"
+  }
+}, {
+  "type" : "org.dasein.cloud.compute.AffinityGroup",
+  "affinityGroupId" : "host-134",
+  "affinityGroupName" : "10.5.6.175",
+  "description" : "Affinity group for 10.5.6.175",
+  "dataCenterId" : "domain-c34",
+  "creationTimestamp" : 0,
+  "tags" : {
+    "type" : "java.util.HashMap",
+    "status" : "green"
+  }
+}, {
+  "type" : "org.dasein.cloud.compute.AffinityGroup",
+  "affinityGroupId" : "host-49",
+  "affinityGroupName" : "10.5.6.195",
+  "description" : "Affinity group for 10.5.6.195",
+  "dataCenterId" : "domain-c45",
+  "creationTimestamp" : 0,
+  "tags" : {
+    "type" : "java.util.HashMap",
+    "status" : "green"
+  }
+}, {
+  "type" : "org.dasein.cloud.compute.AffinityGroup",
+  "affinityGroupId" : "host-47",
+  "affinityGroupName" : "10.5.6.165",
+  "description" : "Affinity group for 10.5.6.165",
+  "dataCenterId" : "domain-c45",
+  "creationTimestamp" : 0,
+  "tags" : {
+    "type" : "java.util.HashMap",
+    "status" : "green"
+  }
+} ]

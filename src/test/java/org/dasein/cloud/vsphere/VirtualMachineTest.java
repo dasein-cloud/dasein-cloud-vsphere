@@ -1,7 +1,6 @@
 package org.dasein.cloud.vsphere;
 
-import com.vmware.vim25.PropertySpec;
-import com.vmware.vim25.RetrieveResult;
+import com.vmware.vim25.*;
 import mockit.Expectations;
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
@@ -15,15 +14,19 @@ import org.dasein.cloud.dc.Folder;
 import org.dasein.cloud.dc.ResourcePool;
 import org.dasein.cloud.util.Cache;
 import org.dasein.cloud.util.CacheLevel;
+import org.dasein.cloud.vsphere.compute.HostSupport;
 import org.dasein.cloud.vsphere.compute.Vm;
+import org.dasein.cloud.vsphere.compute.VsphereCompute;
 import org.dasein.util.uom.time.Minute;
 import org.dasein.util.uom.time.TimePeriod;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -44,23 +47,36 @@ public class VirtualMachineTest extends VsphereTestBase {
     private RetrieveResult virtualMachineNoResourcePool;
     private RetrieveResult virtualMachineNoParent;
     private RetrieveResult virtualMachineAllTemplate;
+    private RetrieveResult virtualMachinePostAlterVMSize;
+    private RetrieveResult virtualMachinePostClone;
     private final ResourcePool[] rootResourcePools = om.readJsonFile("src/test/resources/VirtualMachine/rootResourcePools.json", ResourcePool[].class);
     private final ResourcePool[] resourcePools = om.readJsonFile("src/test/resources/VirtualMachine/resourcePools.json", ResourcePool[].class);
     private final Folder[] vmFolders = om.readJsonFile("src/test/resources/VirtualMachine/vmFolders.json", Folder[].class);
     private final DataCenter datacenter = om.readJsonFile("src/test/resources/VirtualMachine/daseinDatacenter.json", DataCenter.class);
+    private final AffinityGroup[] daseinHosts = om.readJsonFile("src/test/resources/VirtualMachine/daseinHosts.json", AffinityGroup[].class);
+    private final PropertyChange cloneResult = om.readJsonFile("src/test/resources/VirtualMachine/cloneResult.json", PropertyChange.class);
+    private final ManagedObjectReference task = om.readJsonFile("src/test/resources/VirtualMachine/task.json", ManagedObjectReference.class);
+
     private Vm vm = null;
+    private VsphereMethod method = null;
     private List<PropertySpec> vmPSpec = null;
     private Cache<ResourcePool> rpCache = null;
 
     @Mocked
     DataCenters dcMock;
+    @Mocked
+    VsphereCompute vsphereComputeMock;
+    @Mocked
+    HostSupport vsphereAGMock;
 
     @Before
     public void setUp() throws Exception {
         super.setUp();
         vm = new Vm(vsphereMock);
+        method = new VsphereMethod(vsphereMock);
         vmPSpec = vm.getVirtualMachinePSpec();
         rpCache = Cache.getInstance(vsphereMock, "resourcePools", ResourcePool.class, CacheLevel.REGION_ACCOUNT, new TimePeriod<Minute>(15, TimePeriod.MINUTE));
+
         ObjectManagement om = new ObjectManagement();
         om.mapper.enableDefaultTypingAsProperty(ObjectMapper.DefaultTyping.NON_FINAL, "type");
         om.mapper.configure(SerializationConfig.Feature.FAIL_ON_EMPTY_BEANS, false);
@@ -72,6 +88,8 @@ public class VirtualMachineTest extends VsphereTestBase {
         virtualMachineNoResourcePool = om.readJsonFile("src/test/resources/VirtualMachine/virtualMachinesNoResourcePoolProperty.json", RetrieveResult.class);
         virtualMachineNoParent = om.readJsonFile("src/test/resources/VirtualMachine/virtualMachinesNoParentProperty.json", RetrieveResult.class);
         virtualMachineAllTemplate = om.readJsonFile("src/test/resources/VirtualMachine/virtualMachinesAllTemplate.json", RetrieveResult.class);
+        virtualMachinePostAlterVMSize = om.readJsonFile("src/test/resources/VirtualMachine/virtualMachinesPostAlterVMSize.json", RetrieveResult.class);
+        virtualMachinePostClone = om.readJsonFile("src/test/resources/VirtualMachine/virtualMachinesPostClone.json", RetrieveResult.class);
     }
 
     @Test
@@ -80,7 +98,7 @@ public class VirtualMachineTest extends VsphereTestBase {
             {vm.retrieveObjectList(vsphereMock, "vmFolder", null, vmPSpec);
                 result = virtualMachines;
             }
-            {vm.getResourcePools(false);
+            {vm.getResourcePools(anyBoolean);
                 result = rootResourcePools;
             }
         };
@@ -129,7 +147,7 @@ public class VirtualMachineTest extends VsphereTestBase {
             {vm.retrieveObjectList(vsphereMock, "vmFolder", null, vmPSpec);
                 result = virtualMachines;
             }
-            {vm.getResourcePools(false);
+            {vm.getResourcePools(anyBoolean);
                 result = rootResourcePools;
             }
         };
@@ -177,7 +195,7 @@ public class VirtualMachineTest extends VsphereTestBase {
                 result = virtualMachines;
             }
 
-            {vm.getResourcePools(false);
+            {vm.getResourcePools(anyBoolean);
                 result = rootResourcePools;
             }
         };
@@ -229,7 +247,7 @@ public class VirtualMachineTest extends VsphereTestBase {
                 result = virtualMachines;
             }
 
-            {vm.getResourcePools(false);
+            {vm.getResourcePools(anyBoolean);
                 result = new ArrayList<ResourcePool>();
             }
         };
@@ -256,7 +274,7 @@ public class VirtualMachineTest extends VsphereTestBase {
                 result = virtualMachines;
             }
 
-            {vm.getResourcePools(false);
+            {vm.getResourcePools(anyBoolean);
                 result = rootResourcePools;
             }
         };
@@ -285,7 +303,7 @@ public class VirtualMachineTest extends VsphereTestBase {
                 result = virtualMachineNoConfig;
             }
 
-            {vm.getResourcePools(false);
+            {vm.getResourcePools(anyBoolean);
                 result = rootResourcePools;
             }
         };
@@ -311,7 +329,7 @@ public class VirtualMachineTest extends VsphereTestBase {
                 result = virtualMachineNoGuestInfo;
             }
 
-            {vm.getResourcePools(false);
+            {vm.getResourcePools(anyBoolean);
                 result = rootResourcePools;
             }
         };
@@ -337,7 +355,7 @@ public class VirtualMachineTest extends VsphereTestBase {
                 result = virtualMachineNoRuntime;
             }
 
-            {vm.getResourcePools(false);
+            {vm.getResourcePools(anyBoolean);
                 result = rootResourcePools;
             }
         };
@@ -363,7 +381,7 @@ public class VirtualMachineTest extends VsphereTestBase {
                 result = virtualMachineNoDatastore;
             }
 
-            {vm.getResourcePools(false);
+            {vm.getResourcePools(anyBoolean);
                 result = rootResourcePools;
             }
         };
@@ -389,7 +407,7 @@ public class VirtualMachineTest extends VsphereTestBase {
                 result = virtualMachineNoResourcePool;
             }
 
-            {vm.getResourcePools(false);
+            {vm.getResourcePools(anyBoolean);
                 result = rootResourcePools;
             }
         };
@@ -415,7 +433,7 @@ public class VirtualMachineTest extends VsphereTestBase {
                 result = virtualMachineNoParent;
             }
 
-            {vm.getResourcePools(false);
+            {vm.getResourcePools(anyBoolean);
                 result = rootResourcePools;
             }
         };
@@ -444,7 +462,7 @@ public class VirtualMachineTest extends VsphereTestBase {
                 result = virtualMachineAllTemplate;
             }
 
-            {vm.getResourcePools(false);
+            {vm.getResourcePools(anyBoolean);
                 result = rootResourcePools;
             }
         };
@@ -517,6 +535,24 @@ public class VirtualMachineTest extends VsphereTestBase {
     }
 
     @Test
+    public void listProductsWithFilterOptions() throws CloudException, InternalException {
+        new Expectations() {
+            {dcMock.listResourcePools(null);
+                result = resourcePools;
+                minTimes = 0;
+            }
+        };
+
+        Iterable<VirtualMachineProduct> products = vm.listProducts("ignored", VirtualMachineProductFilterOptions.getInstance().withCpuCount(1));
+        assertNotNull("Valid listProducts request returned null object", products);
+        int count = 0;
+        for (VirtualMachineProduct product : products) {
+            count++;
+        }
+        assertEquals("Incorrect number of products returned for filter "+count, 12, count);
+    }
+
+    @Test
     public void getProduct() throws CloudException, InternalException {
         VirtualMachineProduct product = vm.getProduct("2:2048");
         assertNotNull(product);
@@ -562,7 +598,414 @@ public class VirtualMachineTest extends VsphereTestBase {
         vm.getProduct("MyFakeProduct");
     }
 
+    @Test
+    public void alterVirtualMachineSize() throws CloudException, InternalException {
+        new Expectations(Vm.class) {
+            {vm.retrieveObjectList(vsphereMock, "vmFolder", null, vmPSpec);
+                result = virtualMachines;
+                result = virtualMachinePostAlterVMSize;
+            }
+            {vm.getResourcePools(anyBoolean);
+                result = rootResourcePools;
+            }
+            {vm.reconfigVMTask((ManagedObjectReference) any, (VirtualMachineConfigSpec) any);
+                result = task;
+            }
+        };
 
+        new Expectations(VsphereMethod.class) {
+            {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
+                result = true;
+            }
+        };
 
+        new NonStrictExpectations() {
+            {vsphereMock.getDataCenterServices();
+                result = dcMock;
+            }
+            {dcMock.listVMFolders();
+                result = vmFolders;
+            }
+            {dcMock.getDataCenter(anyString);
+                result = datacenter;
+            }
+        };
 
+        VirtualMachine virtualMachine = vm.alterVirtualMachineSize("vm-211", "2", "2048");
+        assertNotNull("Null object returned for valid alterVM operation", virtualMachine);
+        assertEquals("vm-211", virtualMachine.getProviderVirtualMachineId());
+        assertEquals("2:2048", virtualMachine.getProductId());
+    }
+
+    @Test(expected = CloudException.class)
+    public void alterVirtualMachineSizeShouldThrowExceptionIfVmIsNull() throws CloudException, InternalException {
+        new Expectations(Vm.class) {
+            {vm.retrieveObjectList(vsphereMock, "vmFolder", null, vmPSpec);
+                result = virtualMachines;
+            }
+            {vm.getResourcePools(anyBoolean);
+                result = rootResourcePools;
+            }
+            {vm.reconfigVMTask((ManagedObjectReference) any, (VirtualMachineConfigSpec) any);
+                times = 0;
+            }
+        };
+
+        new Expectations(VsphereMethod.class) {
+            {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
+                times = 0;
+            }
+        };
+
+        new NonStrictExpectations() {
+            {vsphereMock.getDataCenterServices();
+                result = dcMock;
+            }
+            {dcMock.listVMFolders();
+                result = vmFolders;
+            }
+            {dcMock.getDataCenter(anyString);
+                result = datacenter;
+            }
+        };
+
+        vm.alterVirtualMachineSize("MyFakeVm", "2", "2048");
+    }
+
+    @Test(expected = CloudException.class)
+    public void alterVirtualMachineSizeShouldThrowExceptionIfCpuCountAndRamInMBIsNull() throws CloudException, InternalException {
+        new Expectations(Vm.class) {
+            {vm.retrieveObjectList(vsphereMock, "vmFolder", null, vmPSpec);
+                result = virtualMachines;
+            }
+            {vm.getResourcePools(anyBoolean);
+                result = rootResourcePools;
+            }
+            {vm.reconfigVMTask((ManagedObjectReference) any, (VirtualMachineConfigSpec) any);
+                times = 0;
+            }
+        };
+
+        new Expectations(VsphereMethod.class) {
+            {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
+                times = 0;
+            }
+        };
+
+        new NonStrictExpectations() {
+            {vsphereMock.getDataCenterServices();
+                result = dcMock;
+            }
+            {dcMock.listVMFolders();
+                result = vmFolders;
+            }
+            {dcMock.getDataCenter(anyString);
+                result = datacenter;
+            }
+        };
+
+        vm.alterVirtualMachineSize("vm-211", null, null);
+    }
+
+    @Test(expected = CloudException.class)
+    public void alterVirtualMachineSizeShouldThrowExceptionIfOperationIsNotSuccesssful() throws CloudException, InternalException {
+        new Expectations(Vm.class) {
+            {vm.retrieveObjectList(vsphereMock, "vmFolder", null, vmPSpec);
+                result = virtualMachines;
+            }
+            {vm.getResourcePools(anyBoolean);
+                result = rootResourcePools;
+            }
+            {vm.reconfigVMTask((ManagedObjectReference) any, (VirtualMachineConfigSpec) any);
+                result = task;
+            }
+        };
+
+        new Expectations(VsphereMethod.class) {
+            {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
+                result = false;
+            }
+            {method.getTaskError().getVal();
+                result = "Alter vm op failed";
+            }
+        };
+
+        new NonStrictExpectations() {
+            {vsphereMock.getDataCenterServices();
+                result = dcMock;
+            }
+            {dcMock.listVMFolders();
+                result = vmFolders;
+            }
+            {dcMock.getDataCenter(anyString);
+                result = datacenter;
+            }
+        };
+
+        vm.alterVirtualMachineSize("vm-211", "2", "2048");
+    }
+
+    @Test
+    public void cloneVirtualMachine() throws CloudException, InternalException {
+        new Expectations(Vm.class) {
+            {vm.retrieveObjectList(vsphereMock, "vmFolder", null, vmPSpec);
+                result = virtualMachines;
+                result = virtualMachinePostClone;
+            }
+            {vm.getResourcePools(anyBoolean);
+                result = rootResourcePools;
+            }
+            {vm.cloneVmTask((ManagedObjectReference) any, (ManagedObjectReference) any, anyString, (VirtualMachineCloneSpec) any);
+                result = task;
+            }
+        };
+
+        new Expectations(VsphereMethod.class) {
+            {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
+                result = true;
+            }
+            {method.getTaskResult();
+                result = cloneResult;
+            }
+        };
+
+        new NonStrictExpectations() {
+            {vsphereMock.getDataCenterServices();
+                result = dcMock;
+            }
+            {dcMock.listVMFolders();
+                result = vmFolders;
+            }
+            {dcMock.getDataCenter(anyString);
+                result = datacenter;
+            }
+            {dcMock.listResourcePools(anyString);
+                result = new ArrayList<ResourcePool>();
+            }
+            { vsphereMock.getComputeServices();
+                result = vsphereComputeMock;
+            }
+            { vsphereComputeMock.getAffinityGroupSupport();
+                result = vsphereAGMock;
+            }
+            { vsphereAGMock.list((AffinityGroupFilterOptions) any);
+                result = daseinHosts;
+            }
+        };
+
+        VirtualMachine virtualMachine = vm.clone("vm-211", "domain-c45", "myNewVm", "clone vm test", false);
+        assertNotNull("Null object returned for valid clone operation", virtualMachine);
+        assertEquals("myNewVm", virtualMachine.getName());
+        assertEquals("1:1024", virtualMachine.getProductId());
+        assertEquals(VmState.STOPPED, virtualMachine.getCurrentState());
+        assertEquals("group-v3", virtualMachine.getTag("vmFolderId"));
+    }
+
+    @Test(expected = CloudException.class)
+    public void cloneVirtualMachineShouldThrowExceptionIfVmIsNull() throws CloudException, InternalException {
+        new Expectations(Vm.class) {
+            {vm.retrieveObjectList(vsphereMock, "vmFolder", null, vmPSpec);
+                result = virtualMachines;
+            }
+            {vm.getResourcePools(anyBoolean);
+                result = rootResourcePools;
+            }
+            {vm.cloneVmTask((ManagedObjectReference) any, (ManagedObjectReference) any, anyString, (VirtualMachineCloneSpec) any);
+                times = 0;
+            }
+        };
+
+        new Expectations(VsphereMethod.class) {
+            {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
+                times = 0;
+            }
+            {method.getTaskResult();
+                times = 0;
+            }
+        };
+
+        new NonStrictExpectations() {
+            {vsphereMock.getDataCenterServices();
+                result = dcMock;
+            }
+            {dcMock.listVMFolders();
+                result = vmFolders;
+            }
+            {dcMock.getDataCenter(anyString);
+                result = datacenter;
+            }
+            {dcMock.listResourcePools(anyString);
+                result = new ArrayList<ResourcePool>();
+            }
+            { vsphereMock.getComputeServices();
+                result = vsphereComputeMock;
+            }
+            { vsphereComputeMock.getAffinityGroupSupport();
+                result = vsphereAGMock;
+            }
+            { vsphereAGMock.list((AffinityGroupFilterOptions) any);
+                result = daseinHosts;
+            }
+        };
+
+        vm.clone("MyFakeVm", "domain-c45", "myNewVm", "clone vm test", false);
+    }
+
+    @Test(expected = InternalException.class)
+    public void cloneVirtualMachineShouldThrowExceptionIfHostMORIsNull() throws CloudException, InternalException {
+        new Expectations(Vm.class) {
+            {vm.retrieveObjectList(vsphereMock, "vmFolder", null, vmPSpec);
+                result = virtualMachines;
+            }
+            {vm.getResourcePools(anyBoolean);
+                result = rootResourcePools;
+            }
+            {vm.cloneVmTask((ManagedObjectReference) any, (ManagedObjectReference) any, anyString, (VirtualMachineCloneSpec) any);
+                result = task;
+                times = 0;
+            }
+        };
+
+        new Expectations(VsphereMethod.class) {
+            {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
+                result = true;
+                times = 0;
+            }
+            {method.getTaskResult();
+                result = cloneResult;
+                times = 0;
+            }
+        };
+
+        new NonStrictExpectations() {
+            {vsphereMock.getDataCenterServices();
+                result = dcMock;
+            }
+            {dcMock.listVMFolders();
+                result = vmFolders;
+            }
+            {dcMock.getDataCenter(anyString);
+                result = datacenter;
+            }
+            {dcMock.listResourcePools(anyString);
+                result = new ArrayList<ResourcePool>();
+            }
+            { vsphereMock.getComputeServices();
+                result = vsphereComputeMock;
+            }
+            { vsphereComputeMock.getAffinityGroupSupport();
+                result = vsphereAGMock;
+            }
+            { vsphereAGMock.list((AffinityGroupFilterOptions) any);
+                result = new ArrayList<AffinityGroup>();
+            }
+        };
+
+        vm.clone("vm-211", "domain-c45", "myNewVm", "clone vm test", false);
+    }
+
+    @Test(expected = InternalException.class)
+    public void cloneVirtualMachineShouldThrowExceptionIfResourcePoolMORIsNull() throws CloudException, InternalException {
+        new Expectations(Vm.class) {
+            {vm.retrieveObjectList(vsphereMock, "vmFolder", null, vmPSpec);
+                result = virtualMachines;
+            }
+            {vm.getResourcePools(anyBoolean);
+                result = rootResourcePools;
+                result = new ArrayList<ResourcePool>();
+            }
+            {vm.cloneVmTask((ManagedObjectReference) any, (ManagedObjectReference) any, anyString, (VirtualMachineCloneSpec) any);
+                times = 0;
+            }
+        };
+
+        new Expectations(VsphereMethod.class) {
+            {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
+                times = 0;
+            }
+            {method.getTaskResult();
+                times = 0;
+            }
+        };
+
+        new NonStrictExpectations() {
+            {vsphereMock.getDataCenterServices();
+                result = dcMock;
+            }
+            {dcMock.listVMFolders();
+                result = vmFolders;
+            }
+            {dcMock.getDataCenter(anyString);
+                result = datacenter;
+            }
+            {dcMock.listResourcePools(anyString);
+                result = new ArrayList<ResourcePool>();
+            }
+            { vsphereMock.getComputeServices();
+                result = vsphereComputeMock;
+            }
+            { vsphereComputeMock.getAffinityGroupSupport();
+                result = vsphereAGMock;
+            }
+            { vsphereAGMock.list((AffinityGroupFilterOptions) any);
+                result = daseinHosts;
+            }
+        };
+
+        vm.clone("vm-211", "domain-c45", "myNewVm", "clone vm test", false);
+    }
+
+    @Test(expected = CloudException.class)
+    public void cloneVirtualMachineShouldThrowExceptionIfOperationIsNotSuccessful() throws CloudException, InternalException {
+        new Expectations(Vm.class) {
+            {vm.retrieveObjectList(vsphereMock, "vmFolder", null, vmPSpec);
+                result = virtualMachines;
+            }
+            {vm.getResourcePools(anyBoolean);
+                result = rootResourcePools;
+            }
+            {vm.cloneVmTask((ManagedObjectReference) any, (ManagedObjectReference) any, anyString, (VirtualMachineCloneSpec) any);
+                result = task;
+            }
+        };
+
+        new Expectations(VsphereMethod.class) {
+            {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
+                result = false;
+            }
+            {method.getTaskResult();
+                result = cloneResult;
+                times = 0;
+            }
+            {method.getTaskError().getVal();
+                result = "Clone task failed";
+            }
+        };
+
+        new NonStrictExpectations() {
+            {vsphereMock.getDataCenterServices();
+                result = dcMock;
+            }
+            {dcMock.listVMFolders();
+                result = vmFolders;
+            }
+            {dcMock.getDataCenter(anyString);
+                result = datacenter;
+            }
+            {dcMock.listResourcePools(anyString);
+                result = new ArrayList<ResourcePool>();
+            }
+            { vsphereMock.getComputeServices();
+                result = vsphereComputeMock;
+            }
+            { vsphereComputeMock.getAffinityGroupSupport();
+                result = vsphereAGMock;
+            }
+            { vsphereAGMock.list((AffinityGroupFilterOptions) any);
+                result = daseinHosts;
+            }
+        };
+
+        vm.clone("vm-211", "domain-c45", "myNewVm", "clone vm test", false);
+    }
 }

@@ -44,7 +44,6 @@ import java.util.*;
 
 public class Vm extends AbstractVMSupport<Vsphere> {
     static private final Logger logger = Vsphere.getLogger(Vm.class);
-    private ObjectManagement om = new ObjectManagement();
     private List<PropertySpec> virtualMachinePSpec;
     private List<PropertySpec> rpPSpecs;
     private List<SelectionSpec> rpSSpecs;
@@ -1275,6 +1274,7 @@ public class Vm extends AbstractVMSupport<Vsphere> {
             VirtualMachine vm = getVirtualMachine(vmId);
             if (vm == null) {
                 logger.info("Unable to find vm with id "+vmId+". Termination unnecessary");
+                return;
             }
 
             ManagedObjectReference vmRef = new ManagedObjectReference();

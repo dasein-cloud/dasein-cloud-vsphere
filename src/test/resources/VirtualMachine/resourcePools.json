@@ -1,7 +1,55 @@
-[ {
-  "type" : "org.dasein.cloud.dc.ResourcePool",
-  "name" : "dev1-rp1",
-  "dataCenterId" : "domain-c45",
-  "provideResourcePoolId" : "resgroup-27",
-  "available" : true
-}]
+{
+  "type" : "com.vmware.vim25.RetrieveResult",
+  "token" : null,
+  "objects" : [ "java.util.ArrayList", [ {
+    "type" : "com.vmware.vim25.ObjectContent",
+    "obj" : {
+      "type" : "com.vmware.vim25.ManagedObjectReference",
+      "value" : "resgroup-35",
+      "type" : "ResourcePool"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "type" : "com.vmware.vim25.DynamicProperty",
+      "name" : "owner",
+      "val" : {
+        "type" : "com.vmware.vim25.ManagedObjectReference",
+        "value" : "domain-c34",
+        "type" : "ClusterComputeResource"
+      }
+    }, {
+      "type" : "com.vmware.vim25.DynamicProperty",
+      "name" : "parent",
+      "val" : {
+        "type" : "com.vmware.vim25.ManagedObjectReference",
+        "value" : "domain-c34",
+        "type" : "ClusterComputeResource"
+      }
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "type" : "com.vmware.vim25.ObjectContent",
+    "obj" : {
+      "type" : "com.vmware.vim25.ManagedObjectReference",
+      "value" : "resgroup-46",
+      "type" : "ResourcePool"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "type" : "com.vmware.vim25.DynamicProperty",
+      "name" : "owner",
+      "val" : {
+        "type" : "com.vmware.vim25.ManagedObjectReference",
+        "value" : "domain-c45",
+        "type" : "ClusterComputeResource"
+      }
+    }, {
+      "type" : "com.vmware.vim25.DynamicProperty",
+      "name" : "parent",
+      "val" : {
+        "type" : "com.vmware.vim25.ManagedObjectReference",
+        "value" : "domain-c45",
+        "type" : "ClusterComputeResource"
+      }
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  } ] ]
+}

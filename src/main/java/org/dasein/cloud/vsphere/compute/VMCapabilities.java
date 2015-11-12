@@ -81,7 +81,7 @@ public class VMCapabilities extends AbstractCapabilities<PrivateCloud> implement
 
     @Override
     public boolean canSuspend(@Nonnull VmState fromState) throws CloudException, InternalException {
-        return !fromState.equals(VmState.SUSPENDED);
+        return fromState.equals(VmState.RUNNING);
     }
 
     @Override

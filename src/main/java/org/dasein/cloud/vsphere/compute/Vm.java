@@ -1,9 +1,8 @@
 package org.dasein.cloud.vsphere.compute;
 
+import com.sun.xml.ws.fault.ServerSOAPFaultException;
 import com.vmware.vim25.*;
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.SerializationConfig;
 import org.dasein.cloud.CloudException;
 import org.dasein.cloud.InternalException;
 import org.dasein.cloud.OperationNotSupportedException;
@@ -537,7 +536,7 @@ public class Vm extends AbstractVMSupport<Vsphere> {
             ProviderContext ctx = getProvider().getContext();
 
             if( ctx == null ) {
-                throw new InternalException("No context was set for this request");
+                throw new NoContextException();
             }
 
             if (ctx.getRegionId() == null) {
@@ -1360,6 +1359,8 @@ public class Vm extends AbstractVMSupport<Vsphere> {
             throw new CloudException("InvalidDatastoreFaultMsg when cloning vm", invalidDatastoreFaultMsg);
         } catch (MigrationFaultFaultMsg migrationFaultFaultMsg) {
             throw new CloudException("MigrationFaultFaultMsg when cloning vm", migrationFaultFaultMsg);
+        } catch (ServerSOAPFaultException serverSoapFaultException) {
+            throw new CloudException("ServerSOAPFaultException when cloning vm: "+serverSoapFaultException.getFault().getFaultString(), serverSoapFaultException);
         }
     }
 

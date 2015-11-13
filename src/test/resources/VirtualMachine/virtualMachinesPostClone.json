@@ -5,6 +5,800 @@
     "type" : "com.vmware.vim25.ObjectContent",
     "obj" : {
       "type" : "com.vmware.vim25.ManagedObjectReference",
+      "value" : "vm-215",
+      "type" : "VirtualMachine"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "type" : "com.vmware.vim25.DynamicProperty",
+      "name" : "config",
+      "val" : {
+        "type" : "com.vmware.vim25.VirtualMachineConfigInfo",
+        "changeVersion" : "2015-11-05T02:50:33.993926Z",
+        "name" : "testvm-stateful-1446721310059",
+        "guestFullName" : "Ubuntu Linux (64-bit)",
+        "version" : "vmx-11",
+        "uuid" : "4239fd34-ccc3-acf1-d3bd-c779678b4775",
+        "instanceUuid" : "50395acf-bff1-f5cf-23b4-6e23a204a8e4",
+        "npivNodeWorldWideName" : [ "java.util.ArrayList", [ ] ],
+        "npivPortWorldWideName" : [ "java.util.ArrayList", [ ] ],
+        "npivWorldWideNameType" : null,
+        "npivDesiredNodeWwns" : null,
+        "npivDesiredPortWwns" : null,
+        "npivTemporaryDisabled" : true,
+        "npivOnNonRdmDisks" : null,
+        "locationId" : "564d1c24-a999-f57a-3b67-2b13e60482ca",
+        "template" : false,
+        "guestId" : "ubuntu64Guest",
+        "alternateGuestName" : "",
+        "annotation" : "vm-206",
+        "files" : {
+          "type" : "com.vmware.vim25.VirtualMachineFileInfo",
+          "vmPathName" : "[iSCSI03] testvm-stateful-1446721310059/testvm-stateful-1446721310059.vmx",
+          "snapshotDirectory" : "[iSCSI03] testvm-stateful-1446721310059/",
+          "suspendDirectory" : "[iSCSI03] testvm-stateful-1446721310059/",
+          "logDirectory" : "[iSCSI03] testvm-stateful-1446721310059/",
+          "ftMetadataDirectory" : null
+        },
+        "tools" : {
+          "type" : "com.vmware.vim25.ToolsConfigInfo",
+          "toolsVersion" : 9541,
+          "afterPowerOn" : true,
+          "afterResume" : true,
+          "beforeGuestStandby" : true,
+          "beforeGuestShutdown" : true,
+          "beforeGuestReboot" : null,
+          "toolsUpgradePolicy" : "manual",
+          "pendingCustomization" : null,
+          "syncTimeWithHost" : false,
+          "lastInstallInfo" : {
+            "type" : "com.vmware.vim25.ToolsConfigInfoToolsLastInstallInfo",
+            "counter" : 0,
+            "fault" : null
+          }
+        },
+        "flags" : {
+          "type" : "com.vmware.vim25.VirtualMachineFlagInfo",
+          "disableAcceleration" : false,
+          "enableLogging" : true,
+          "useToe" : false,
+          "runWithDebugInfo" : false,
+          "monitorType" : "release",
+          "htSharing" : "any",
+          "snapshotDisabled" : false,
+          "snapshotLocked" : false,
+          "diskUuidEnabled" : false,
+          "virtualMmuUsage" : "automatic",
+          "virtualExecUsage" : "hvAuto",
+          "snapshotPowerOffBehavior" : "powerOff",
+          "recordReplayEnabled" : false,
+          "faultToleranceType" : "unset"
+        },
+        "consolePreferences" : null,
+        "defaultPowerOps" : {
+          "type" : "com.vmware.vim25.VirtualMachineDefaultPowerOpInfo",
+          "powerOffType" : "soft",
+          "suspendType" : "hard",
+          "resetType" : "soft",
+          "defaultPowerOffType" : "soft",
+          "defaultSuspendType" : "hard",
+          "defaultResetType" : "soft",
+          "standbyAction" : "checkpoint"
+        },
+        "hardware" : {
+          "type" : "com.vmware.vim25.VirtualHardware",
+          "numCPU" : 1,
+          "numCoresPerSocket" : 1,
+          "memoryMB" : 1024,
+          "virtualICH7MPresent" : false,
+          "virtualSMCPresent" : false,
+          "device" : [ "java.util.ArrayList", [ {
+            "type" : "com.vmware.vim25.VirtualIDEController",
+            "key" : 200,
+            "deviceInfo" : {
+              "type" : "com.vmware.vim25.Description",
+              "label" : "IDE 0",
+              "summary" : "IDE 0"
+            },
+            "backing" : null,
+            "connectable" : null,
+            "slotInfo" : null,
+            "controllerKey" : null,
+            "unitNumber" : null,
+            "busNumber" : 0,
+            "device" : [ "java.util.ArrayList", [ ] ]
+          }, {
+            "type" : "com.vmware.vim25.VirtualIDEController",
+            "key" : 201,
+            "deviceInfo" : {
+              "type" : "com.vmware.vim25.Description",
+              "label" : "IDE 1",
+              "summary" : "IDE 1"
+            },
+            "backing" : null,
+            "connectable" : null,
+            "slotInfo" : null,
+            "controllerKey" : null,
+            "unitNumber" : null,
+            "busNumber" : 1,
+            "device" : [ "java.util.ArrayList", [ 3002 ] ]
+          }, {
+            "type" : "com.vmware.vim25.VirtualPS2Controller",
+            "key" : 300,
+            "deviceInfo" : {
+              "type" : "com.vmware.vim25.Description",
+              "label" : "PS2 controller 0",
+              "summary" : "PS2 controller 0"
+            },
+            "backing" : null,
+            "connectable" : null,
+            "slotInfo" : null,
+            "controllerKey" : null,
+            "unitNumber" : null,
+            "busNumber" : 0,
+            "device" : [ "java.util.ArrayList", [ 600, 700 ] ]
+          }, {
+            "type" : "com.vmware.vim25.VirtualPCIController",
+            "key" : 100,
+            "deviceInfo" : {
+              "type" : "com.vmware.vim25.Description",
+              "label" : "PCI controller 0",
+              "summary" : "PCI controller 0"
+            },
+            "backing" : null,
+            "connectable" : null,
+            "slotInfo" : null,
+            "controllerKey" : null,
+            "unitNumber" : null,
+            "busNumber" : 0,
+            "device" : [ "java.util.ArrayList", [ 500, 12000, 1000, 4000 ] ]
+          }, {
+            "type" : "com.vmware.vim25.VirtualSIOController",
+            "key" : 400,
+            "deviceInfo" : {
+              "type" : "com.vmware.vim25.Description",
+              "label" : "SIO controller 0",
+              "summary" : "SIO controller 0"
+            },
+            "backing" : null,
+            "connectable" : null,
+            "slotInfo" : null,
+            "controllerKey" : null,
+            "unitNumber" : null,
+            "busNumber" : 0,
+            "device" : [ "java.util.ArrayList", [ 8000 ] ]
+          }, {
+            "type" : "com.vmware.vim25.VirtualKeyboard",
+            "key" : 600,
+            "deviceInfo" : {
+              "type" : "com.vmware.vim25.Description",
+              "label" : "Keyboard ",
+              "summary" : "Keyboard"
+            },
+            "backing" : null,
+            "connectable" : null,
+            "slotInfo" : null,
+            "controllerKey" : 300,
+            "unitNumber" : 0
+          }, {
+            "type" : "com.vmware.vim25.VirtualPointingDevice",
+            "key" : 700,
+            "deviceInfo" : {
+              "type" : "com.vmware.vim25.Description",
+              "label" : "Pointing device",
+              "summary" : "Pointing device; Device"
+            },
+            "backing" : {
+              "type" : "com.vmware.vim25.VirtualPointingDeviceDeviceBackingInfo",
+              "deviceName" : "",
+              "useAutoDetect" : false,
+              "hostPointingDevice" : "autodetect"
+            },
+            "connectable" : null,
+            "slotInfo" : null,
+            "controllerKey" : 300,
+            "unitNumber" : 1
+          }, {
+            "type" : "com.vmware.vim25.VirtualMachineVideoCard",
+            "key" : 500,
+            "deviceInfo" : {
+              "type" : "com.vmware.vim25.Description",
+              "label" : "Video card ",
+              "summary" : "Video card"
+            },
+            "backing" : null,
+            "connectable" : null,
+            "slotInfo" : null,
+            "controllerKey" : 100,
+            "unitNumber" : 0,
+            "videoRamSizeInKB" : 4096,
+            "numDisplays" : 1,
+            "useAutoDetect" : false,
+            "enable3DSupport" : false,
+            "use3DRenderer" : "automatic",
+            "graphicsMemorySizeInKB" : 262144
+          }, {
+            "type" : "com.vmware.vim25.VirtualMachineVMCIDevice",
+            "key" : 12000,
+            "deviceInfo" : {
+              "type" : "com.vmware.vim25.Description",
+              "label" : "VMCI device",
+              "summary" : "Device on the virtual machine PCI bus that provides support for the virtual machine communication interface"
+            },
+            "backing" : null,
+            "connectable" : null,
+            "slotInfo" : {
+              "type" : "com.vmware.vim25.VirtualDevicePciBusSlotInfo",
+              "pciSlotNumber" : 32
+            },
+            "controllerKey" : 100,
+            "unitNumber" : 17,
+            "id" : 1737181045,
+            "allowUnrestrictedCommunication" : false,
+            "filterEnable" : true,
+            "filterInfo" : null
+          }, {
+            "type" : "com.vmware.vim25.VirtualLsiLogicSASController",
+            "key" : 1000,
+            "deviceInfo" : {
+              "type" : "com.vmware.vim25.Description",
+              "label" : "SCSI controller 0",
+              "summary" : "LSI Logic SAS"
+            },
+            "backing" : null,
+            "connectable" : null,
+            "slotInfo" : {
+              "type" : "com.vmware.vim25.VirtualDevicePciBusSlotInfo",
+              "pciSlotNumber" : 160
+            },
+            "controllerKey" : 100,
+            "unitNumber" : 3,
+            "busNumber" : 0,
+            "device" : [ "java.util.ArrayList", [ 2000 ] ],
+            "hotAddRemove" : true,
+            "sharedBus" : "NO_SHARING",
+            "scsiCtlrUnitNumber" : 7
+          }, {
+            "type" : "com.vmware.vim25.VirtualCdrom",
+            "key" : 3002,
+            "deviceInfo" : {
+              "type" : "com.vmware.vim25.Description",
+              "label" : "CD/DVD drive 1",
+              "summary" : "Remote ATAPI"
+            },
+            "backing" : {
+              "type" : "com.vmware.vim25.VirtualCdromRemoteAtapiBackingInfo",
+              "deviceName" : "",
+              "useAutoDetect" : false
+            },
+            "connectable" : {
+              "type" : "com.vmware.vim25.VirtualDeviceConnectInfo",
+              "startConnected" : false,
+              "allowGuestControl" : true,
+              "connected" : false,
+              "status" : "untried"
+            },
+            "slotInfo" : null,
+            "controllerKey" : 201,
+            "unitNumber" : 0
+          }, {
+            "type" : "com.vmware.vim25.VirtualDisk",
+            "key" : 2000,
+            "deviceInfo" : {
+              "type" : "com.vmware.vim25.Description",
+              "label" : "Hard disk 1",
+              "summary" : "31,457,280 KB"
+            },
+            "backing" : {
+              "type" : "com.vmware.vim25.VirtualDiskFlatVer2BackingInfo",
+              "fileName" : "[iSCSI03] testvm-stateful-1446721310059/testvm-stateful-1446721310059.vmdk",
+              "datastore" : {
+                "type" : "com.vmware.vim25.ManagedObjectReference",
+                "value" : "datastore-62",
+                "type" : "Datastore"
+              },
+              "backingObjectId" : "",
+              "diskMode" : "persistent",
+              "split" : false,
+              "writeThrough" : false,
+              "thinProvisioned" : true,
+              "eagerlyScrub" : null,
+              "uuid" : "6000C299-b867-829f-9e91-d0b4284a2b51",
+              "contentId" : "c817c6946619712898a6c0472a0b6833",
+              "changeId" : null,
+              "parent" : null,
+              "deltaDiskFormat" : null,
+              "digestEnabled" : false,
+              "deltaGrainSize" : null,
+              "deltaDiskFormatVariant" : null,
+              "sharing" : "sharingNone"
+            },
+            "connectable" : null,
+            "slotInfo" : null,
+            "controllerKey" : 1000,
+            "unitNumber" : 0,
+            "capacityInKB" : 31457280,
+            "capacityInBytes" : 32212254720,
+            "shares" : {
+              "type" : "com.vmware.vim25.SharesInfo",
+              "shares" : 1000,
+              "level" : "NORMAL"
+            },
+            "storageIOAllocation" : {
+              "type" : "com.vmware.vim25.StorageIOAllocationInfo",
+              "limit" : -1,
+              "shares" : {
+                "type" : "com.vmware.vim25.SharesInfo",
+                "shares" : 1000,
+                "level" : "NORMAL"
+              },
+              "reservation" : 0
+            },
+            "diskObjectId" : "41-2000",
+            "iofilter" : [ "java.util.ArrayList", [ ] ],
+            "vflashCacheConfigInfo" : null
+          }, {
+            "type" : "com.vmware.vim25.VirtualFloppy",
+            "key" : 8000,
+            "deviceInfo" : {
+              "type" : "com.vmware.vim25.Description",
+              "label" : "Floppy drive 1",
+              "summary" : "Remote"
+            },
+            "backing" : {
+              "type" : "com.vmware.vim25.VirtualFloppyRemoteDeviceBackingInfo",
+              "deviceName" : "",
+              "useAutoDetect" : false
+            },
+            "connectable" : {
+              "type" : "com.vmware.vim25.VirtualDeviceConnectInfo",
+              "startConnected" : false,
+              "allowGuestControl" : true,
+              "connected" : false,
+              "status" : "untried"
+            },
+            "slotInfo" : null,
+            "controllerKey" : 400,
+            "unitNumber" : 0
+          }, {
+            "type" : "com.vmware.vim25.VirtualVmxnet3",
+            "key" : 4000,
+            "deviceInfo" : {
+              "type" : "com.vmware.vim25.Description",
+              "label" : "Network adapter 1",
+              "summary" : "Dev2-Internal"
+            },
+            "backing" : {
+              "type" : "com.vmware.vim25.VirtualEthernetCardNetworkBackingInfo",
+              "deviceName" : "Dev2-Internal",
+              "useAutoDetect" : false,
+              "network" : {
+                "type" : "com.vmware.vim25.ManagedObjectReference",
+                "value" : "network-77",
+                "type" : "Network"
+              },
+              "inPassthroughMode" : null
+            },
+            "connectable" : {
+              "type" : "com.vmware.vim25.VirtualDeviceConnectInfo",
+              "startConnected" : true,
+              "allowGuestControl" : true,
+              "connected" : false,
+              "status" : "untried"
+            },
+            "slotInfo" : {
+              "type" : "com.vmware.vim25.VirtualDevicePciBusSlotInfo",
+              "pciSlotNumber" : 192
+            },
+            "controllerKey" : 100,
+            "unitNumber" : 7,
+            "addressType" : "assigned",
+            "macAddress" : "00:50:56:b9:9e:8a",
+            "wakeOnLanEnabled" : true,
+            "resourceAllocation" : {
+              "type" : "com.vmware.vim25.VirtualEthernetCardResourceAllocation",
+              "reservation" : 0,
+              "share" : {
+                "type" : "com.vmware.vim25.SharesInfo",
+                "shares" : 50,
+                "level" : "NORMAL"
+              },
+              "limit" : -1
+            },
+            "externalId" : null,
+            "uptCompatibilityEnabled" : true
+          } ] ]
+        },
+        "cpuAllocation" : {
+          "type" : "com.vmware.vim25.ResourceAllocationInfo",
+          "reservation" : 0,
+          "expandableReservation" : false,
+          "limit" : -1,
+          "shares" : {
+            "type" : "com.vmware.vim25.SharesInfo",
+            "shares" : 1000,
+            "level" : "NORMAL"
+          },
+          "overheadLimit" : null
+        },
+        "memoryAllocation" : {
+          "type" : "com.vmware.vim25.ResourceAllocationInfo",
+          "reservation" : 0,
+          "expandableReservation" : false,
+          "limit" : -1,
+          "shares" : {
+            "type" : "com.vmware.vim25.SharesInfo",
+            "shares" : 10240,
+            "level" : "NORMAL"
+          },
+          "overheadLimit" : null
+        },
+        "latencySensitivity" : {
+          "type" : "com.vmware.vim25.LatencySensitivity",
+          "level" : "NORMAL",
+          "sensitivity" : null
+        },
+        "memoryHotAddEnabled" : false,
+        "cpuHotAddEnabled" : false,
+        "cpuHotRemoveEnabled" : false,
+        "hotPlugMemoryLimit" : null,
+        "hotPlugMemoryIncrementSize" : null,
+        "cpuAffinity" : null,
+        "memoryAffinity" : null,
+        "networkShaper" : null,
+        "extraConfig" : [ "java.util.ArrayList", [ {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "sched.cpu.latencySensitivity",
+          "value" : "normal"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "sched.scsi0:0.throughputCap",
+          "value" : "off"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "tools.guest.desktop.autolock",
+          "value" : "FALSE"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "nvram",
+          "value" : "testvm-stateful-1446721310059.nvram"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "pciBridge0.present",
+          "value" : "TRUE"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "svga.present",
+          "value" : "TRUE"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "pciBridge4.present",
+          "value" : "TRUE"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "pciBridge4.virtualDev",
+          "value" : "pcieRootPort"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "pciBridge4.functions",
+          "value" : "8"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "pciBridge5.present",
+          "value" : "TRUE"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "pciBridge5.virtualDev",
+          "value" : "pcieRootPort"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "pciBridge5.functions",
+          "value" : "8"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "pciBridge6.present",
+          "value" : "TRUE"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "pciBridge6.virtualDev",
+          "value" : "pcieRootPort"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "pciBridge6.functions",
+          "value" : "8"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "pciBridge7.present",
+          "value" : "TRUE"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "pciBridge7.virtualDev",
+          "value" : "pcieRootPort"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "pciBridge7.functions",
+          "value" : "8"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "hpet0.present",
+          "value" : "true"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "ethernet0.uptCompatibility",
+          "value" : "true"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "virtualHW.productCompatibility",
+          "value" : "hosted"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "replay.supported",
+          "value" : "false"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "pciBridge0.pciSlotNumber",
+          "value" : "17"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "pciBridge4.pciSlotNumber",
+          "value" : "21"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "pciBridge5.pciSlotNumber",
+          "value" : "22"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "pciBridge6.pciSlotNumber",
+          "value" : "23"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "pciBridge7.pciSlotNumber",
+          "value" : "24"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "scsi0.pciSlotNumber",
+          "value" : "160"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "ethernet0.pciSlotNumber",
+          "value" : "192"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "vmci0.pciSlotNumber",
+          "value" : "32"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "scsi0.sasWWID",
+          "value" : "50 05 05 64 cc c3 ac f0"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "monitor.phys_bits_used",
+          "value" : "42"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "vmotion.checkpointFBSize",
+          "value" : "4194304"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "vmotion.checkpointSVGAPrimarySize",
+          "value" : "4194304"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "softPowerOff",
+          "value" : "FALSE"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "toolsInstallManager.lastInstallError",
+          "value" : "0"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "tools.remindInstall",
+          "value" : "FALSE"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "toolsInstallManager.updateCounter",
+          "value" : "3"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "vmware.tools.internalversion",
+          "value" : "9541"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "vmware.tools.requiredversion",
+          "value" : "9541"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "migrate.hostLogState",
+          "value" : "none"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "migrate.migrationId",
+          "value" : "0"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "migrate.hostLog",
+          "value" : "testvm-stateful-1446721310059-369c516e.hlog"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "replay.filename",
+          "value" : ""
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "sched.swap.derivedName",
+          "value" : "/vmfs/volumes/5629dc70-504432f8-bf59-005056b9bd82/testvm-stateful-1446721310059/testvm-stateful-1446721310059-275373d4.vswp"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "scsi0:0.redo",
+          "value" : ""
+        } ] ],
+        "cpuFeatureMask" : [ "java.util.ArrayList", [ ] ],
+        "datastoreUrl" : [ "java.util.ArrayList", [ {
+          "type" : "com.vmware.vim25.VirtualMachineConfigInfoDatastoreUrlPair",
+          "name" : "iSCSI03",
+          "url" : "/vmfs/volumes/5629dc70-504432f8-bf59-005056b9bd82"
+        } ] ],
+        "swapPlacement" : "inherit",
+        "bootOptions" : {
+          "type" : "com.vmware.vim25.VirtualMachineBootOptions",
+          "bootDelay" : 0,
+          "enterBIOSSetup" : false,
+          "bootRetryEnabled" : false,
+          "bootRetryDelay" : 10000,
+          "bootOrder" : [ "java.util.ArrayList", [ ] ],
+          "networkBootProtocol" : "ipv4"
+        },
+        "ftInfo" : null,
+        "repConfig" : null,
+        "changeTrackingEnabled" : false,
+        "firmware" : "bios",
+        "maxMksConnections" : 40,
+        "guestAutoLockEnabled" : false,
+        "managedBy" : null,
+        "memoryReservationLockedToMax" : false,
+        "initialOverhead" : {
+          "type" : "com.vmware.vim25.VirtualMachineConfigInfoOverheadInfo",
+          "initialMemoryReservation" : 37371904,
+          "initialSwapReservation" : 170577920
+        },
+        "nestedHVEnabled" : false,
+        "scheduledHardwareUpgradeInfo" : {
+          "type" : "com.vmware.vim25.ScheduledHardwareUpgradeInfo",
+          "upgradePolicy" : "never",
+          "versionKey" : null,
+          "scheduledHardwareUpgradeStatus" : "none",
+          "fault" : null
+        },
+        "forkConfigInfo" : {
+          "type" : "com.vmware.vim25.VirtualMachineForkConfigInfo",
+          "parentEnabled" : false,
+          "childForkGroupId" : null,
+          "childType" : null
+        },
+        "vmxConfigChecksum" : "cwtAwyQNMwi8wi8RQia0vSud7Sg=",
+        "messageBusTunnelEnabled" : false,
+        "vmStorageObjectId" : null,
+        "swapStorageObjectId" : null,
+        "vappConfig" : null,
+        "vassertsEnabled" : false,
+        "vpmcenabled" : false,
+        "vflashCacheReservation" : 0
+      }
+    }, {
+      "type" : "com.vmware.vim25.DynamicProperty",
+      "name" : "datastore",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
+        "managedObjectReference" : [ "java.util.ArrayList", [ {
+          "type" : "com.vmware.vim25.ManagedObjectReference",
+          "value" : "datastore-62",
+          "type" : "Datastore"
+        } ] ]
+      }
+    }, {
+      "type" : "com.vmware.vim25.DynamicProperty",
+      "name" : "guest",
+      "val" : {
+        "type" : "com.vmware.vim25.GuestInfo",
+        "toolsStatus" : "TOOLS_NOT_RUNNING",
+        "toolsVersionStatus" : "guestToolsCurrent",
+        "toolsVersionStatus2" : "guestToolsCurrent",
+        "toolsRunningStatus" : "guestToolsNotRunning",
+        "toolsVersion" : "9541",
+        "guestId" : null,
+        "guestFamily" : null,
+        "guestFullName" : null,
+        "hostName" : null,
+        "ipAddress" : null,
+        "net" : [ "java.util.ArrayList", [ ] ],
+        "ipStack" : [ "java.util.ArrayList", [ ] ],
+        "disk" : [ "java.util.ArrayList", [ ] ],
+        "screen" : {
+          "type" : "com.vmware.vim25.GuestScreenInfo",
+          "width" : 720,
+          "height" : 400
+        },
+        "guestState" : "notRunning",
+        "appHeartbeatStatus" : "appStatusGray",
+        "guestKernelCrashed" : null,
+        "appState" : "none",
+        "guestOperationsReady" : false,
+        "interactiveGuestOperationsReady" : false,
+        "guestStateChangeSupported" : false,
+        "generationInfo" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "type" : "com.vmware.vim25.DynamicProperty",
+      "name" : "parent",
+      "val" : {
+        "type" : "com.vmware.vim25.ManagedObjectReference",
+        "value" : "group-v3",
+        "type" : "Folder"
+      }
+    }, {
+      "type" : "com.vmware.vim25.DynamicProperty",
+      "name" : "resourcePool",
+      "val" : {
+        "type" : "com.vmware.vim25.ManagedObjectReference",
+        "value" : "resgroup-46",
+        "type" : "ResourcePool"
+      }
+    }, {
+      "type" : "com.vmware.vim25.DynamicProperty",
+      "name" : "runtime",
+      "val" : {
+        "type" : "com.vmware.vim25.VirtualMachineRuntimeInfo",
+        "device" : [ "java.util.ArrayList", [ {
+          "type" : "com.vmware.vim25.VirtualMachineDeviceRuntimeInfo",
+          "runtimeState" : {
+            "type" : "com.vmware.vim25.VirtualMachineDeviceRuntimeInfoVirtualEthernetCardRuntimeState",
+            "vmDirectPathGen2Active" : false,
+            "vmDirectPathGen2InactiveReasonVm" : [ "java.util.ArrayList", [ "vmNptDisabledOrDisconnectedAdapter" ] ],
+            "vmDirectPathGen2InactiveReasonOther" : [ "java.util.ArrayList", [ "vmNptIncompatibleNetwork" ] ],
+            "vmDirectPathGen2InactiveReasonExtended" : null,
+            "reservationStatus" : null
+          },
+          "key" : 4000
+        } ] ],
+        "host" : {
+          "type" : "com.vmware.vim25.ManagedObjectReference",
+          "value" : "host-47",
+          "type" : "HostSystem"
+        },
+        "connectionState" : "CONNECTED",
+        "powerState" : "POWERED_OFF",
+        "faultToleranceState" : "NOT_CONFIGURED",
+        "dasVmProtection" : null,
+        "toolsInstallerMounted" : false,
+        "suspendInterval" : 0,
+        "question" : null,
+        "memoryOverhead" : null,
+        "maxCpuUsage" : 2000,
+        "maxMemoryUsage" : 1024,
+        "numMksConnections" : 0,
+        "recordReplayState" : "INACTIVE",
+        "cleanPowerOff" : null,
+        "needSecondaryReason" : null,
+        "onlineStandby" : false,
+        "minRequiredEVCModeKey" : null,
+        "consolidationNeeded" : false,
+        "offlineFeatureRequirement" : [ "java.util.ArrayList", [ {
+          "type" : "com.vmware.vim25.VirtualMachineFeatureRequirement",
+          "key" : "cpuid.lm",
+          "featureName" : "cpuid.lm",
+          "value" : "Bool:Min:1"
+        } ] ],
+        "featureRequirement" : [ "java.util.ArrayList", [ ] ],
+        "featureMask" : [ "java.util.ArrayList", [ ] ],
+        "paused" : false,
+        "snapshotInBackground" : false,
+        "quiescedForkParent" : null,
+        "vflashCacheAllocation" : null
+      }
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "type" : "com.vmware.vim25.ObjectContent",
+    "obj" : {
+      "type" : "com.vmware.vim25.ManagedObjectReference",
       "value" : "vm-211",
       "type" : "VirtualMachine"
     },
@@ -13,6 +807,7 @@
       "name" : "config",
       "val" : {
         "type" : "com.vmware.vim25.VirtualMachineConfigInfo",
+        "changeVersion" : "2015-11-03T01:57:22.244833Z",
         "name" : "testvm-stateless-1446545324274",
         "guestFullName" : "Ubuntu Linux (64-bit)",
         "version" : "vmx-11",
@@ -782,6 +1577,784 @@
     "type" : "com.vmware.vim25.ObjectContent",
     "obj" : {
       "type" : "com.vmware.vim25.ManagedObjectReference",
+      "value" : "vm-216",
+      "type" : "VirtualMachine"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "type" : "com.vmware.vim25.DynamicProperty",
+      "name" : "config",
+      "val" : {
+        "type" : "com.vmware.vim25.VirtualMachineConfigInfo",
+        "changeVersion" : "2015-11-05T02:52:56.982188Z",
+        "name" : "myNewVm",
+        "guestFullName" : "Ubuntu Linux (64-bit)",
+        "version" : "vmx-11",
+        "uuid" : "42394eba-a1b0-97fd-7eba-63ea45ae392c",
+        "instanceUuid" : "503917ff-c714-3674-f99b-028192b254e0",
+        "npivNodeWorldWideName" : [ "java.util.ArrayList", [ ] ],
+        "npivPortWorldWideName" : [ "java.util.ArrayList", [ ] ],
+        "npivWorldWideNameType" : null,
+        "npivDesiredNodeWwns" : null,
+        "npivDesiredPortWwns" : null,
+        "npivTemporaryDisabled" : true,
+        "npivOnNonRdmDisks" : null,
+        "locationId" : "",
+        "template" : false,
+        "guestId" : "ubuntu64Guest",
+        "alternateGuestName" : "",
+        "annotation" : "vm-206",
+        "files" : {
+          "type" : "com.vmware.vim25.VirtualMachineFileInfo",
+          "vmPathName" : "[iSCSI03] myNewVm/myNewVm.vmx",
+          "snapshotDirectory" : "[iSCSI03] myNewVm/",
+          "suspendDirectory" : "[iSCSI03] myNewVm/",
+          "logDirectory" : "[iSCSI03] myNewVm/",
+          "ftMetadataDirectory" : null
+        },
+        "tools" : {
+          "type" : "com.vmware.vim25.ToolsConfigInfo",
+          "toolsVersion" : 9541,
+          "afterPowerOn" : true,
+          "afterResume" : true,
+          "beforeGuestStandby" : true,
+          "beforeGuestShutdown" : true,
+          "beforeGuestReboot" : null,
+          "toolsUpgradePolicy" : "manual",
+          "pendingCustomization" : null,
+          "syncTimeWithHost" : false,
+          "lastInstallInfo" : {
+            "type" : "com.vmware.vim25.ToolsConfigInfoToolsLastInstallInfo",
+            "counter" : 0,
+            "fault" : null
+          }
+        },
+        "flags" : {
+          "type" : "com.vmware.vim25.VirtualMachineFlagInfo",
+          "disableAcceleration" : false,
+          "enableLogging" : true,
+          "useToe" : false,
+          "runWithDebugInfo" : false,
+          "monitorType" : "release",
+          "htSharing" : "any",
+          "snapshotDisabled" : false,
+          "snapshotLocked" : false,
+          "diskUuidEnabled" : false,
+          "virtualMmuUsage" : "automatic",
+          "virtualExecUsage" : "hvAuto",
+          "snapshotPowerOffBehavior" : "powerOff",
+          "recordReplayEnabled" : false,
+          "faultToleranceType" : "unset"
+        },
+        "consolePreferences" : null,
+        "defaultPowerOps" : {
+          "type" : "com.vmware.vim25.VirtualMachineDefaultPowerOpInfo",
+          "powerOffType" : "soft",
+          "suspendType" : "hard",
+          "resetType" : "soft",
+          "defaultPowerOffType" : "soft",
+          "defaultSuspendType" : "hard",
+          "defaultResetType" : "soft",
+          "standbyAction" : "checkpoint"
+        },
+        "hardware" : {
+          "type" : "com.vmware.vim25.VirtualHardware",
+          "numCPU" : 1,
+          "numCoresPerSocket" : 1,
+          "memoryMB" : 1024,
+          "virtualICH7MPresent" : false,
+          "virtualSMCPresent" : false,
+          "device" : [ "java.util.ArrayList", [ {
+            "type" : "com.vmware.vim25.VirtualIDEController",
+            "key" : 200,
+            "deviceInfo" : {
+              "type" : "com.vmware.vim25.Description",
+              "label" : "IDE 0",
+              "summary" : "IDE 0"
+            },
+            "backing" : null,
+            "connectable" : null,
+            "slotInfo" : null,
+            "controllerKey" : null,
+            "unitNumber" : null,
+            "busNumber" : 0,
+            "device" : [ "java.util.ArrayList", [ ] ]
+          }, {
+            "type" : "com.vmware.vim25.VirtualIDEController",
+            "key" : 201,
+            "deviceInfo" : {
+              "type" : "com.vmware.vim25.Description",
+              "label" : "IDE 1",
+              "summary" : "IDE 1"
+            },
+            "backing" : null,
+            "connectable" : null,
+            "slotInfo" : null,
+            "controllerKey" : null,
+            "unitNumber" : null,
+            "busNumber" : 1,
+            "device" : [ "java.util.ArrayList", [ 3002 ] ]
+          }, {
+            "type" : "com.vmware.vim25.VirtualPS2Controller",
+            "key" : 300,
+            "deviceInfo" : {
+              "type" : "com.vmware.vim25.Description",
+              "label" : "PS2 controller 0",
+              "summary" : "PS2 controller 0"
+            },
+            "backing" : null,
+            "connectable" : null,
+            "slotInfo" : null,
+            "controllerKey" : null,
+            "unitNumber" : null,
+            "busNumber" : 0,
+            "device" : [ "java.util.ArrayList", [ 600, 700 ] ]
+          }, {
+            "type" : "com.vmware.vim25.VirtualPCIController",
+            "key" : 100,
+            "deviceInfo" : {
+              "type" : "com.vmware.vim25.Description",
+              "label" : "PCI controller 0",
+              "summary" : "PCI controller 0"
+            },
+            "backing" : null,
+            "connectable" : null,
+            "slotInfo" : null,
+            "controllerKey" : null,
+            "unitNumber" : null,
+            "busNumber" : 0,
+            "device" : [ "java.util.ArrayList", [ 500, 12000, 1000, 4000 ] ]
+          }, {
+            "type" : "com.vmware.vim25.VirtualSIOController",
+            "key" : 400,
+            "deviceInfo" : {
+              "type" : "com.vmware.vim25.Description",
+              "label" : "SIO controller 0",
+              "summary" : "SIO controller 0"
+            },
+            "backing" : null,
+            "connectable" : null,
+            "slotInfo" : null,
+            "controllerKey" : null,
+            "unitNumber" : null,
+            "busNumber" : 0,
+            "device" : [ "java.util.ArrayList", [ 8000 ] ]
+          }, {
+            "type" : "com.vmware.vim25.VirtualKeyboard",
+            "key" : 600,
+            "deviceInfo" : {
+              "type" : "com.vmware.vim25.Description",
+              "label" : "Keyboard ",
+              "summary" : "Keyboard"
+            },
+            "backing" : null,
+            "connectable" : null,
+            "slotInfo" : null,
+            "controllerKey" : 300,
+            "unitNumber" : 0
+          }, {
+            "type" : "com.vmware.vim25.VirtualPointingDevice",
+            "key" : 700,
+            "deviceInfo" : {
+              "type" : "com.vmware.vim25.Description",
+              "label" : "Pointing device",
+              "summary" : "Pointing device; Device"
+            },
+            "backing" : {
+              "type" : "com.vmware.vim25.VirtualPointingDeviceDeviceBackingInfo",
+              "deviceName" : "",
+              "useAutoDetect" : false,
+              "hostPointingDevice" : "autodetect"
+            },
+            "connectable" : null,
+            "slotInfo" : null,
+            "controllerKey" : 300,
+            "unitNumber" : 1
+          }, {
+            "type" : "com.vmware.vim25.VirtualMachineVideoCard",
+            "key" : 500,
+            "deviceInfo" : {
+              "type" : "com.vmware.vim25.Description",
+              "label" : "Video card ",
+              "summary" : "Video card"
+            },
+            "backing" : null,
+            "connectable" : null,
+            "slotInfo" : null,
+            "controllerKey" : 100,
+            "unitNumber" : 0,
+            "videoRamSizeInKB" : 4096,
+            "numDisplays" : 1,
+            "useAutoDetect" : false,
+            "enable3DSupport" : false,
+            "use3DRenderer" : "automatic",
+            "graphicsMemorySizeInKB" : 262144
+          }, {
+            "type" : "com.vmware.vim25.VirtualMachineVMCIDevice",
+            "key" : 12000,
+            "deviceInfo" : {
+              "type" : "com.vmware.vim25.Description",
+              "label" : "VMCI device",
+              "summary" : "Device on the virtual machine PCI bus that provides support for the virtual machine communication interface"
+            },
+            "backing" : null,
+            "connectable" : null,
+            "slotInfo" : {
+              "type" : "com.vmware.vim25.VirtualDevicePciBusSlotInfo",
+              "pciSlotNumber" : 32
+            },
+            "controllerKey" : 100,
+            "unitNumber" : 17,
+            "id" : -1,
+            "allowUnrestrictedCommunication" : false,
+            "filterEnable" : true,
+            "filterInfo" : null
+          }, {
+            "type" : "com.vmware.vim25.VirtualLsiLogicSASController",
+            "key" : 1000,
+            "deviceInfo" : {
+              "type" : "com.vmware.vim25.Description",
+              "label" : "SCSI controller 0",
+              "summary" : "LSI Logic SAS"
+            },
+            "backing" : null,
+            "connectable" : null,
+            "slotInfo" : {
+              "type" : "com.vmware.vim25.VirtualDevicePciBusSlotInfo",
+              "pciSlotNumber" : 160
+            },
+            "controllerKey" : 100,
+            "unitNumber" : 3,
+            "busNumber" : 0,
+            "device" : [ "java.util.ArrayList", [ 2000 ] ],
+            "hotAddRemove" : true,
+            "sharedBus" : "NO_SHARING",
+            "scsiCtlrUnitNumber" : 7
+          }, {
+            "type" : "com.vmware.vim25.VirtualCdrom",
+            "key" : 3002,
+            "deviceInfo" : {
+              "type" : "com.vmware.vim25.Description",
+              "label" : "CD/DVD drive 1",
+              "summary" : "Remote ATAPI"
+            },
+            "backing" : {
+              "type" : "com.vmware.vim25.VirtualCdromRemoteAtapiBackingInfo",
+              "deviceName" : "",
+              "useAutoDetect" : false
+            },
+            "connectable" : {
+              "type" : "com.vmware.vim25.VirtualDeviceConnectInfo",
+              "startConnected" : false,
+              "allowGuestControl" : true,
+              "connected" : false,
+              "status" : "untried"
+            },
+            "slotInfo" : null,
+            "controllerKey" : 201,
+            "unitNumber" : 0
+          }, {
+            "type" : "com.vmware.vim25.VirtualDisk",
+            "key" : 2000,
+            "deviceInfo" : {
+              "type" : "com.vmware.vim25.Description",
+              "label" : "Hard disk 1",
+              "summary" : "31,457,280 KB"
+            },
+            "backing" : {
+              "type" : "com.vmware.vim25.VirtualDiskFlatVer2BackingInfo",
+              "fileName" : "[iSCSI03] myNewVm/myNewVm.vmdk",
+              "datastore" : {
+                "type" : "com.vmware.vim25.ManagedObjectReference",
+                "value" : "datastore-62",
+                "type" : "Datastore"
+              },
+              "backingObjectId" : "",
+              "diskMode" : "persistent",
+              "split" : false,
+              "writeThrough" : false,
+              "thinProvisioned" : true,
+              "eagerlyScrub" : null,
+              "uuid" : "6000C290-c3b7-29c0-983d-63864d0b0c27",
+              "contentId" : "c817c6946619712898a6c0472a0b6833",
+              "changeId" : null,
+              "parent" : null,
+              "deltaDiskFormat" : null,
+              "digestEnabled" : false,
+              "deltaGrainSize" : null,
+              "deltaDiskFormatVariant" : null,
+              "sharing" : "sharingNone"
+            },
+            "connectable" : null,
+            "slotInfo" : null,
+            "controllerKey" : 1000,
+            "unitNumber" : 0,
+            "capacityInKB" : 31457280,
+            "capacityInBytes" : 32212254720,
+            "shares" : {
+              "type" : "com.vmware.vim25.SharesInfo",
+              "shares" : 1000,
+              "level" : "NORMAL"
+            },
+            "storageIOAllocation" : {
+              "type" : "com.vmware.vim25.StorageIOAllocationInfo",
+              "limit" : -1,
+              "shares" : {
+                "type" : "com.vmware.vim25.SharesInfo",
+                "shares" : 1000,
+                "level" : "NORMAL"
+              },
+              "reservation" : 0
+            },
+            "diskObjectId" : "32-2000",
+            "iofilter" : [ "java.util.ArrayList", [ ] ],
+            "vflashCacheConfigInfo" : null
+          }, {
+            "type" : "com.vmware.vim25.VirtualFloppy",
+            "key" : 8000,
+            "deviceInfo" : {
+              "type" : "com.vmware.vim25.Description",
+              "label" : "Floppy drive 1",
+              "summary" : "Remote"
+            },
+            "backing" : {
+              "type" : "com.vmware.vim25.VirtualFloppyRemoteDeviceBackingInfo",
+              "deviceName" : "",
+              "useAutoDetect" : false
+            },
+            "connectable" : {
+              "type" : "com.vmware.vim25.VirtualDeviceConnectInfo",
+              "startConnected" : false,
+              "allowGuestControl" : true,
+              "connected" : false,
+              "status" : "untried"
+            },
+            "slotInfo" : null,
+            "controllerKey" : 400,
+            "unitNumber" : 0
+          }, {
+            "type" : "com.vmware.vim25.VirtualVmxnet3",
+            "key" : 4000,
+            "deviceInfo" : {
+              "type" : "com.vmware.vim25.Description",
+              "label" : "Network adapter 1",
+              "summary" : "Dev2-Internal"
+            },
+            "backing" : {
+              "type" : "com.vmware.vim25.VirtualEthernetCardNetworkBackingInfo",
+              "deviceName" : "Dev2-Internal",
+              "useAutoDetect" : false,
+              "network" : {
+                "type" : "com.vmware.vim25.ManagedObjectReference",
+                "value" : "network-77",
+                "type" : "Network"
+              },
+              "inPassthroughMode" : null
+            },
+            "connectable" : {
+              "type" : "com.vmware.vim25.VirtualDeviceConnectInfo",
+              "startConnected" : true,
+              "allowGuestControl" : true,
+              "connected" : false,
+              "status" : "untried"
+            },
+            "slotInfo" : {
+              "type" : "com.vmware.vim25.VirtualDevicePciBusSlotInfo",
+              "pciSlotNumber" : 192
+            },
+            "controllerKey" : 100,
+            "unitNumber" : 7,
+            "addressType" : "assigned",
+            "macAddress" : "00:50:56:b9:1c:e9",
+            "wakeOnLanEnabled" : true,
+            "resourceAllocation" : {
+              "type" : "com.vmware.vim25.VirtualEthernetCardResourceAllocation",
+              "reservation" : 0,
+              "share" : {
+                "type" : "com.vmware.vim25.SharesInfo",
+                "shares" : 50,
+                "level" : "NORMAL"
+              },
+              "limit" : -1
+            },
+            "externalId" : null,
+            "uptCompatibilityEnabled" : true
+          } ] ]
+        },
+        "cpuAllocation" : {
+          "type" : "com.vmware.vim25.ResourceAllocationInfo",
+          "reservation" : 0,
+          "expandableReservation" : false,
+          "limit" : -1,
+          "shares" : {
+            "type" : "com.vmware.vim25.SharesInfo",
+            "shares" : 1000,
+            "level" : "NORMAL"
+          },
+          "overheadLimit" : null
+        },
+        "memoryAllocation" : {
+          "type" : "com.vmware.vim25.ResourceAllocationInfo",
+          "reservation" : 0,
+          "expandableReservation" : false,
+          "limit" : -1,
+          "shares" : {
+            "type" : "com.vmware.vim25.SharesInfo",
+            "shares" : 10240,
+            "level" : "NORMAL"
+          },
+          "overheadLimit" : null
+        },
+        "latencySensitivity" : {
+          "type" : "com.vmware.vim25.LatencySensitivity",
+          "level" : "NORMAL",
+          "sensitivity" : null
+        },
+        "memoryHotAddEnabled" : false,
+        "cpuHotAddEnabled" : false,
+        "cpuHotRemoveEnabled" : false,
+        "hotPlugMemoryLimit" : null,
+        "hotPlugMemoryIncrementSize" : null,
+        "cpuAffinity" : null,
+        "memoryAffinity" : null,
+        "networkShaper" : null,
+        "extraConfig" : [ "java.util.ArrayList", [ {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "sched.cpu.latencySensitivity",
+          "value" : "normal"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "sched.scsi0:0.throughputCap",
+          "value" : "off"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "tools.guest.desktop.autolock",
+          "value" : "false"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "nvram",
+          "value" : "myNewVm.nvram"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "pciBridge0.present",
+          "value" : "TRUE"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "svga.present",
+          "value" : "TRUE"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "pciBridge4.present",
+          "value" : "TRUE"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "pciBridge4.virtualDev",
+          "value" : "pcieRootPort"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "pciBridge4.functions",
+          "value" : "8"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "pciBridge5.present",
+          "value" : "TRUE"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "pciBridge5.virtualDev",
+          "value" : "pcieRootPort"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "pciBridge5.functions",
+          "value" : "8"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "pciBridge6.present",
+          "value" : "TRUE"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "pciBridge6.virtualDev",
+          "value" : "pcieRootPort"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "pciBridge6.functions",
+          "value" : "8"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "pciBridge7.present",
+          "value" : "TRUE"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "pciBridge7.virtualDev",
+          "value" : "pcieRootPort"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "pciBridge7.functions",
+          "value" : "8"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "hpet0.present",
+          "value" : "true"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "ethernet0.uptCompatibility",
+          "value" : "true"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "virtualHW.productCompatibility",
+          "value" : "hosted"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "replay.supported",
+          "value" : "false"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "pciBridge0.pciSlotNumber",
+          "value" : "17"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "pciBridge4.pciSlotNumber",
+          "value" : "21"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "pciBridge5.pciSlotNumber",
+          "value" : "22"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "pciBridge6.pciSlotNumber",
+          "value" : "23"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "pciBridge7.pciSlotNumber",
+          "value" : "24"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "scsi0.pciSlotNumber",
+          "value" : "160"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "ethernet0.pciSlotNumber",
+          "value" : "192"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "vmci0.pciSlotNumber",
+          "value" : "32"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "scsi0.sasWWID",
+          "value" : "50 05 05 6d 3e 46 62 60"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "monitor.phys_bits_used",
+          "value" : "42"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "vmotion.checkpointFBSize",
+          "value" : "4194304"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "vmotion.checkpointSVGAPrimarySize",
+          "value" : "4194304"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "softPowerOff",
+          "value" : "TRUE"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "toolsInstallManager.lastInstallError",
+          "value" : "0"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "tools.remindInstall",
+          "value" : "FALSE"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "toolsInstallManager.updateCounter",
+          "value" : "3"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "vmware.tools.internalversion",
+          "value" : "9541"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "vmware.tools.requiredversion",
+          "value" : "9541"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "migrate.hostLogState",
+          "value" : "none"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "migrate.migrationId",
+          "value" : "0"
+        }, {
+          "type" : "com.vmware.vim25.OptionValue",
+          "key" : "migrate.hostLog",
+          "value" : "myNewVm-7c235865.hlog"
+        } ] ],
+        "cpuFeatureMask" : [ "java.util.ArrayList", [ ] ],
+        "datastoreUrl" : [ "java.util.ArrayList", [ {
+          "type" : "com.vmware.vim25.VirtualMachineConfigInfoDatastoreUrlPair",
+          "name" : "iSCSI03",
+          "url" : "/vmfs/volumes/5629dc70-504432f8-bf59-005056b9bd82"
+        } ] ],
+        "swapPlacement" : "inherit",
+        "bootOptions" : {
+          "type" : "com.vmware.vim25.VirtualMachineBootOptions",
+          "bootDelay" : 0,
+          "enterBIOSSetup" : false,
+          "bootRetryEnabled" : false,
+          "bootRetryDelay" : 10000,
+          "bootOrder" : [ "java.util.ArrayList", [ ] ],
+          "networkBootProtocol" : "ipv4"
+        },
+        "ftInfo" : null,
+        "repConfig" : null,
+        "changeTrackingEnabled" : false,
+        "firmware" : "bios",
+        "maxMksConnections" : 40,
+        "guestAutoLockEnabled" : false,
+        "managedBy" : null,
+        "memoryReservationLockedToMax" : false,
+        "initialOverhead" : {
+          "type" : "com.vmware.vim25.VirtualMachineConfigInfoOverheadInfo",
+          "initialMemoryReservation" : 37371904,
+          "initialSwapReservation" : 170577920
+        },
+        "nestedHVEnabled" : false,
+        "scheduledHardwareUpgradeInfo" : {
+          "type" : "com.vmware.vim25.ScheduledHardwareUpgradeInfo",
+          "upgradePolicy" : "never",
+          "versionKey" : null,
+          "scheduledHardwareUpgradeStatus" : "none",
+          "fault" : null
+        },
+        "forkConfigInfo" : {
+          "type" : "com.vmware.vim25.VirtualMachineForkConfigInfo",
+          "parentEnabled" : false,
+          "childForkGroupId" : null,
+          "childType" : null
+        },
+        "vmxConfigChecksum" : "PdRxAasStCh77iLjyYhbPZnNLWQ=",
+        "messageBusTunnelEnabled" : false,
+        "vmStorageObjectId" : null,
+        "swapStorageObjectId" : null,
+        "vappConfig" : null,
+        "vassertsEnabled" : false,
+        "vpmcenabled" : false,
+        "vflashCacheReservation" : 0
+      }
+    }, {
+      "type" : "com.vmware.vim25.DynamicProperty",
+      "name" : "datastore",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
+        "managedObjectReference" : [ "java.util.ArrayList", [ {
+          "type" : "com.vmware.vim25.ManagedObjectReference",
+          "value" : "datastore-62",
+          "type" : "Datastore"
+        } ] ]
+      }
+    }, {
+      "type" : "com.vmware.vim25.DynamicProperty",
+      "name" : "guest",
+      "val" : {
+        "type" : "com.vmware.vim25.GuestInfo",
+        "toolsStatus" : "TOOLS_NOT_RUNNING",
+        "toolsVersionStatus" : "guestToolsCurrent",
+        "toolsVersionStatus2" : "guestToolsCurrent",
+        "toolsRunningStatus" : "guestToolsNotRunning",
+        "toolsVersion" : null,
+        "guestId" : null,
+        "guestFamily" : null,
+        "guestFullName" : null,
+        "hostName" : null,
+        "ipAddress" : null,
+        "net" : [ "java.util.ArrayList", [ ] ],
+        "ipStack" : [ "java.util.ArrayList", [ ] ],
+        "disk" : [ "java.util.ArrayList", [ ] ],
+        "screen" : null,
+        "guestState" : "notRunning",
+        "appHeartbeatStatus" : null,
+        "guestKernelCrashed" : null,
+        "appState" : null,
+        "guestOperationsReady" : false,
+        "interactiveGuestOperationsReady" : false,
+        "guestStateChangeSupported" : false,
+        "generationInfo" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "type" : "com.vmware.vim25.DynamicProperty",
+      "name" : "parent",
+      "val" : {
+        "type" : "com.vmware.vim25.ManagedObjectReference",
+        "value" : "group-v3",
+        "type" : "Folder"
+      }
+    }, {
+      "type" : "com.vmware.vim25.DynamicProperty",
+      "name" : "resourcePool",
+      "val" : {
+        "type" : "com.vmware.vim25.ManagedObjectReference",
+        "value" : "resgroup-46",
+        "type" : "ResourcePool"
+      }
+    }, {
+      "type" : "com.vmware.vim25.DynamicProperty",
+      "name" : "runtime",
+      "val" : {
+        "type" : "com.vmware.vim25.VirtualMachineRuntimeInfo",
+        "device" : [ "java.util.ArrayList", [ {
+          "type" : "com.vmware.vim25.VirtualMachineDeviceRuntimeInfo",
+          "runtimeState" : {
+            "type" : "com.vmware.vim25.VirtualMachineDeviceRuntimeInfoVirtualEthernetCardRuntimeState",
+            "vmDirectPathGen2Active" : false,
+            "vmDirectPathGen2InactiveReasonVm" : [ "java.util.ArrayList", [ "vmNptDisabledOrDisconnectedAdapter" ] ],
+            "vmDirectPathGen2InactiveReasonOther" : [ "java.util.ArrayList", [ "vmNptIncompatibleNetwork" ] ],
+            "vmDirectPathGen2InactiveReasonExtended" : null,
+            "reservationStatus" : null
+          },
+          "key" : 4000
+        } ] ],
+        "host" : {
+          "type" : "com.vmware.vim25.ManagedObjectReference",
+          "value" : "host-49",
+          "type" : "HostSystem"
+        },
+        "connectionState" : "CONNECTED",
+        "powerState" : "POWERED_OFF",
+        "faultToleranceState" : "NOT_CONFIGURED",
+        "dasVmProtection" : null,
+        "toolsInstallerMounted" : false,
+        "suspendInterval" : 0,
+        "question" : null,
+        "memoryOverhead" : null,
+        "maxCpuUsage" : null,
+        "maxMemoryUsage" : null,
+        "numMksConnections" : 0,
+        "recordReplayState" : "INACTIVE",
+        "cleanPowerOff" : null,
+        "needSecondaryReason" : null,
+        "onlineStandby" : false,
+        "minRequiredEVCModeKey" : null,
+        "consolidationNeeded" : false,
+        "offlineFeatureRequirement" : [ "java.util.ArrayList", [ {
+          "type" : "com.vmware.vim25.VirtualMachineFeatureRequirement",
+          "key" : "cpuid.lm",
+          "featureName" : "cpuid.lm",
+          "value" : "Bool:Min:1"
+        } ] ],
+        "featureRequirement" : [ "java.util.ArrayList", [ ] ],
+        "featureMask" : [ "java.util.ArrayList", [ ] ],
+        "paused" : false,
+        "snapshotInBackground" : false,
+        "quiescedForkParent" : null,
+        "vflashCacheAllocation" : null
+      }
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "type" : "com.vmware.vim25.ObjectContent",
+    "obj" : {
+      "type" : "com.vmware.vim25.ManagedObjectReference",
       "value" : "vm-207",
       "type" : "VirtualMachine"
     },
@@ -790,6 +2363,7 @@
       "name" : "config",
       "val" : {
         "type" : "com.vmware.vim25.VirtualMachineConfigInfo",
+        "changeVersion" : "2015-10-31T11:21:47.735165Z",
         "name" : "smtest2",
         "guestFullName" : "Ubuntu Linux (64-bit)",
         "version" : "vmx-11",
@@ -1572,7 +3146,7 @@
           "type" : "com.vmware.vim25.GuestDiskInfo",
           "diskPath" : "/",
           "capacity" : 30514671616,
-          "freeSpace" : 29087031296
+          "freeSpace" : 29086404608
         } ] ],
         "screen" : {
           "type" : "com.vmware.vim25.GuestScreenInfo",
@@ -1770,6 +3344,7 @@
       "name" : "config",
       "val" : {
         "type" : "com.vmware.vim25.VirtualMachineConfigInfo",
+        "changeVersion" : "2015-10-28T12:14:43.953438Z",
         "name" : "Jumpbox-Linux",
         "guestFullName" : "Ubuntu Linux (64-bit)",
         "version" : "vmx-11",
@@ -2839,6 +4414,7 @@
       "name" : "config",
       "val" : {
         "type" : "com.vmware.vim25.VirtualMachineConfigInfo",
+        "changeVersion" : "2015-10-28T12:18:40.622186Z",
         "name" : "jumpbox-Windows2k12r2",
         "guestFullName" : "Microsoft Windows Server 2012 (64-bit)",
         "version" : "vmx-11",
@@ -4057,7 +5633,7 @@
           "type" : "com.vmware.vim25.GuestDiskInfo",
           "diskPath" : "C:\\",
           "capacity" : 42580570112,
-          "freeSpace" : 20927946752
+          "freeSpace" : 21946970112
         } ] ],
         "screen" : {
           "type" : "com.vmware.vim25.GuestScreenInfo",
@@ -4277,6 +5853,7 @@
       "name" : "config",
       "val" : {
         "type" : "com.vmware.vim25.VirtualMachineConfigInfo",
+        "changeVersion" : "2015-11-01T04:49:17.443247Z",
         "name" : "Tmpl-Ubuntu-14.04-New",
         "guestFullName" : "Ubuntu Linux (64-bit)",
         "version" : "vmx-11",
@@ -5107,6 +6684,7 @@
       "name" : "config",
       "val" : {
         "type" : "com.vmware.vim25.VirtualMachineConfigInfo",
+        "changeVersion" : "2015-10-27T05:15:04.606448Z",
         "name" : "Tmpl-Win2002R2",
         "guestFullName" : "Microsoft Windows Server 2012 (64-bit)",
         "version" : "vmx-11",
@@ -6003,6 +7581,7 @@
       "name" : "config",
       "val" : {
         "type" : "com.vmware.vim25.VirtualMachineConfigInfo",
+        "changeVersion" : "2015-10-27T05:23:41.172277Z",
         "name" : "Tmpl-Ubuntu-14.04",
         "guestFullName" : "Ubuntu Linux (64-bit)",
         "version" : "vmx-11",

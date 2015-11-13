@@ -50,9 +50,6 @@ import java.util.*;
  * @since 2015.09
  */
 public class DataCenters extends AbstractDataCenterServices<Vsphere> {
-    static private final Logger logger = Vsphere.getLogger(DataCenters.class);
-
-    private Vsphere provider;
 
     public AffinityGroupSupport agSupport;
     public List<SelectionSpec>  rpSSpecs;
@@ -65,7 +62,6 @@ public class DataCenters extends AbstractDataCenterServices<Vsphere> {
 
     protected DataCenters(@Nonnull Vsphere provider) {
         super(provider);
-        this.provider = provider;
         agSupport = provider.getComputeServices().getAffinityGroupSupport();
     }
 
@@ -172,7 +168,7 @@ public class DataCenters extends AbstractDataCenterServices<Vsphere> {
             ArrayList<DataCenter> dataCenters = new ArrayList<DataCenter>();
             List<PropertySpec>  pSpecs = getDataCenterPropertySpec();
 
-            RetrieveResult listobcont = retrieveObjectList(provider, "hostFolder", null, pSpecs);
+            RetrieveResult listobcont = retrieveObjectList(getProvider(), "hostFolder", null, pSpecs);
 
             if (listobcont != null) {
                 for (ObjectContent oc : listobcont.getObjects()) {
@@ -215,14 +211,14 @@ public class DataCenters extends AbstractDataCenterServices<Vsphere> {
     @Override
     @Nonnull
     public Collection<Region> listRegions() throws InternalException, CloudException {
-        APITrace.begin(provider, "listRegions");
+        APITrace.begin(getProvider(), "listRegions");
         try {
-            ProviderContext ctx = provider.getContext();
+            ProviderContext ctx = getProvider().getContext();
 
             if( ctx == null ) {
                 throw new NoContextException(); 
             }
-            Cache<Region> cache = Cache.getInstance(provider, "regions", Region.class, CacheLevel.CLOUD_ACCOUNT, new TimePeriod<Hour>(10, TimePeriod.HOUR));
+            Cache<Region> cache = Cache.getInstance(getProvider(), "regions", Region.class, CacheLevel.CLOUD_ACCOUNT, new TimePeriod<Hour>(10, TimePeriod.HOUR));
             Collection<Region> regions = (Collection<Region>)cache.get(ctx);
 
             if( regions != null ) {
@@ -233,7 +229,7 @@ public class DataCenters extends AbstractDataCenterServices<Vsphere> {
             // Create Property Spec
             List<PropertySpec> pSpecs = getRegionPropertySpec();
 
-            RetrieveResult listobcont = retrieveObjectList(provider, "hostFolder", null, pSpecs);
+            RetrieveResult listobcont = retrieveObjectList(getProvider(), "hostFolder", null, pSpecs);
 
             if (listobcont != null) {
                for (ObjectContent oc : listobcont.getObjects()) {
@@ -265,20 +261,20 @@ public class DataCenters extends AbstractDataCenterServices<Vsphere> {
     @Override
     @Nonnull
     public DataCenterCapabilities getCapabilities() {
-        return new VsphereDataCenterCapabilities(provider);
+        return new VsphereDataCenterCapabilities(getProvider());
     }
 
     @Override
     @Nonnull
     public Collection<ResourcePool> listResourcePools(String providerDataCenterId) throws InternalException, CloudException {
-        APITrace.begin(provider, "listResourcePools");
+        APITrace.begin(getProvider(), "listResourcePools");
         try {
             List<ResourcePool> resourcePools = new ArrayList<ResourcePool>();
 
             List<SelectionSpec> selectionSpecsArr = getResourcePoolSelectionSpec();
             List<PropertySpec> pSpecs = getResourcePoolPropertySpec();
 
-            RetrieveResult listobcont = retrieveObjectList(provider, "hostFolder", selectionSpecsArr, pSpecs);
+            RetrieveResult listobcont = retrieveObjectList(getProvider(), "hostFolder", selectionSpecsArr, pSpecs);
 
             if (listobcont != null) {
                 for (ObjectContent oc : listobcont.getObjects()) {
@@ -288,16 +284,18 @@ public class DataCenters extends AbstractDataCenterServices<Vsphere> {
                     List<DynamicProperty> dps = oc.getPropSet();
                     if (dps != null) {
                         for (DynamicProperty dp : dps) {
-                            if (dp.getName().equals("name")) {
-                                rpName = (String) dp.getVal();
-                            }
-                            else if (dp.getName().equals("owner")) {
-                                ManagedObjectReference clusterRef = (ManagedObjectReference) dp.getVal();
-                                owner = clusterRef.getValue();
-                            }
-                            else if (dp.getName().equals("runtime")) {
-                                ResourcePoolRuntimeInfo rpri = (ResourcePoolRuntimeInfo) dp.getVal();
-                                rpStatus = rpri.getOverallStatus().value();
+                            switch (dp.getName()) {
+                                case "name":
+                                    rpName = (String) dp.getVal();
+                                    break;
+                                case "owner":
+                                    ManagedObjectReference clusterRef = (ManagedObjectReference) dp.getVal();
+                                    owner = clusterRef.getValue();
+                                    break;
+                                case "runtime":
+                                    ResourcePoolRuntimeInfo rpri = (ResourcePoolRuntimeInfo) dp.getVal();
+                                    rpStatus = rpri.getOverallStatus().value();
+                                    break;
                             }
                         }
                     }
@@ -317,8 +315,8 @@ public class DataCenters extends AbstractDataCenterServices<Vsphere> {
     }
 
     @Override
-    public ResourcePool getResourcePool(String providerResourcePoolId) throws InternalException, CloudException {
-        APITrace.begin(provider, "DataCenters.getResourcePool");
+    public ResourcePool getResourcePool(@Nonnull String providerResourcePoolId) throws InternalException, CloudException {
+        APITrace.begin(getProvider(), "DataCenters.getResourcePool");
         try {
             Iterable<org.dasein.cloud.dc.ResourcePool> rps = listResourcePools(null);
             for (org.dasein.cloud.dc.ResourcePool rp : rps) {
@@ -333,16 +331,17 @@ public class DataCenters extends AbstractDataCenterServices<Vsphere> {
         }
     }
 
+    @Nonnull
     @Override
     public Collection<StoragePool> listStoragePools() throws InternalException, CloudException {
-        APITrace.begin(provider, "listStoragePools");
+        APITrace.begin(getProvider(), "listStoragePools");
         try {
-            ProviderContext ctx = provider.getContext();
+            ProviderContext ctx = getProvider().getContext();
 
             if( ctx == null ) {
                 throw new NoContextException();
             }
-            Cache<StoragePool> cache = Cache.getInstance(provider, "storagePools", StoragePool.class, CacheLevel.CLOUD_ACCOUNT, new TimePeriod<Hour>(10, TimePeriod.HOUR));
+            Cache<StoragePool> cache = Cache.getInstance(getProvider(), "storagePools", StoragePool.class, CacheLevel.CLOUD_ACCOUNT, new TimePeriod<Hour>(10, TimePeriod.HOUR));
             Collection<StoragePool> storagePools = (Collection<StoragePool>)cache.get(ctx);
 
             if( storagePools != null ) {
@@ -351,7 +350,7 @@ public class DataCenters extends AbstractDataCenterServices<Vsphere> {
             storagePools = new ArrayList<StoragePool>();
             List<PropertySpec> pSpecs = getStoragePoolPropertySpec();
 
-            RetrieveResult listobcont = retrieveObjectList(provider, "datastoreFolder", null, pSpecs);
+            RetrieveResult listobcont = retrieveObjectList(getProvider(), "datastoreFolder", null, pSpecs);
 
             if (listobcont != null) {
                 Iterable<AffinityGroup> allHosts = agSupport.list(AffinityGroupFilterOptions.getInstance());
@@ -422,8 +421,8 @@ public class DataCenters extends AbstractDataCenterServices<Vsphere> {
     }
 
     @Override
-    public StoragePool getStoragePool(String providerStoragePoolId) throws InternalException, CloudException {
-        APITrace.begin(provider, "DataCenters.getStoragePool");
+    public StoragePool getStoragePool(@Nonnull String providerStoragePoolId) throws InternalException, CloudException {
+        APITrace.begin(getProvider(), "DataCenters.getStoragePool");
         try {
             Collection<StoragePool> pools = listStoragePools();
             for (StoragePool pool : pools) {
@@ -438,16 +437,17 @@ public class DataCenters extends AbstractDataCenterServices<Vsphere> {
         }
     }
 
+    @Nonnull
     @Override
     public Collection<Folder> listVMFolders() throws InternalException, CloudException {
-        APITrace.begin(provider, "listVMFolders");
+        APITrace.begin(getProvider(), "listVMFolders");
         try {
-            ProviderContext ctx = provider.getContext();
+            ProviderContext ctx = getProvider().getContext();
 
             if( ctx == null ) {
                 throw new NoContextException();
             }
-            Cache<Folder> cache = Cache.getInstance(provider, "folders", Folder.class, CacheLevel.CLOUD_ACCOUNT, new TimePeriod<Hour>(10, TimePeriod.HOUR));
+            Cache<Folder> cache = Cache.getInstance(getProvider(), "folders", Folder.class, CacheLevel.CLOUD_ACCOUNT, new TimePeriod<Hour>(10, TimePeriod.HOUR));
             Collection<Folder> folders = (Collection<Folder>)cache.get(ctx);
             Map<String, Folder> folderMap = new HashMap<String, Folder>();
 
@@ -459,7 +459,7 @@ public class DataCenters extends AbstractDataCenterServices<Vsphere> {
             // Create Property Spec
             List<PropertySpec> pSpecs = getVmFolderPropertySpec();
 
-            RetrieveResult listobcont = retrieveObjectList(provider, "vmFolder", null, pSpecs);
+            RetrieveResult listobcont = retrieveObjectList(getProvider(), "vmFolder", null, pSpecs);
 
             if (listobcont != null) {
                 for (ObjectContent oc : listobcont.getObjects()) {
@@ -470,28 +470,30 @@ public class DataCenters extends AbstractDataCenterServices<Vsphere> {
                     List<DynamicProperty> dps = oc.getPropSet();
                     if (dps != null) {
                         for (DynamicProperty dp : dps) {
-                            if (dp.getName().equals("name")) {
-                                folderName = (String) dp.getVal();
-                            }
-                            else if (dp.getName().equals("parent")) {
-                                ManagedObjectReference pRef = (ManagedObjectReference) dp.getVal();
-                                if (pRef.getType().equals("Folder")) {
-                                    folderParent = pRef.getValue();
-                                }
-                            }
-                            else if (dp.getName().equals("childEntity")) {
-                                ArrayOfManagedObjectReference cRefs = (ArrayOfManagedObjectReference) dp.getVal();
-                                List<ManagedObjectReference> list = cRefs.getManagedObjectReference();
-                                boolean firstTime = true;
-                                for (ManagedObjectReference item : list) {
-                                    if (item.getType().equals("Folder")) {
-                                        if (firstTime) {
-                                            folderChildren = new ArrayList<String>();
-                                            firstTime=false;
-                                        }
-                                        folderChildren.add(item.getValue());
+                            switch (dp.getName()) {
+                                case "name":
+                                    folderName = (String) dp.getVal();
+                                    break;
+                                case "parent":
+                                    ManagedObjectReference pRef = (ManagedObjectReference) dp.getVal();
+                                    if (pRef.getType().equals("Folder")) {
+                                        folderParent = pRef.getValue();
                                     }
-                                }
+                                    break;
+                                case "childEntity":
+                                    ArrayOfManagedObjectReference cRefs = (ArrayOfManagedObjectReference) dp.getVal();
+                                    List<ManagedObjectReference> list = cRefs.getManagedObjectReference();
+                                    boolean firstTime = true;
+                                    for (ManagedObjectReference item : list) {
+                                        if (item.getType().equals("Folder")) {
+                                            if (firstTime) {
+                                                folderChildren = new ArrayList<String>();
+                                                firstTime = false;
+                                            }
+                                            folderChildren.add(item.getValue());
+                                        }
+                                    }
+                                    break;
                             }
                         }
                         if (folderName != null) {
@@ -527,8 +529,8 @@ public class DataCenters extends AbstractDataCenterServices<Vsphere> {
     }
 
     @Override
-    public Folder getVMFolder(String providerVMFolderId) throws InternalException, CloudException {
-        APITrace.begin(provider, "DataCenters.getVMFolder");
+    public Folder getVMFolder(@Nonnull String providerVMFolderId) throws InternalException, CloudException {
+        APITrace.begin(getProvider(), "DataCenters.getVMFolder");
         try {
             Collection<Folder> folders = listVMFolders();
             for (Folder folder : folders) {
@@ -554,12 +556,8 @@ public class DataCenters extends AbstractDataCenterServices<Vsphere> {
     }
 
     private @Nullable DataCenter toDataCenter(@Nonnull String dataCenterId, @Nonnull String datacenterName, @Nonnull String regionId, @Nonnull String status) {
-        boolean available = true;
-        if (status != null) {
-            available = (!status.equalsIgnoreCase("red"));
-        }
-        DataCenter dc = new DataCenter(dataCenterId, datacenterName, regionId, available, available);
-        return dc;
+        boolean available = (!status.equalsIgnoreCase("red"));
+        return new DataCenter(dataCenterId, datacenterName, regionId, available, available);
     }
 
     private ResourcePool toResourcePool(@Nonnull String resourcePoolId, @Nonnull String resourcePoolName, @Nonnull String providerDataCenterId, @Nullable String status) {
@@ -579,7 +577,7 @@ public class DataCenters extends AbstractDataCenterServices<Vsphere> {
         StoragePool sp = new StoragePool();
         sp.setAffinityGroupId(hostId);
         sp.setDataCenterId(datacenter);
-        sp.setRegionId(provider.getContext().getRegionId());
+        sp.setRegionId(getProvider().getContext().getRegionId());
         sp.setStoragePoolName(ds.getName());
         sp.setStoragePoolId(dsId);
 

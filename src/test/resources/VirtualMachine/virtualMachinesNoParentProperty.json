@@ -710,14 +710,6 @@
       }
     }, {
       "type" : "com.vmware.vim25.DynamicProperty",
-      "name" : "parent",
-      "val" : {
-        "type" : "com.vmware.vim25.ManagedObjectReference",
-        "value" : "group-v3",
-        "type" : "Folder"
-      }
-    }, {
-      "type" : "com.vmware.vim25.DynamicProperty",
       "name" : "resourcePool",
       "val" : {
         "type" : "com.vmware.vim25.ManagedObjectReference",
@@ -1587,14 +1579,6 @@
         "interactiveGuestOperationsReady" : false,
         "guestStateChangeSupported" : true,
         "generationInfo" : [ "java.util.ArrayList", [ ] ]
-      }
-    }, {
-      "type" : "com.vmware.vim25.DynamicProperty",
-      "name" : "parent",
-      "val" : {
-        "type" : "com.vmware.vim25.ManagedObjectReference",
-        "value" : "group-v3",
-        "type" : "Folder"
       }
     }, {
       "type" : "com.vmware.vim25.DynamicProperty",
@@ -2634,14 +2618,6 @@
         "interactiveGuestOperationsReady" : false,
         "guestStateChangeSupported" : true,
         "generationInfo" : [ "java.util.ArrayList", [ ] ]
-      }
-    }, {
-      "type" : "com.vmware.vim25.DynamicProperty",
-      "name" : "parent",
-      "val" : {
-        "type" : "com.vmware.vim25.ManagedObjectReference",
-        "value" : "group-v89",
-        "type" : "Folder"
       }
     }, {
       "type" : "com.vmware.vim25.DynamicProperty",
@@ -4075,14 +4051,6 @@
       }
     }, {
       "type" : "com.vmware.vim25.DynamicProperty",
-      "name" : "parent",
-      "val" : {
-        "type" : "com.vmware.vim25.ManagedObjectReference",
-        "value" : "group-v89",
-        "type" : "Folder"
-      }
-    }, {
-      "type" : "com.vmware.vim25.DynamicProperty",
       "name" : "resourcePool",
       "val" : {
         "type" : "com.vmware.vim25.ManagedObjectReference",
@@ -5035,14 +5003,6 @@
       }
     }, {
       "type" : "com.vmware.vim25.DynamicProperty",
-      "name" : "parent",
-      "val" : {
-        "type" : "com.vmware.vim25.ManagedObjectReference",
-        "value" : "group-v21",
-        "type" : "Folder"
-      }
-    }, {
-      "type" : "com.vmware.vim25.DynamicProperty",
       "name" : "runtime",
       "val" : {
         "type" : "com.vmware.vim25.VirtualMachineRuntimeInfo",
@@ -5931,14 +5891,6 @@
       }
     }, {
       "type" : "com.vmware.vim25.DynamicProperty",
-      "name" : "parent",
-      "val" : {
-        "type" : "com.vmware.vim25.ManagedObjectReference",
-        "value" : "group-v21",
-        "type" : "Folder"
-      }
-    }, {
-      "type" : "com.vmware.vim25.DynamicProperty",
       "name" : "runtime",
       "val" : {
         "type" : "com.vmware.vim25.VirtualMachineRuntimeInfo",
@@ -6703,14 +6655,6 @@
         "interactiveGuestOperationsReady" : false,
         "guestStateChangeSupported" : false,
         "generationInfo" : [ "java.util.ArrayList", [ ] ]
-      }
-    }, {
-      "type" : "com.vmware.vim25.DynamicProperty",
-      "name" : "parent",
-      "val" : {
-        "type" : "com.vmware.vim25.ManagedObjectReference",
-        "value" : "group-v21",
-        "type" : "Folder"
       }
     }, {
       "type" : "com.vmware.vim25.DynamicProperty",

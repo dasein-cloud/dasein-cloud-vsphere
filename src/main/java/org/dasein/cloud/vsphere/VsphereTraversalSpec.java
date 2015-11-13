@@ -50,10 +50,6 @@ public class VsphereTraversalSpec {
         return this;
     }
 
-    public TraversalSpec getTraversalSpec() {
-        return traversalSpec;
-    }
-
     public VsphereTraversalSpec withObjectSpec(ManagedObjectReference folder, boolean skip) {
         // create an object spec to define the beginning of the traversal;
         // container view is the root object for this traversal

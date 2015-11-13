@@ -671,17 +671,6 @@
       }
     }, {
       "type" : "com.vmware.vim25.DynamicProperty",
-      "name" : "datastore",
-      "val" : {
-        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
-        "managedObjectReference" : [ "java.util.ArrayList", [ {
-          "type" : "com.vmware.vim25.ManagedObjectReference",
-          "value" : "datastore-62",
-          "type" : "Datastore"
-        } ] ]
-      }
-    }, {
-      "type" : "com.vmware.vim25.DynamicProperty",
       "name" : "guest",
       "val" : {
         "type" : "com.vmware.vim25.GuestInfo",
@@ -1458,17 +1447,6 @@
         "vassertsEnabled" : false,
         "vpmcenabled" : false,
         "vflashCacheReservation" : 0
-      }
-    }, {
-      "type" : "com.vmware.vim25.DynamicProperty",
-      "name" : "datastore",
-      "val" : {
-        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
-        "managedObjectReference" : [ "java.util.ArrayList", [ {
-          "type" : "com.vmware.vim25.ManagedObjectReference",
-          "value" : "datastore-61",
-          "type" : "Datastore"
-        } ] ]
       }
     }, {
       "type" : "com.vmware.vim25.DynamicProperty",
@@ -2543,17 +2521,6 @@
       }
     }, {
       "type" : "com.vmware.vim25.DynamicProperty",
-      "name" : "datastore",
-      "val" : {
-        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
-        "managedObjectReference" : [ "java.util.ArrayList", [ {
-          "type" : "com.vmware.vim25.ManagedObjectReference",
-          "value" : "datastore-60",
-          "type" : "Datastore"
-        } ] ]
-      }
-    }, {
-      "type" : "com.vmware.vim25.DynamicProperty",
       "name" : "guest",
       "val" : {
         "type" : "com.vmware.vim25.GuestInfo",
@@ -3624,17 +3591,6 @@
         "vassertsEnabled" : false,
         "vpmcenabled" : false,
         "vflashCacheReservation" : 0
-      }
-    }, {
-      "type" : "com.vmware.vim25.DynamicProperty",
-      "name" : "datastore",
-      "val" : {
-        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
-        "managedObjectReference" : [ "java.util.ArrayList", [ {
-          "type" : "com.vmware.vim25.ManagedObjectReference",
-          "value" : "datastore-61",
-          "type" : "Datastore"
-        } ] ]
       }
     }, {
       "type" : "com.vmware.vim25.DynamicProperty",
@@ -4935,17 +4891,6 @@
       }
     }, {
       "type" : "com.vmware.vim25.DynamicProperty",
-      "name" : "datastore",
-      "val" : {
-        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
-        "managedObjectReference" : [ "java.util.ArrayList", [ {
-          "type" : "com.vmware.vim25.ManagedObjectReference",
-          "value" : "datastore-62",
-          "type" : "Datastore"
-        } ] ]
-      }
-    }, {
-      "type" : "com.vmware.vim25.DynamicProperty",
       "name" : "guest",
       "val" : {
         "type" : "com.vmware.vim25.GuestInfo",
@@ -5773,17 +5718,6 @@
         "vassertsEnabled" : false,
         "vpmcenabled" : false,
         "vflashCacheReservation" : 0
-      }
-    }, {
-      "type" : "com.vmware.vim25.DynamicProperty",
-      "name" : "datastore",
-      "val" : {
-        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
-        "managedObjectReference" : [ "java.util.ArrayList", [ {
-          "type" : "com.vmware.vim25.ManagedObjectReference",
-          "value" : "datastore-60",
-          "type" : "Datastore"
-        } ] ]
       }
     }, {
       "type" : "com.vmware.vim25.DynamicProperty",
@@ -6650,17 +6584,6 @@
         "vassertsEnabled" : false,
         "vpmcenabled" : false,
         "vflashCacheReservation" : 0
-      }
-    }, {
-      "type" : "com.vmware.vim25.DynamicProperty",
-      "name" : "datastore",
-      "val" : {
-        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
-        "managedObjectReference" : [ "java.util.ArrayList", [ {
-          "type" : "com.vmware.vim25.ManagedObjectReference",
-          "value" : "datastore-62",
-          "type" : "Datastore"
-        } ] ]
       }
     }, {
       "type" : "com.vmware.vim25.DynamicProperty",

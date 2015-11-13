@@ -38,13 +38,11 @@ import java.util.*;
 public class HostSupport extends AbstractAffinityGroupSupport<Vsphere> {
     static private final Logger logger = Vsphere.getLogger(HostSupport.class);
 
-    private Vsphere provider;
     public List<PropertySpec> hostPSpec;
     public List<SelectionSpec> hostSSpec;
 
     public HostSupport(@Nonnull Vsphere provider) {
         super(provider);
-        this.provider = provider;
     }
 
     public RetrieveResult retrieveObjectList(Vsphere provider, @Nonnull String baseFolder, @Nullable List<SelectionSpec> selectionSpecsArr, @Nonnull List<PropertySpec> pSpecs) throws InternalException, CloudException {
@@ -84,7 +82,6 @@ public class HostSupport extends AbstractAffinityGroupSupport<Vsphere> {
         throw new OperationNotSupportedException("Unable to delete physical hosts in vSphere");
     }
 
-    @Nonnull
     @Override
     public AffinityGroup get(@Nonnull String affinityGroupId) throws InternalException, CloudException {
         for (AffinityGroup ag : list(AffinityGroupFilterOptions.getInstance())) {
@@ -98,24 +95,30 @@ public class HostSupport extends AbstractAffinityGroupSupport<Vsphere> {
     @Nonnull
     @Override
     public Iterable<AffinityGroup> list(@Nonnull AffinityGroupFilterOptions options) throws InternalException, CloudException {
-        APITrace.begin(provider, "Host.list");
+        APITrace.begin(getProvider(), "Host.list");
         try {
-            ProviderContext ctx = provider.getContext();
+            ProviderContext ctx = getProvider().getContext();
             if( ctx == null ) {
                 throw new NoContextException();
             }
-            Cache<AffinityGroup> cache = Cache.getInstance(provider, "affinityGroups", AffinityGroup.class, CacheLevel.REGION_ACCOUNT, new TimePeriod<Day>(1, TimePeriod.DAY));
+            Cache<AffinityGroup> cache = Cache.getInstance(getProvider(), "affinityGroups", AffinityGroup.class, CacheLevel.REGION_ACCOUNT, new TimePeriod<Day>(1, TimePeriod.DAY));
             Collection<AffinityGroup> hostList = (Collection<AffinityGroup>)cache.get(ctx);
 
             if( hostList != null ) {
-                return hostList;
+                List<AffinityGroup> filtered = new ArrayList<AffinityGroup>();
+                for (AffinityGroup a : hostList) {
+                    if (options.matches(a)) {
+                        filtered.add(a);
+                    }
+                }
+                return filtered;
             }
-            List<AffinityGroup> hosts = new ArrayList<AffinityGroup>();
+            List<AffinityGroup> allHosts = new ArrayList<AffinityGroup>();
 
             List<SelectionSpec> selectionSpecsArr = getHostSSpec();
             List<PropertySpec> pSpecs = getHostPSpec();
 
-            RetrieveResult listobcont = retrieveObjectList(provider, "hostFolder", selectionSpecsArr, pSpecs);
+            RetrieveResult listobcont = retrieveObjectList(getProvider(), "hostFolder", selectionSpecsArr, pSpecs);
 
             if (listobcont != null) {
                 List<AffinityGroup> temp = new ArrayList<AffinityGroup>();
@@ -137,7 +140,7 @@ public class HostSupport extends AbstractAffinityGroupSupport<Vsphere> {
                                 }
 
                             }
-                            if (hostName != null) {
+                            if (hostName != null && status != null) {
                                 String agDesc = "Affinity group for "+hostName;
                                 long created = 0;
 
@@ -168,17 +171,23 @@ public class HostSupport extends AbstractAffinityGroupSupport<Vsphere> {
                     for (Map.Entry e : dcToHostMap.entrySet()) {
                         List<String> ids = (List<String>) e.getValue();
                         if (ids.contains(id)) {
+                            Map<String, String> tags = host.getTags();
                             host = AffinityGroup.getInstance(host.getAffinityGroupId(), host.getAffinityGroupName(), host.getDescription(), (String) e.getKey(), host.getCreationTimestamp());
-                            if (options.matches(host)) {
-                                hosts.add(host);
-                            }
+                            host.setTags(tags);
+                            allHosts.add(host);
                             break;
                         }
                     }
                 }
             }
-            cache.put(ctx, hosts);
-            return hosts;
+            cache.put(ctx, allHosts);
+            List<AffinityGroup> filtered = new ArrayList<AffinityGroup>();
+            for (AffinityGroup affinityGroup : allHosts) {
+                if (options.matches(affinityGroup)) {
+                    filtered.add(affinityGroup);
+                }
+            }
+            return filtered;
         }
         finally {
             APITrace.end();

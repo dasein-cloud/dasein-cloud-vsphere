@@ -17,11 +17,9 @@ import java.util.Locale;
  * Time: 12:34
  */
 public class VSphereNetworkCapabilities extends AbstractCapabilities<Vsphere> implements VLANCapabilities {
-    private Vsphere provider;
 
     VSphereNetworkCapabilities(Vsphere provider) {
         super(provider);
-        this.provider = provider;
     }
 
     @Override
@@ -148,6 +146,6 @@ public class VSphereNetworkCapabilities extends AbstractCapabilities<Vsphere> im
     @Nonnull
     @Override
     public NamingConstraints getVlanNamingConstraints() throws CloudException, InternalException {
-        return NamingConstraints.getAlphaNumeric(1, 30).constrainedBy(new char[] {'-'}).lowerCaseOnly();
+        return NamingConstraints.getAlphaNumeric(1, 30).constrainedBy('-').lowerCaseOnly();
     }
 }

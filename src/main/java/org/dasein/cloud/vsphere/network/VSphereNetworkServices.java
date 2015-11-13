@@ -1,7 +1,6 @@
 package org.dasein.cloud.vsphere.network;
 
 import org.dasein.cloud.network.AbstractNetworkServices;
-import org.dasein.cloud.network.VLANSupport;
 import org.dasein.cloud.vsphere.Vsphere;
 
 import javax.annotation.Nonnull;
@@ -17,7 +16,7 @@ public class VSphereNetworkServices extends AbstractNetworkServices<Vsphere> {
 
     @Nullable
     @Override
-    public VLANSupport getVlanSupport() {
+    public VSphereNetwork getVlanSupport() {
         return new VSphereNetwork(getProvider());
     }
 }

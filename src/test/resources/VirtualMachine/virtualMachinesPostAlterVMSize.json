@@ -85,9 +85,9 @@
         },
         "hardware" : {
           "type" : "com.vmware.vim25.VirtualHardware",
-          "numCPU" : 1,
-          "numCoresPerSocket" : 1,
-          "memoryMB" : 1024,
+          "numCPU" : 2,
+          "numCoresPerSocket" : 2,
+          "memoryMB" : 2048,
           "virtualICH7MPresent" : false,
           "virtualSMCPresent" : false,
           "device" : [ "java.util.ArrayList", [ {

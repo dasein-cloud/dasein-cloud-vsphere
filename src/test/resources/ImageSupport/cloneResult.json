@@ -1,0 +1,9 @@
+{
+  "name" : "info.result",
+  "op" : "ASSIGN",
+  "val" : {
+    "type" : "com.vmware.vim25.ManagedObjectReference",
+    "value" : "vm-2528",
+    "type" : "VirtualMachine"
+  }
+}

@@ -1,9 +1,8 @@
 package org.dasein.cloud.vsphere.compute;
 
+import com.sun.xml.ws.fault.ServerSOAPFaultException;
 import com.vmware.vim25.*;
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.SerializationConfig;
 import org.dasein.cloud.CloudException;
 import org.dasein.cloud.InternalException;
 import org.dasein.cloud.OperationNotSupportedException;
@@ -154,9 +153,9 @@ public class Vm extends AbstractVMSupport<Vsphere> {
             CloudException lastError;
             ManagedObjectReference taskMor = reconfigVMTask(vmRef, spec);
             VsphereMethod method = new VsphereMethod(getProvider());
-            TimePeriod interval = new TimePeriod<Second>(15, TimePeriod.SECOND);
+            TimePeriod interval = new TimePeriod<Second>(30, TimePeriod.SECOND);
 
-            if( taskMor != null && method.getOperationComplete(taskMor, interval, 4) ) {
+            if( taskMor != null && method.getOperationComplete(taskMor, interval, 10) ) {
                 long timeout = System.currentTimeMillis() + ( CalendarWrapper.MINUTE * 20L );
 
                 while( System.currentTimeMillis() < timeout ) {
@@ -249,8 +248,8 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                 taskMor = cloneVmTask(vmRef, vmFolder, name, spec);
 
                 VsphereMethod method = new VsphereMethod(getProvider());
-                TimePeriod interval = new TimePeriod<Second>(15, TimePeriod.SECOND);
-                if (method.getOperationComplete(taskMor, interval, 4)) {
+                TimePeriod interval = new TimePeriod<Second>(30, TimePeriod.SECOND);
+                if (method.getOperationComplete(taskMor, interval, 20)) {
                     PropertyChange pChange = method.getTaskResult();
                     ManagedObjectReference newVmRef = (ManagedObjectReference) pChange.getVal();
 
@@ -537,7 +536,7 @@ public class Vm extends AbstractVMSupport<Vsphere> {
             ProviderContext ctx = getProvider().getContext();
 
             if( ctx == null ) {
-                throw new InternalException("No context was set for this request");
+                throw new NoContextException();
             }
 
             if (ctx.getRegionId() == null) {
@@ -1288,8 +1287,8 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                 if (!vm.getCurrentState().equals(VmState.STOPPED)) {
                     ManagedObjectReference taskMor = vimPortType.powerOffVMTask(vmRef);
                     VsphereMethod method = new VsphereMethod(getProvider());
-                    TimePeriod interval = new TimePeriod<Second>(15, TimePeriod.SECOND);
-                    if (!method.getOperationComplete(taskMor, interval, 4)) {
+                    TimePeriod interval = new TimePeriod<Second>(30, TimePeriod.SECOND);
+                    if (!method.getOperationComplete(taskMor, interval, 10)) {
                         throw new CloudException("Error stopping vm prior to termination: "+method.getTaskError().getVal());
                     }
                 }
@@ -1360,6 +1359,8 @@ public class Vm extends AbstractVMSupport<Vsphere> {
             throw new CloudException("InvalidDatastoreFaultMsg when cloning vm", invalidDatastoreFaultMsg);
         } catch (MigrationFaultFaultMsg migrationFaultFaultMsg) {
             throw new CloudException("MigrationFaultFaultMsg when cloning vm", migrationFaultFaultMsg);
+        } catch (ServerSOAPFaultException serverSoapFaultException) {
+            throw new CloudException("ServerSOAPFaultException when cloning vm: "+serverSoapFaultException.getFault().getFaultString(), serverSoapFaultException);
         }
     }
 

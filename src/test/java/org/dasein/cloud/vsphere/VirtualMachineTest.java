@@ -1,5 +1,6 @@
 package org.dasein.cloud.vsphere;
 
+import com.sun.xml.ws.fault.ServerSOAPFaultException;
 import com.vmware.vim25.*;
 import mockit.Expectations;
 import mockit.Mocked;
@@ -29,6 +30,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import javax.naming.InsufficientResourcesException;
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPFactory;
+import javax.xml.soap.SOAPFault;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,6 +59,7 @@ public class VirtualMachineTest extends VsphereTestBase {
     private RetrieveResult virtualMachinePostClone;
     private RetrieveResult virtualMachinesPostTerminate;
     private RetrieveResult launchVmTemplates;
+    private RetrieveResult launchVmTemplatesNoConfig;
     private RetrieveResult virtualMachinesPostLaunch;
     private final RetrieveResult resourcePools = om.readJsonFile("src/test/resources/VirtualMachine/resourcePools.json", RetrieveResult.class);
 
@@ -66,7 +72,15 @@ public class VirtualMachineTest extends VsphereTestBase {
     private final PropertyChange launchResult = om.readJsonFile("src/test/resources/VirtualMachine/launchResult.json", PropertyChange.class);
     private final PropertyChange launchWinVmResult = om.readJsonFile("src/test/resources/VirtualMachine/launchWinVmResult.json", PropertyChange.class);
     private final ManagedObjectReference task = om.readJsonFile("src/test/resources/VirtualMachine/task.json", ManagedObjectReference.class);
-    private final VMLaunchOptions winLaunchOptions = om.readJsonFile("src/test/resources/VirtualMachine/vmLaunchOptionsWinCustomisation.json", VMLaunchOptions.class);
+    private final VMLaunchOptions winLaunchOptions = om.readJsonFile("src/test/resources/VirtualMachine/LaunchCustomisation/vmLaunchOptionsWinCustomisation.json", VMLaunchOptions.class);
+    private final VMLaunchOptions winLaunchOptionsNoDnsDomain = om.readJsonFile("src/test/resources/VirtualMachine/LaunchCustomisation/vmLaunchOptionsWinCustomisationNoDnsDomain.json", VMLaunchOptions.class);
+    private final VMLaunchOptions winLaunchOptionsNoDnsServerList = om.readJsonFile("src/test/resources/VirtualMachine/LaunchCustomisation/vmLaunchOptionsWinCustomisationNoDnsServerList.json", VMLaunchOptions.class);
+    private final VMLaunchOptions winLaunchOptionsNoDnsSuffixList = om.readJsonFile("src/test/resources/VirtualMachine/LaunchCustomisation/vmLaunchOptionsWinCustomisationNoDnsSuffixList.json", VMLaunchOptions.class);
+    private final VMLaunchOptions winLaunchOptionsNoGatewayList = om.readJsonFile("src/test/resources/VirtualMachine/LaunchCustomisation/vmLaunchOptionsWinCustomisationNoGatewayList.json", VMLaunchOptions.class);
+    private final VMLaunchOptions winLaunchOptionsNoOwner = om.readJsonFile("src/test/resources/VirtualMachine/LaunchCustomisation/vmLaunchOptionsWinCustomisationNoOwner.json", VMLaunchOptions.class);
+    private final VMLaunchOptions winLaunchOptionsNoWorkgroupName = om.readJsonFile("src/test/resources/VirtualMachine/LaunchCustomisation/vmLaunchOptionsWinCustomisationNoWorkgroup.json", VMLaunchOptions.class);
+    private final VMLaunchOptions winLaunchOptionsNoOrgName = om.readJsonFile("src/test/resources/VirtualMachine/LaunchCustomisation/vmLaunchOptionsWinCustomisationNoOrg.json", VMLaunchOptions.class);
+    private final VMLaunchOptions winLaunchOptionsNoSerial = om.readJsonFile("src/test/resources/VirtualMachine/LaunchCustomisation/vmLaunchOptionsWinCustomisationNoSerial.json", VMLaunchOptions.class);
     private final VLAN[] daseinNetworks = om.readJsonFile("src/test/resources/VirtualMachine/daseinNetworks.json", VLAN[].class);
 
     private Vm vm = null;
@@ -116,6 +130,7 @@ public class VirtualMachineTest extends VsphereTestBase {
         virtualMachinePostClone = om.readJsonFile("src/test/resources/VirtualMachine/virtualMachinesPostClone.json", RetrieveResult.class);
         virtualMachinesPostTerminate = om.readJsonFile("src/test/resources/VirtualMachine/virtualMachinesPostTerminate.json", RetrieveResult.class);
         launchVmTemplates = om.readJsonFile("src/test/resources/VirtualMachine/launchVmTemplates.json", RetrieveResult.class);
+        launchVmTemplatesNoConfig = om.readJsonFile("src/test/resources/VirtualMachine/vmTemplatesNoConfigProperty.json", RetrieveResult.class);
         virtualMachinesPostLaunch = om.readJsonFile("src/test/resources/VirtualMachine/virtualMachinesPostLaunch.json", RetrieveResult.class);
     }
 
@@ -2019,7 +2034,7 @@ public class VirtualMachineTest extends VsphereTestBase {
     }
 
     @Test(expected = OperationNotSupportedException.class)
-    public void suspendVirtualMachineShouldThrowExceptionIfVmIsStopped() throws CloudException, InternalException {
+    public void suspendVirtualMachineShouldThrowExceptionIfVmIsNotRunning() throws CloudException, InternalException {
         new Expectations(Vm.class) {
             {vm.retrieveObjectList(vsphereMock, "vmFolder", null, vmPSpec);
                 result = virtualMachines;
@@ -2408,7 +2423,11 @@ public class VirtualMachineTest extends VsphereTestBase {
         new Expectations(Vm.class) {
             {vm.retrieveObjectList(vsphereMock, "vmFolder", null, launchVmPSpec);
                 result = launchVmTemplates;
+                times = 1;
+            }
+            {vm.retrieveObjectList(vsphereMock, "vmFolder", null, vmPSpec);
                 result = virtualMachinesPostLaunch;
+                minTimes = 1;
             }
             {vm.getResourcePools(anyBoolean);
                 result = daseinRootResourcePools;
@@ -2421,9 +2440,6 @@ public class VirtualMachineTest extends VsphereTestBase {
             }
             {vm.start(anyString);
             }
-            //{vm.retrieveObjectList(vsphereMock, "vmFolder", null, vmPSpec);
-            //    result = virtualMachinesPostLaunch;
-            //}
         };
 
         new Expectations(VsphereMethod.class) {
@@ -2455,7 +2471,84 @@ public class VirtualMachineTest extends VsphereTestBase {
         };
 
         VMLaunchOptions options = VMLaunchOptions.getInstance("1:1024", "vm-276", "testvm-stateful-1447150661369", "Test VM for stateful integration tests for Dasein Cloud");
-        options.inDataCenter("domain-c45");
+        VirtualMachine v = vm.launch(options);
+        assertNotNull(v);
+        assertEquals("vm-284", v.getProviderVirtualMachineId());
+        assertEquals("testvm-stateful-1447150661369", v.getName());
+        assertEquals(Platform.UBUNTU, v.getPlatform());
+        assertEquals(Architecture.I64, v.getArchitecture());
+        assertEquals("Ubuntu Linux (64-bit)", v.getDescription());
+        assertEquals("1:1024", v.getProductId());
+        assertEquals("host-49", v.getAffinityGroupId());
+        assertEquals("resgroup-46", v.getResourcePoolId());
+        assertEquals("vm-276", v.getProviderMachineImageId());
+        assertEquals("network-77", v.getProviderVlanId());
+        assertNull(v.getPrivateDnsAddress());
+        assertNull(v.getProviderAssignedIpAddressId());
+        assertEquals(VmState.RUNNING, v.getCurrentState());
+        assertTrue(v.isRebootable());
+        assertEquals("TESTACCOUNTNO", v.getProviderOwnerId());
+        assertEquals("domain-c45", v.getProviderDataCenterId());
+        assertEquals("datacenter-2", v.getProviderRegionId());
+        assertEquals("vm", v.getTag("vmFolder"));
+        assertEquals("group-v3", v.getTag("vmFolderId"));
+        assertEquals("datastore-62", v.getTag("datastore0"));
+    }
+
+    @Test
+    public void launchVirtualMachineForAPIVersionLessThan6ShouldNotCallReconfigOrStartTasks() throws CloudException, InternalException {
+        new Expectations(Vm.class) {
+            {vm.retrieveObjectList(vsphereMock, "vmFolder", null, launchVmPSpec);
+                result = launchVmTemplates;
+                times = 1;
+            }
+            {vm.retrieveObjectList(vsphereMock, "vmFolder", null, vmPSpec);
+                result = virtualMachinesPostLaunch;
+                minTimes = 1;
+            }
+            {vm.getResourcePools(anyBoolean);
+                result = daseinRootResourcePools;
+            }
+            {vm.cloneVmTask((ManagedObjectReference) any, (ManagedObjectReference) any, anyString, (VirtualMachineCloneSpec) any);
+                result = task;
+            }
+            {vm.reconfigVMTask((ManagedObjectReference) any, (VirtualMachineConfigSpec) any);
+                times = 0;
+            }
+            {vm.start(anyString);
+                times = 0;
+            }
+        };
+
+        new Expectations(VsphereMethod.class) {
+            {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
+                result = true;
+                times = 1;
+            }
+            {method.getTaskResult();
+                result = launchResult;
+            }
+        };
+
+        new NonStrictExpectations() {
+            {vsphereMock.getApiMajorVersion();
+                result = 5;
+            }
+            {vsphereMock.getDataCenterServices();
+                result = dcMock;
+            }
+            {dcMock.listDataCenters(anyString);
+                result = daseinDatacenter;
+            }
+            {dcMock.listVMFolders();
+                result = vmFolders;
+            }
+            {dcMock.getDataCenter(anyString);
+                result = daseinDatacenter;
+            }
+        };
+
+        VMLaunchOptions options = VMLaunchOptions.getInstance("1:1024", "vm-276", "testvm-stateful-1447150661369", "Test VM for stateful integration tests for Dasein Cloud");
         VirtualMachine v = vm.launch(options);
         assertNotNull(v);
         assertEquals("vm-284", v.getProviderVirtualMachineId());
@@ -2485,7 +2578,11 @@ public class VirtualMachineTest extends VsphereTestBase {
         new Expectations(Vm.class) {
             {vm.retrieveObjectList(vsphereMock, "vmFolder", null, launchVmPSpec);
                 result = launchVmTemplates;
+                times = 1;
+            }
+            {vm.retrieveObjectList(vsphereMock, "vmFolder", null, vmPSpec);
                 result = virtualMachinesPostLaunch;
+                minTimes = 1;
             }
             {vm.getResourcePools(anyBoolean);
                 result = daseinRootResourcePools;
@@ -2560,5 +2657,1108 @@ public class VirtualMachineTest extends VsphereTestBase {
         assertEquals("Discovered virtual machine", v.getTag("vmFolder"));
         assertEquals("group-v133", v.getTag("vmFolderId"));
         assertEquals("datastore-61", v.getTag("datastore0"));
+    }
+
+    @Test
+    public void launchCustomisedWindowsVmShouldSucceedIfDNSDomainIsNull() throws CloudException, InternalException {
+        new Expectations(Vm.class) {
+            {vm.retrieveObjectList(vsphereMock, "vmFolder", null, launchVmPSpec);
+                result = launchVmTemplates;
+                times = 1;
+            }
+            {vm.retrieveObjectList(vsphereMock, "vmFolder", null, vmPSpec);
+                result = virtualMachinesPostLaunch;
+                minTimes = 1;
+            }
+            {vm.getResourcePools(anyBoolean);
+                result = daseinRootResourcePools;
+            }
+            {vm.cloneVmTask((ManagedObjectReference) any, (ManagedObjectReference) any, anyString, (VirtualMachineCloneSpec) any);
+                result = task;
+            }
+            {vm.reconfigVMTask((ManagedObjectReference) any, (VirtualMachineConfigSpec) any);
+                result = task;
+            }
+            {vm.start(anyString);
+            }
+        };
+
+        new Expectations(VsphereMethod.class) {
+            {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
+                result = true;
+                times = 2;
+            }
+            {method.getTaskResult();
+                result = launchWinVmResult;
+            }
+        };
+
+        new NonStrictExpectations() {
+            {vsphereMock.getApiMajorVersion();
+                result = 6;
+            }
+            {vsphereMock.getDataCenterServices();
+                result = dcMock;
+            }
+            {dcMock.listDataCenters(anyString);
+                result = daseinDatacenter;
+            }
+            {dcMock.listVMFolders();
+                result = vmFolders;
+            }
+            {dcMock.getDataCenter(anyString);
+                result = daseinDatacenter;
+            }
+            {vsphereMock.getNetworkServices();
+                result = vsphereNetworkMock;
+            }
+            {vsphereNetworkMock.getVlanSupport();
+                result = netMock;
+            }
+            {netMock.listVlans();
+                result = daseinNetworks;
+            }
+        };
+
+        VMLaunchOptions options = winLaunchOptionsNoDnsDomain;
+        VirtualMachine v = vm.launch(options);
+        assertNotNull(v);
+        assertEquals("vm-279", v.getProviderVirtualMachineId());
+        assertEquals("testvm-stateful-1443524218811", v.getName());
+        assertEquals(Platform.WINDOWS, v.getPlatform());
+        assertEquals(Architecture.I64, v.getArchitecture());
+        assertEquals("Microsoft Windows Server 2012 (64-bit)", v.getDescription());
+        assertEquals("2:2048", v.getProductId());
+        assertEquals("host-47", v.getAffinityGroupId());
+        assertEquals("resgroup-46", v.getResourcePoolId());
+        assertEquals("vm-87", v.getProviderMachineImageId());
+        assertEquals("network-77", v.getProviderVlanId());
+        assertEquals("testvm-stateful-1443524218811", v.getPrivateDnsAddress());
+        assertEquals("192.168.7.16",  v.getProviderAssignedIpAddressId());
+        assertEquals(VmState.RUNNING, v.getCurrentState());
+        assertTrue(v.isRebootable());
+        assertEquals("TESTACCOUNTNO", v.getProviderOwnerId());
+        assertEquals("domain-c45", v.getProviderDataCenterId());
+        assertEquals("datacenter-2", v.getProviderRegionId());
+        assertEquals("Discovered virtual machine", v.getTag("vmFolder"));
+        assertEquals("group-v133", v.getTag("vmFolderId"));
+        assertEquals("datastore-61", v.getTag("datastore0"));
+    }
+
+    @Test
+    public void launchCustomisedWindowsVmShouldSucceedIfDnsServerListIsNull() throws CloudException, InternalException {
+        new Expectations(Vm.class) {
+            {vm.retrieveObjectList(vsphereMock, "vmFolder", null, launchVmPSpec);
+                result = launchVmTemplates;
+                times = 1;
+            }
+            {vm.retrieveObjectList(vsphereMock, "vmFolder", null, vmPSpec);
+                result = virtualMachinesPostLaunch;
+                minTimes = 1;
+            }
+            {vm.getResourcePools(anyBoolean);
+                result = daseinRootResourcePools;
+            }
+            {vm.cloneVmTask((ManagedObjectReference) any, (ManagedObjectReference) any, anyString, (VirtualMachineCloneSpec) any);
+                result = task;
+            }
+            {vm.reconfigVMTask((ManagedObjectReference) any, (VirtualMachineConfigSpec) any);
+                result = task;
+            }
+            {vm.start(anyString);
+            }
+        };
+
+        new Expectations(VsphereMethod.class) {
+            {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
+                result = true;
+                times = 2;
+            }
+            {method.getTaskResult();
+                result = launchWinVmResult;
+            }
+        };
+
+        new NonStrictExpectations() {
+            {vsphereMock.getApiMajorVersion();
+                result = 6;
+            }
+            {vsphereMock.getDataCenterServices();
+                result = dcMock;
+            }
+            {dcMock.listDataCenters(anyString);
+                result = daseinDatacenter;
+            }
+            {dcMock.listVMFolders();
+                result = vmFolders;
+            }
+            {dcMock.getDataCenter(anyString);
+                result = daseinDatacenter;
+            }
+            {vsphereMock.getNetworkServices();
+                result = vsphereNetworkMock;
+            }
+            {vsphereNetworkMock.getVlanSupport();
+                result = netMock;
+            }
+            {netMock.listVlans();
+                result = daseinNetworks;
+            }
+        };
+
+        VMLaunchOptions options = winLaunchOptionsNoDnsServerList;
+        VirtualMachine v = vm.launch(options);
+        assertNotNull(v);
+        assertEquals("vm-279", v.getProviderVirtualMachineId());
+        assertEquals("testvm-stateful-1443524218811", v.getName());
+        assertEquals(Platform.WINDOWS, v.getPlatform());
+        assertEquals(Architecture.I64, v.getArchitecture());
+        assertEquals("Microsoft Windows Server 2012 (64-bit)", v.getDescription());
+        assertEquals("2:2048", v.getProductId());
+        assertEquals("host-47", v.getAffinityGroupId());
+        assertEquals("resgroup-46", v.getResourcePoolId());
+        assertEquals("vm-87", v.getProviderMachineImageId());
+        assertEquals("network-77", v.getProviderVlanId());
+        assertEquals("testvm-stateful-1443524218811", v.getPrivateDnsAddress());
+        assertEquals("192.168.7.16",  v.getProviderAssignedIpAddressId());
+        assertEquals(VmState.RUNNING, v.getCurrentState());
+        assertTrue(v.isRebootable());
+        assertEquals("TESTACCOUNTNO", v.getProviderOwnerId());
+        assertEquals("domain-c45", v.getProviderDataCenterId());
+        assertEquals("datacenter-2", v.getProviderRegionId());
+        assertEquals("Discovered virtual machine", v.getTag("vmFolder"));
+        assertEquals("group-v133", v.getTag("vmFolderId"));
+        assertEquals("datastore-61", v.getTag("datastore0"));
+    }
+
+    @Test
+    public void launchCustomisedWindowsVmShouldSucceedIfDnsSuffixListIsNull() throws CloudException, InternalException {
+        new Expectations(Vm.class) {
+            {vm.retrieveObjectList(vsphereMock, "vmFolder", null, launchVmPSpec);
+                result = launchVmTemplates;
+                times = 1;
+            }
+            {vm.retrieveObjectList(vsphereMock, "vmFolder", null, vmPSpec);
+                result = virtualMachinesPostLaunch;
+                minTimes = 1;
+            }
+            {vm.getResourcePools(anyBoolean);
+                result = daseinRootResourcePools;
+            }
+            {vm.cloneVmTask((ManagedObjectReference) any, (ManagedObjectReference) any, anyString, (VirtualMachineCloneSpec) any);
+                result = task;
+            }
+            {vm.reconfigVMTask((ManagedObjectReference) any, (VirtualMachineConfigSpec) any);
+                result = task;
+            }
+            {vm.start(anyString);
+            }
+        };
+
+        new Expectations(VsphereMethod.class) {
+            {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
+                result = true;
+                times = 2;
+            }
+            {method.getTaskResult();
+                result = launchWinVmResult;
+            }
+        };
+
+        new NonStrictExpectations() {
+            {vsphereMock.getApiMajorVersion();
+                result = 6;
+            }
+            {vsphereMock.getDataCenterServices();
+                result = dcMock;
+            }
+            {dcMock.listDataCenters(anyString);
+                result = daseinDatacenter;
+            }
+            {dcMock.listVMFolders();
+                result = vmFolders;
+            }
+            {dcMock.getDataCenter(anyString);
+                result = daseinDatacenter;
+            }
+            {vsphereMock.getNetworkServices();
+                result = vsphereNetworkMock;
+            }
+            {vsphereNetworkMock.getVlanSupport();
+                result = netMock;
+            }
+            {netMock.listVlans();
+                result = daseinNetworks;
+            }
+        };
+
+        VMLaunchOptions options = winLaunchOptionsNoDnsSuffixList;
+        VirtualMachine v = vm.launch(options);
+        assertNotNull(v);
+        assertEquals("vm-279", v.getProviderVirtualMachineId());
+        assertEquals("testvm-stateful-1443524218811", v.getName());
+        assertEquals(Platform.WINDOWS, v.getPlatform());
+        assertEquals(Architecture.I64, v.getArchitecture());
+        assertEquals("Microsoft Windows Server 2012 (64-bit)", v.getDescription());
+        assertEquals("2:2048", v.getProductId());
+        assertEquals("host-47", v.getAffinityGroupId());
+        assertEquals("resgroup-46", v.getResourcePoolId());
+        assertEquals("vm-87", v.getProviderMachineImageId());
+        assertEquals("network-77", v.getProviderVlanId());
+        assertEquals("testvm-stateful-1443524218811", v.getPrivateDnsAddress());
+        assertEquals("192.168.7.16",  v.getProviderAssignedIpAddressId());
+        assertEquals(VmState.RUNNING, v.getCurrentState());
+        assertTrue(v.isRebootable());
+        assertEquals("TESTACCOUNTNO", v.getProviderOwnerId());
+        assertEquals("domain-c45", v.getProviderDataCenterId());
+        assertEquals("datacenter-2", v.getProviderRegionId());
+        assertEquals("Discovered virtual machine", v.getTag("vmFolder"));
+        assertEquals("group-v133", v.getTag("vmFolderId"));
+        assertEquals("datastore-61", v.getTag("datastore0"));
+    }
+
+    @Test
+    public void launchCustomisedWindowsVmShouldSucceedIfGatewayListIsNull() throws CloudException, InternalException {
+        new Expectations(Vm.class) {
+            {vm.retrieveObjectList(vsphereMock, "vmFolder", null, launchVmPSpec);
+                result = launchVmTemplates;
+                times = 1;
+            }
+            {vm.retrieveObjectList(vsphereMock, "vmFolder", null, vmPSpec);
+                result = virtualMachinesPostLaunch;
+                minTimes = 1;
+            }
+            {vm.getResourcePools(anyBoolean);
+                result = daseinRootResourcePools;
+            }
+            {vm.cloneVmTask((ManagedObjectReference) any, (ManagedObjectReference) any, anyString, (VirtualMachineCloneSpec) any);
+                result = task;
+            }
+            {vm.reconfigVMTask((ManagedObjectReference) any, (VirtualMachineConfigSpec) any);
+                result = task;
+            }
+            {vm.start(anyString);
+            }
+        };
+
+        new Expectations(VsphereMethod.class) {
+            {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
+                result = true;
+                times = 2;
+            }
+            {method.getTaskResult();
+                result = launchWinVmResult;
+            }
+        };
+
+        new NonStrictExpectations() {
+            {vsphereMock.getApiMajorVersion();
+                result = 6;
+            }
+            {vsphereMock.getDataCenterServices();
+                result = dcMock;
+            }
+            {dcMock.listDataCenters(anyString);
+                result = daseinDatacenter;
+            }
+            {dcMock.listVMFolders();
+                result = vmFolders;
+            }
+            {dcMock.getDataCenter(anyString);
+                result = daseinDatacenter;
+            }
+            {vsphereMock.getNetworkServices();
+                result = vsphereNetworkMock;
+            }
+            {vsphereNetworkMock.getVlanSupport();
+                result = netMock;
+            }
+            {netMock.listVlans();
+                result = daseinNetworks;
+            }
+        };
+
+        VMLaunchOptions options = winLaunchOptionsNoGatewayList;
+        VirtualMachine v = vm.launch(options);
+        assertNotNull(v);
+        assertEquals("vm-279", v.getProviderVirtualMachineId());
+        assertEquals("testvm-stateful-1443524218811", v.getName());
+        assertEquals(Platform.WINDOWS, v.getPlatform());
+        assertEquals(Architecture.I64, v.getArchitecture());
+        assertEquals("Microsoft Windows Server 2012 (64-bit)", v.getDescription());
+        assertEquals("2:2048", v.getProductId());
+        assertEquals("host-47", v.getAffinityGroupId());
+        assertEquals("resgroup-46", v.getResourcePoolId());
+        assertEquals("vm-87", v.getProviderMachineImageId());
+        assertEquals("network-77", v.getProviderVlanId());
+        assertEquals("testvm-stateful-1443524218811", v.getPrivateDnsAddress());
+        assertEquals("192.168.7.16",  v.getProviderAssignedIpAddressId());
+        assertEquals(VmState.RUNNING, v.getCurrentState());
+        assertTrue(v.isRebootable());
+        assertEquals("TESTACCOUNTNO", v.getProviderOwnerId());
+        assertEquals("domain-c45", v.getProviderDataCenterId());
+        assertEquals("datacenter-2", v.getProviderRegionId());
+        assertEquals("Discovered virtual machine", v.getTag("vmFolder"));
+        assertEquals("group-v133", v.getTag("vmFolderId"));
+        assertEquals("datastore-61", v.getTag("datastore0"));
+    }
+
+    @Test
+    public void launchCustomisedWindowsVmShouldSucceedIfWorkgroupIsNull() throws CloudException, InternalException {
+        new Expectations(Vm.class) {
+            {vm.retrieveObjectList(vsphereMock, "vmFolder", null, launchVmPSpec);
+                result = launchVmTemplates;
+                times = 1;
+            }
+            {vm.retrieveObjectList(vsphereMock, "vmFolder", null, vmPSpec);
+                result = virtualMachinesPostLaunch;
+                minTimes = 1;
+            }
+            {vm.getResourcePools(anyBoolean);
+                result = daseinRootResourcePools;
+            }
+            {vm.cloneVmTask((ManagedObjectReference) any, (ManagedObjectReference) any, anyString, (VirtualMachineCloneSpec) any);
+                result = task;
+            }
+            {vm.reconfigVMTask((ManagedObjectReference) any, (VirtualMachineConfigSpec) any);
+                result = task;
+            }
+            {vm.start(anyString);
+            }
+        };
+
+        new Expectations(VsphereMethod.class) {
+            {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
+                result = true;
+                times = 2;
+            }
+            {method.getTaskResult();
+                result = launchWinVmResult;
+            }
+        };
+
+        new NonStrictExpectations() {
+            {vsphereMock.getApiMajorVersion();
+                result = 6;
+            }
+            {vsphereMock.getDataCenterServices();
+                result = dcMock;
+            }
+            {dcMock.listDataCenters(anyString);
+                result = daseinDatacenter;
+            }
+            {dcMock.listVMFolders();
+                result = vmFolders;
+            }
+            {dcMock.getDataCenter(anyString);
+                result = daseinDatacenter;
+            }
+            {vsphereMock.getNetworkServices();
+                result = vsphereNetworkMock;
+            }
+            {vsphereNetworkMock.getVlanSupport();
+                result = netMock;
+            }
+            {netMock.listVlans();
+                result = daseinNetworks;
+            }
+        };
+
+        VMLaunchOptions options = winLaunchOptionsNoWorkgroupName;
+        VirtualMachine v = vm.launch(options);
+        assertNotNull(v);
+        assertEquals("vm-279", v.getProviderVirtualMachineId());
+        assertEquals("testvm-stateful-1443524218811", v.getName());
+        assertEquals(Platform.WINDOWS, v.getPlatform());
+        assertEquals(Architecture.I64, v.getArchitecture());
+        assertEquals("Microsoft Windows Server 2012 (64-bit)", v.getDescription());
+        assertEquals("2:2048", v.getProductId());
+        assertEquals("host-47", v.getAffinityGroupId());
+        assertEquals("resgroup-46", v.getResourcePoolId());
+        assertEquals("vm-87", v.getProviderMachineImageId());
+        assertEquals("network-77", v.getProviderVlanId());
+        assertEquals("testvm-stateful-1443524218811", v.getPrivateDnsAddress());
+        assertEquals("192.168.7.16",  v.getProviderAssignedIpAddressId());
+        assertEquals(VmState.RUNNING, v.getCurrentState());
+        assertTrue(v.isRebootable());
+        assertEquals("TESTACCOUNTNO", v.getProviderOwnerId());
+        assertEquals("domain-c45", v.getProviderDataCenterId());
+        assertEquals("datacenter-2", v.getProviderRegionId());
+        assertEquals("Discovered virtual machine", v.getTag("vmFolder"));
+        assertEquals("group-v133", v.getTag("vmFolderId"));
+        assertEquals("datastore-61", v.getTag("datastore0"));
+    }
+
+    @Test
+    public void launchCustomisedWindowsVmShouldSucceedIfSerialNumberIsNull() throws CloudException, InternalException {
+        new Expectations(Vm.class) {
+            {vm.retrieveObjectList(vsphereMock, "vmFolder", null, launchVmPSpec);
+                result = launchVmTemplates;
+                times = 1;
+            }
+            {vm.retrieveObjectList(vsphereMock, "vmFolder", null, vmPSpec);
+                result = virtualMachinesPostLaunch;
+                minTimes = 1;
+            }
+            {vm.getResourcePools(anyBoolean);
+                result = daseinRootResourcePools;
+            }
+            {vm.cloneVmTask((ManagedObjectReference) any, (ManagedObjectReference) any, anyString, (VirtualMachineCloneSpec) any);
+                result = task;
+            }
+            {vm.reconfigVMTask((ManagedObjectReference) any, (VirtualMachineConfigSpec) any);
+                result = task;
+            }
+            {vm.start(anyString);
+            }
+        };
+
+        new Expectations(VsphereMethod.class) {
+            {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
+                result = true;
+                times = 2;
+            }
+            {method.getTaskResult();
+                result = launchWinVmResult;
+            }
+        };
+
+        new NonStrictExpectations() {
+            {vsphereMock.getApiMajorVersion();
+                result = 6;
+            }
+            {vsphereMock.getDataCenterServices();
+                result = dcMock;
+            }
+            {dcMock.listDataCenters(anyString);
+                result = daseinDatacenter;
+            }
+            {dcMock.listVMFolders();
+                result = vmFolders;
+            }
+            {dcMock.getDataCenter(anyString);
+                result = daseinDatacenter;
+            }
+            {vsphereMock.getNetworkServices();
+                result = vsphereNetworkMock;
+            }
+            {vsphereNetworkMock.getVlanSupport();
+                result = netMock;
+            }
+            {netMock.listVlans();
+                result = daseinNetworks;
+            }
+        };
+
+        VMLaunchOptions options = winLaunchOptionsNoSerial;
+        VirtualMachine v = vm.launch(options);
+        assertNotNull(v);
+        assertEquals("vm-279", v.getProviderVirtualMachineId());
+        assertEquals("testvm-stateful-1443524218811", v.getName());
+        assertEquals(Platform.WINDOWS, v.getPlatform());
+        assertEquals(Architecture.I64, v.getArchitecture());
+        assertEquals("Microsoft Windows Server 2012 (64-bit)", v.getDescription());
+        assertEquals("2:2048", v.getProductId());
+        assertEquals("host-47", v.getAffinityGroupId());
+        assertEquals("resgroup-46", v.getResourcePoolId());
+        assertEquals("vm-87", v.getProviderMachineImageId());
+        assertEquals("network-77", v.getProviderVlanId());
+        assertEquals("testvm-stateful-1443524218811", v.getPrivateDnsAddress());
+        assertEquals("192.168.7.16",  v.getProviderAssignedIpAddressId());
+        assertEquals(VmState.RUNNING, v.getCurrentState());
+        assertTrue(v.isRebootable());
+        assertEquals("TESTACCOUNTNO", v.getProviderOwnerId());
+        assertEquals("domain-c45", v.getProviderDataCenterId());
+        assertEquals("datacenter-2", v.getProviderRegionId());
+        assertEquals("Discovered virtual machine", v.getTag("vmFolder"));
+        assertEquals("group-v133", v.getTag("vmFolderId"));
+        assertEquals("datastore-61", v.getTag("datastore0"));
+    }
+
+    @Test
+    public void launchVirtualMachineShouldReturnNullIfConfigPropertyIsMissingFromTemplateList() throws CloudException, InternalException {
+        new Expectations(Vm.class) {
+            {vm.retrieveObjectList(vsphereMock, "vmFolder", null, launchVmPSpec);
+                result = launchVmTemplatesNoConfig;
+            }
+        };
+
+        vm.launch(VMLaunchOptions.getInstance("1:1024", "vm-276", "testvm-stateful-1447150661369", "Test VM for stateful integration tests for Dasein Cloud"));
+    }
+
+    @Test(expected = NoContextException.class)
+    public void launchVirtualMachineShouldThrowExceptionIfContextIsNull() throws CloudException, InternalException {
+        new NonStrictExpectations() {
+            {vsphereMock.getContext();
+                result = null;
+            }
+        };
+
+        vm.launch(VMLaunchOptions.getInstance("blah", "blah", "blah", "blah"));
+    }
+
+    @Test(expected = CloudException.class)
+    public void launchVirtualMachineShouldThrowExceptionIfRegionIsNull() throws CloudException, InternalException {
+        new NonStrictExpectations() {
+            {providerContextMock.getRegionId();
+                result = null;
+            }
+        };
+
+        vm.launch(VMLaunchOptions.getInstance("blah", "blah", "blah", "blah"));
+    }
+
+    @Test(expected = CloudException.class)
+    public void launchVirtualMachineShouldThrowExceptionIfMachineImageIdIsInvalid() throws CloudException, InternalException {
+        new Expectations(Vm.class) {
+            {vm.retrieveObjectList(vsphereMock, "vmFolder", null, launchVmPSpec);
+                result = launchVmTemplates;
+            }
+
+        };
+
+        vm.launch(VMLaunchOptions.getInstance("blah", "MyFakeImage", "blah", "blah"));
+    }
+
+    @Test(expected = CloudException.class)
+    public void launchVirtualMachineShouldThrowExceptionIfCloneTaskFails() throws CloudException, InternalException {
+        new Expectations(Vm.class) {
+            {vm.retrieveObjectList(vsphereMock, "vmFolder", null, launchVmPSpec);
+                result = launchVmTemplates;
+            }
+            {vm.getResourcePools(anyBoolean);
+                result = daseinRootResourcePools;
+            }
+            {vm.cloneVmTask((ManagedObjectReference) any, (ManagedObjectReference) any, anyString, (VirtualMachineCloneSpec) any);
+                result = task;
+            }
+            {vm.reconfigVMTask((ManagedObjectReference) any, (VirtualMachineConfigSpec) any);
+                times = 0;
+            }
+            {vm.start(anyString);
+                times = 0;
+            }
+        };
+
+        new Expectations(VsphereMethod.class) {
+            {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
+                result = false;
+            }
+            {method.getTaskResult();
+                times = 0;
+            }
+            {method.getTaskError().getVal();
+                result = "Clone during launch failed";
+            }
+        };
+
+        new NonStrictExpectations() {
+            {vsphereMock.getApiMajorVersion();
+                result = 6;
+            }
+            {vsphereMock.getDataCenterServices();
+                result = dcMock;
+            }
+            {dcMock.listVMFolders();
+                result = vmFolders;
+            }
+        };
+
+        VMLaunchOptions options = VMLaunchOptions.getInstance("1:1024", "vm-276", "testvm-stateful-1447150661369", "Test VM for stateful integration tests for Dasein Cloud");
+        options.inDataCenter("domain-c45");
+        vm.launch(options);
+    }
+
+    @Test(expected = CloudException.class)
+    public void launchVirtualMachineShouldThrowExceptionIfApiVersion6AndReconfigTaskFails() throws CloudException, InternalException {
+        new Expectations(Vm.class) {
+            {vm.retrieveObjectList(vsphereMock, "vmFolder", null, launchVmPSpec);
+                result = launchVmTemplates;
+            }
+            {vm.getResourcePools(anyBoolean);
+                result = daseinRootResourcePools;
+            }
+            {vm.cloneVmTask((ManagedObjectReference) any, (ManagedObjectReference) any, anyString, (VirtualMachineCloneSpec) any);
+                result = task;
+            }
+            {vm.reconfigVMTask((ManagedObjectReference) any, (VirtualMachineConfigSpec) any);
+                result = task;
+            }
+            {vm.start(anyString);
+                times = 0;
+            }
+        };
+
+        new Expectations(VsphereMethod.class) {
+            {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
+                result = true;
+                result = false;
+            }
+            {method.getTaskResult();
+                result = launchResult;
+            }
+            {method.getTaskError().getVal();
+                result = "Reconfig during launch failed";
+            }
+        };
+
+        new NonStrictExpectations() {
+            {vsphereMock.getApiMajorVersion();
+                result = 6;
+            }
+            {vsphereMock.getDataCenterServices();
+                result = dcMock;
+            }
+            {dcMock.listVMFolders();
+                result = vmFolders;
+            }
+        };
+
+        VMLaunchOptions options = VMLaunchOptions.getInstance("1:1024", "vm-276", "testvm-stateful-1447150661369", "Test VM for stateful integration tests for Dasein Cloud");
+        options.inDataCenter("domain-c45");
+        vm.launch(options);
+    }
+
+    //test will run for 20 minutes looking for the new vm so
+    //update the timeout to a more reasonable value if you want to run this test
+    @Ignore
+    @Test(expected = CloudException.class)
+    public void launchVirtualMachineShouldThrowExceptionIfNewVmIsNotFound() throws CloudException, InternalException {
+        new Expectations(Vm.class) {
+            {vm.retrieveObjectList(vsphereMock, "vmFolder", null, launchVmPSpec);
+                result = launchVmTemplates;
+                minTimes = 2;
+            }
+            {vm.getResourcePools(anyBoolean);
+                result = daseinRootResourcePools;
+            }
+            {vm.cloneVmTask((ManagedObjectReference) any, (ManagedObjectReference) any, anyString, (VirtualMachineCloneSpec) any);
+                result = task;
+            }
+            {vm.reconfigVMTask((ManagedObjectReference) any, (VirtualMachineConfigSpec) any);
+                result = task;
+            }
+            {vm.start(anyString);
+            }
+        };
+
+        new Expectations(VsphereMethod.class) {
+            {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
+                result = true;
+                times = 2;
+            }
+            {method.getTaskResult();
+                result = launchResult;
+            }
+        };
+
+        new NonStrictExpectations() {
+            {vsphereMock.getApiMajorVersion();
+                result = 6;
+            }
+            {vsphereMock.getDataCenterServices();
+                result = dcMock;
+            }
+            {dcMock.listDataCenters(anyString);
+                result = daseinDatacenter;
+            }
+            {dcMock.listVMFolders();
+                result = vmFolders;
+            }
+            {dcMock.getDataCenter(anyString);
+                result = daseinDatacenter;
+            }
+        };
+
+        VMLaunchOptions options = VMLaunchOptions.getInstance("1:1024", "vm-276", "testvm-stateful-1447150661369", "Test VM for stateful integration tests for Dasein Cloud");
+        options.inDataCenter("domain-c45");
+        vm.launch(options);
+    }
+
+    @Test(expected = CloudException.class)
+    public void launchVirtualMachinesShouldThrowExceptionIfCloudReturnsNullObject() throws CloudException, InternalException {
+        new Expectations(Vm.class) {
+            {vm.retrieveObjectList(vsphereMock, "vmFolder", null, launchVmPSpec);
+                result = null;
+            }
+        };
+
+        vm.launch(VMLaunchOptions.getInstance("blah", "blah", "blah", "blah"));
+    }
+
+    @Test(expected = CloudException.class)
+    public void launchVirtualMachinesShouldThrowExceptionIfCloudReturnsEmptyObject() throws CloudException, InternalException {
+        new Expectations(Vm.class) {
+            {vm.retrieveObjectList(vsphereMock, "vmFolder", null, launchVmPSpec);
+                result = new RetrieveResult();
+            }
+        };
+
+        vm.launch(VMLaunchOptions.getInstance("blah", "blah", "blah", "blah"));
+    }
+
+    @Test(expected = CloudException.class)
+    public void launchCustomisedWindowsVmShouldThrowExceptionIfOwnerPropertyIsMissing() throws CloudException, InternalException,
+            SOAPException, CustomizationFaultFaultMsg, FileFaultFaultMsg, InsufficientResourcesFaultFaultMsg,
+            InvalidDatastoreFaultMsg, InvalidStateFaultMsg, MigrationFaultFaultMsg, RuntimeFaultFaultMsg,
+            TaskInProgressFaultMsg, VmConfigFaultFaultMsg {
+
+        final SOAPFault fault = SOAPFactory.newInstance().createFault();
+        fault.setFaultString("Missing param fullName");
+
+        new Expectations(Vm.class) {
+            {vm.retrieveObjectList(vsphereMock, "vmFolder", null, launchVmPSpec);
+                result = launchVmTemplates;
+            }
+            {vm.getResourcePools(anyBoolean);
+                times = 0;
+            }
+            {vimPortMock.cloneVMTask((ManagedObjectReference) any, (ManagedObjectReference) any, anyString, (VirtualMachineCloneSpec) any);
+                result = new ServerSOAPFaultException(fault);
+            }
+            {vm.reconfigVMTask((ManagedObjectReference) any, (VirtualMachineConfigSpec) any);
+                result = task;
+                times = 0;
+            }
+            {vm.start(anyString);
+                times = 0;
+            }
+        };
+
+        new Expectations(VsphereMethod.class) {
+            {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
+                times = 0;
+            }
+            {method.getTaskResult();
+                times = 0;
+            }
+        };
+
+        new NonStrictExpectations() {
+            {vsphereMock.getApiMajorVersion();
+                result = 6;
+            }
+            {vsphereMock.getDataCenterServices();
+                result = dcMock;
+            }
+            {dcMock.listDataCenters(anyString);
+                result = daseinDatacenter;
+            }
+            {dcMock.listVMFolders();
+                result = vmFolders;
+            }
+            {dcMock.getDataCenter(anyString);
+                result = daseinDatacenter;
+            }
+            {vsphereMock.getNetworkServices();
+                result = vsphereNetworkMock;
+            }
+            {vsphereNetworkMock.getVlanSupport();
+                result = netMock;
+            }
+            {netMock.listVlans();
+                result = daseinNetworks;
+            }
+        };
+
+        VMLaunchOptions options = winLaunchOptionsNoOwner;
+        vm.launch(options);
+
+    }
+
+    @Test(expected = CloudException.class)
+    public void launchCustomisedWindowsVmShouldThrowExceptionIfOrgNamePropertyIsMissing() throws CloudException, InternalException,
+            SOAPException, CustomizationFaultFaultMsg, FileFaultFaultMsg, InsufficientResourcesFaultFaultMsg,
+            InvalidDatastoreFaultMsg, InvalidStateFaultMsg, MigrationFaultFaultMsg, RuntimeFaultFaultMsg,
+            TaskInProgressFaultMsg, VmConfigFaultFaultMsg {
+
+        final SOAPFault fault = SOAPFactory.newInstance().createFault();
+        fault.setFaultString("Missing param orgName");
+
+        new Expectations(Vm.class) {
+            {vm.retrieveObjectList(vsphereMock, "vmFolder", null, launchVmPSpec);
+                result = launchVmTemplates;
+            }
+            {vm.getResourcePools(anyBoolean);
+                times = 0;
+            }
+            {vimPortMock.cloneVMTask((ManagedObjectReference) any, (ManagedObjectReference) any, anyString, (VirtualMachineCloneSpec) any);
+                result = new ServerSOAPFaultException(fault);
+            }
+            {vm.reconfigVMTask((ManagedObjectReference) any, (VirtualMachineConfigSpec) any);
+                result = task;
+                times = 0;
+            }
+            {vm.start(anyString);
+                times = 0;
+            }
+        };
+
+        new Expectations(VsphereMethod.class) {
+            {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
+                times = 0;
+            }
+            {method.getTaskResult();
+                times = 0;
+            }
+        };
+
+        new NonStrictExpectations() {
+            {vsphereMock.getApiMajorVersion();
+                result = 6;
+            }
+            {vsphereMock.getDataCenterServices();
+                result = dcMock;
+            }
+            {dcMock.listDataCenters(anyString);
+                result = daseinDatacenter;
+            }
+            {dcMock.listVMFolders();
+                result = vmFolders;
+            }
+            {dcMock.getDataCenter(anyString);
+                result = daseinDatacenter;
+            }
+            {vsphereMock.getNetworkServices();
+                result = vsphereNetworkMock;
+            }
+            {vsphereNetworkMock.getVlanSupport();
+                result = netMock;
+            }
+            {netMock.listVlans();
+                result = daseinNetworks;
+            }
+        };
+
+        VMLaunchOptions options = winLaunchOptionsNoOrgName;
+        vm.launch(options);
+    }
+
+    @Test(expected = CloudException.class)
+    public void reconfigVmTaskShouldThrowCloudExceptionIfCloudReturnsConcurrentAccessFaultMsg() throws CloudException, InternalException,
+            ConcurrentAccessFaultMsg, DuplicateNameFaultMsg, FileFaultFaultMsg, InsufficientResourcesFaultFaultMsg, InvalidDatastoreFaultMsg,
+            InvalidNameFaultMsg, InvalidStateFaultMsg, RuntimeFaultFaultMsg, TaskInProgressFaultMsg, VmConfigFaultFaultMsg{
+        new Expectations(Vm.class) {
+            {vimPortMock.reconfigVMTask((ManagedObjectReference) any, (VirtualMachineConfigSpec) any);
+                result = new ConcurrentAccessFaultMsg("Reconfig fault", new ConcurrentAccess());
+            }
+        };
+        vm.reconfigVMTask(new ManagedObjectReference(), new VirtualMachineConfigSpec());
+    }
+
+    @Test(expected = CloudException.class)
+    public void reconfigVmTaskShouldThrowCloudExceptionIfCloudReturnsDuplicateNameFaultMsg() throws CloudException, InternalException,
+            ConcurrentAccessFaultMsg, DuplicateNameFaultMsg, FileFaultFaultMsg, InsufficientResourcesFaultFaultMsg, InvalidDatastoreFaultMsg,
+            InvalidNameFaultMsg, InvalidStateFaultMsg, RuntimeFaultFaultMsg, TaskInProgressFaultMsg, VmConfigFaultFaultMsg{
+        new Expectations(Vm.class) {
+            {vimPortMock.reconfigVMTask((ManagedObjectReference) any, (VirtualMachineConfigSpec) any);
+                result = new DuplicateNameFaultMsg("Reconfig fault", new DuplicateName());
+            }
+        };
+        vm.reconfigVMTask(new ManagedObjectReference(), new VirtualMachineConfigSpec());
+    }
+
+    @Test(expected = CloudException.class)
+    public void reconfigVmTaskShouldThrowCloudExceptionIfCloudReturnsFileFaultFaultMsg() throws CloudException, InternalException,
+            ConcurrentAccessFaultMsg, DuplicateNameFaultMsg, FileFaultFaultMsg, InsufficientResourcesFaultFaultMsg, InvalidDatastoreFaultMsg,
+            InvalidNameFaultMsg, InvalidStateFaultMsg, RuntimeFaultFaultMsg, TaskInProgressFaultMsg, VmConfigFaultFaultMsg{
+        new Expectations(Vm.class) {
+            {vimPortMock.reconfigVMTask((ManagedObjectReference) any, (VirtualMachineConfigSpec) any);
+                result = new FileFaultFaultMsg("Reconfig fault", new FileFault());
+            }
+        };
+        vm.reconfigVMTask(new ManagedObjectReference(), new VirtualMachineConfigSpec());
+    }
+
+    @Test(expected = CloudException.class)
+    public void reconfigVmTaskShouldThrowCloudExceptionIfCloudReturnsInsufficientResourcesFaultFaultMsg() throws CloudException, InternalException,
+            ConcurrentAccessFaultMsg, DuplicateNameFaultMsg, FileFaultFaultMsg, InsufficientResourcesFaultFaultMsg, InvalidDatastoreFaultMsg,
+            InvalidNameFaultMsg, InvalidStateFaultMsg, RuntimeFaultFaultMsg, TaskInProgressFaultMsg, VmConfigFaultFaultMsg{
+        new Expectations(Vm.class) {
+            {vimPortMock.reconfigVMTask((ManagedObjectReference) any, (VirtualMachineConfigSpec) any);
+                result = new InsufficientResourcesFaultFaultMsg("Reconfig fault", new InsufficientResourcesFault());
+            }
+        };
+        vm.reconfigVMTask(new ManagedObjectReference(), new VirtualMachineConfigSpec());
+    }
+
+    @Test(expected = CloudException.class)
+    public void reconfigVmTaskShouldThrowCloudExceptionIfCloudReturnsInvalidDatastoreFaultMsg() throws CloudException, InternalException,
+            ConcurrentAccessFaultMsg, DuplicateNameFaultMsg, FileFaultFaultMsg, InsufficientResourcesFaultFaultMsg, InvalidDatastoreFaultMsg,
+            InvalidNameFaultMsg, InvalidStateFaultMsg, RuntimeFaultFaultMsg, TaskInProgressFaultMsg, VmConfigFaultFaultMsg{
+        new Expectations(Vm.class) {
+            {vimPortMock.reconfigVMTask((ManagedObjectReference) any, (VirtualMachineConfigSpec) any);
+                result = new InvalidDatastoreFaultMsg("Reconfig fault", new InvalidDatastore());
+            }
+        };
+        vm.reconfigVMTask(new ManagedObjectReference(), new VirtualMachineConfigSpec());
+    }
+
+    @Test(expected = CloudException.class)
+    public void reconfigVmTaskShouldThrowCloudExceptionIfCloudReturnsInvalidNameFaultMsg() throws CloudException, InternalException,
+            ConcurrentAccessFaultMsg, DuplicateNameFaultMsg, FileFaultFaultMsg, InsufficientResourcesFaultFaultMsg, InvalidDatastoreFaultMsg,
+            InvalidNameFaultMsg, InvalidStateFaultMsg, RuntimeFaultFaultMsg, TaskInProgressFaultMsg, VmConfigFaultFaultMsg{
+        new Expectations(Vm.class) {
+            {vimPortMock.reconfigVMTask((ManagedObjectReference) any, (VirtualMachineConfigSpec) any);
+                result = new InvalidNameFaultMsg("Reconfig fault", new InvalidName());
+            }
+        };
+        vm.reconfigVMTask(new ManagedObjectReference(), new VirtualMachineConfigSpec());
+    }
+
+    @Test(expected = CloudException.class)
+    public void reconfigVmTaskShouldThrowCloudExceptionIfCloudReturnsInvalidStateFaultMsg() throws CloudException, InternalException,
+            ConcurrentAccessFaultMsg, DuplicateNameFaultMsg, FileFaultFaultMsg, InsufficientResourcesFaultFaultMsg, InvalidDatastoreFaultMsg,
+            InvalidNameFaultMsg, InvalidStateFaultMsg, RuntimeFaultFaultMsg, TaskInProgressFaultMsg, VmConfigFaultFaultMsg{
+        new Expectations(Vm.class) {
+            {vimPortMock.reconfigVMTask((ManagedObjectReference) any, (VirtualMachineConfigSpec) any);
+                result = new InvalidStateFaultMsg("Reconfig fault", new InvalidState());
+            }
+        };
+        vm.reconfigVMTask(new ManagedObjectReference(), new VirtualMachineConfigSpec());
+    }
+
+    @Test(expected = CloudException.class)
+    public void reconfigVmTaskShouldThrowCloudExceptionIfCloudReturnsRuntimeFaultFaultMsg() throws CloudException, InternalException,
+            ConcurrentAccessFaultMsg, DuplicateNameFaultMsg, FileFaultFaultMsg, InsufficientResourcesFaultFaultMsg, InvalidDatastoreFaultMsg,
+            InvalidNameFaultMsg, InvalidStateFaultMsg, RuntimeFaultFaultMsg, TaskInProgressFaultMsg, VmConfigFaultFaultMsg{
+        new Expectations(Vm.class) {
+            {vimPortMock.reconfigVMTask((ManagedObjectReference) any, (VirtualMachineConfigSpec) any);
+                result = new RuntimeFaultFaultMsg("Reconfig fault", new RuntimeFault());
+            }
+        };
+        vm.reconfigVMTask(new ManagedObjectReference(), new VirtualMachineConfigSpec());
+    }
+
+    @Test(expected = CloudException.class)
+    public void reconfigVmTaskShouldThrowCloudExceptionIfCloudReturnsTaskInProgressFaultMsg() throws CloudException, InternalException,
+            ConcurrentAccessFaultMsg, DuplicateNameFaultMsg, FileFaultFaultMsg, InsufficientResourcesFaultFaultMsg, InvalidDatastoreFaultMsg,
+            InvalidNameFaultMsg, InvalidStateFaultMsg, RuntimeFaultFaultMsg, TaskInProgressFaultMsg, VmConfigFaultFaultMsg{
+        new Expectations(Vm.class) {
+            {vimPortMock.reconfigVMTask((ManagedObjectReference) any, (VirtualMachineConfigSpec) any);
+                result = new TaskInProgressFaultMsg("Reconfig fault", new TaskInProgress());
+            }
+        };
+        vm.reconfigVMTask(new ManagedObjectReference(), new VirtualMachineConfigSpec());
+    }
+
+    @Test(expected = CloudException.class)
+    public void reconfigVmTaskShouldThrowCloudExceptionIfCloudReturnVmConfigFaultFaultMsg() throws CloudException, InternalException,
+            ConcurrentAccessFaultMsg, DuplicateNameFaultMsg, FileFaultFaultMsg, InsufficientResourcesFaultFaultMsg, InvalidDatastoreFaultMsg,
+            InvalidNameFaultMsg, InvalidStateFaultMsg, RuntimeFaultFaultMsg, TaskInProgressFaultMsg, VmConfigFaultFaultMsg{
+        new Expectations(Vm.class) {
+            {vimPortMock.reconfigVMTask((ManagedObjectReference) any, (VirtualMachineConfigSpec) any);
+                result = new VmConfigFaultFaultMsg("Reconfig fault", new VmConfigFault());
+            }
+        };
+        vm.reconfigVMTask(new ManagedObjectReference(), new VirtualMachineConfigSpec());
+    }
+
+    @Test(expected = CloudException.class)
+    public void cloneVmTaskShouldThrowCloudExceptionIfCloudReturnFileFaultFaultMsg() throws CloudException, InternalException,
+            FileFaultFaultMsg, CustomizationFaultFaultMsg, InsufficientResourcesFaultFaultMsg, InvalidDatastoreFaultMsg,
+            InvalidStateFaultMsg, MigrationFaultFaultMsg, RuntimeFaultFaultMsg, ServerSOAPFaultException, TaskInProgressFaultMsg, VmConfigFaultFaultMsg {
+        new Expectations(Vm.class) {
+            {vimPortMock.cloneVMTask((ManagedObjectReference) any, (ManagedObjectReference) any, anyString, (VirtualMachineCloneSpec) any);
+                result = new FileFaultFaultMsg("Clone fault", new FileFault());
+            }
+        };
+        vm.cloneVmTask(new ManagedObjectReference(), new ManagedObjectReference(), "", new VirtualMachineCloneSpec());
+    }
+
+    @Test(expected = CloudException.class)
+    public void cloneVmTaskShouldThrowCloudExceptionIfCloudReturnCustomisationFaultFaultMsg() throws CloudException, InternalException,
+            FileFaultFaultMsg, CustomizationFaultFaultMsg, InsufficientResourcesFaultFaultMsg, InvalidDatastoreFaultMsg,
+            InvalidStateFaultMsg, MigrationFaultFaultMsg, RuntimeFaultFaultMsg, ServerSOAPFaultException, TaskInProgressFaultMsg, VmConfigFaultFaultMsg {
+        new Expectations(Vm.class) {
+            {vimPortMock.cloneVMTask((ManagedObjectReference) any, (ManagedObjectReference) any, anyString, (VirtualMachineCloneSpec) any);
+                result = new CustomizationFaultFaultMsg("Clone fault", new CustomizationFault());
+            }
+        };
+        vm.cloneVmTask(new ManagedObjectReference(), new ManagedObjectReference(), "", new VirtualMachineCloneSpec());
+    }
+
+    @Test(expected = CloudException.class)
+    public void cloneVmTaskShouldThrowCloudExceptionIfCloudReturnInsufficientResourcesFaultFaultMsg() throws CloudException, InternalException,
+            FileFaultFaultMsg, CustomizationFaultFaultMsg, InsufficientResourcesFaultFaultMsg, InvalidDatastoreFaultMsg,
+            InvalidStateFaultMsg, MigrationFaultFaultMsg, RuntimeFaultFaultMsg, ServerSOAPFaultException, TaskInProgressFaultMsg, VmConfigFaultFaultMsg {
+        new Expectations(Vm.class) {
+            {vimPortMock.cloneVMTask((ManagedObjectReference) any, (ManagedObjectReference) any, anyString, (VirtualMachineCloneSpec) any);
+                result = new InsufficientResourcesFaultFaultMsg("Clone fault", new InsufficientResourcesFault());
+            }
+        };
+        vm.cloneVmTask(new ManagedObjectReference(), new ManagedObjectReference(), "", new VirtualMachineCloneSpec());
+    }
+
+    @Test(expected = CloudException.class)
+    public void cloneVmTaskShouldThrowCloudExceptionIfCloudReturnInvalidDatastoreFaultMsg() throws CloudException, InternalException,
+            FileFaultFaultMsg, CustomizationFaultFaultMsg, InsufficientResourcesFaultFaultMsg, InvalidDatastoreFaultMsg,
+            InvalidStateFaultMsg, MigrationFaultFaultMsg, RuntimeFaultFaultMsg, ServerSOAPFaultException, TaskInProgressFaultMsg, VmConfigFaultFaultMsg {
+        new Expectations(Vm.class) {
+            {vimPortMock.cloneVMTask((ManagedObjectReference) any, (ManagedObjectReference) any, anyString, (VirtualMachineCloneSpec) any);
+                result = new InvalidDatastoreFaultMsg("Clone fault", new InvalidDatastore());
+            }
+        };
+        vm.cloneVmTask(new ManagedObjectReference(), new ManagedObjectReference(), "", new VirtualMachineCloneSpec());
+    }
+
+    @Test(expected = CloudException.class)
+    public void cloneVmTaskShouldThrowCloudExceptionIfCloudReturnInvalidStateFaultMsg() throws CloudException, InternalException,
+            FileFaultFaultMsg, CustomizationFaultFaultMsg, InsufficientResourcesFaultFaultMsg, InvalidDatastoreFaultMsg,
+            InvalidStateFaultMsg, MigrationFaultFaultMsg, RuntimeFaultFaultMsg, ServerSOAPFaultException, TaskInProgressFaultMsg, VmConfigFaultFaultMsg {
+        new Expectations(Vm.class) {
+            {vimPortMock.cloneVMTask((ManagedObjectReference) any, (ManagedObjectReference) any, anyString, (VirtualMachineCloneSpec) any);
+                result = new InvalidStateFaultMsg("Clone fault", new InvalidState());
+            }
+        };
+        vm.cloneVmTask(new ManagedObjectReference(), new ManagedObjectReference(), "", new VirtualMachineCloneSpec());
+    }
+
+    @Test(expected = CloudException.class)
+    public void cloneVmTaskShouldThrowCloudExceptionIfCloudReturnMigrationFaultFaultMsg() throws CloudException, InternalException,
+            FileFaultFaultMsg, CustomizationFaultFaultMsg, InsufficientResourcesFaultFaultMsg, InvalidDatastoreFaultMsg,
+            InvalidStateFaultMsg, MigrationFaultFaultMsg, RuntimeFaultFaultMsg, ServerSOAPFaultException, TaskInProgressFaultMsg, VmConfigFaultFaultMsg {
+        new Expectations(Vm.class) {
+            {vimPortMock.cloneVMTask((ManagedObjectReference) any, (ManagedObjectReference) any, anyString, (VirtualMachineCloneSpec) any);
+                result = new MigrationFaultFaultMsg("Clone fault", new MigrationFault());
+            }
+        };
+        vm.cloneVmTask(new ManagedObjectReference(), new ManagedObjectReference(), "", new VirtualMachineCloneSpec());
+    }
+
+    @Test(expected = CloudException.class)
+    public void cloneVmTaskShouldThrowCloudExceptionIfCloudReturnRuntimeFaultFaultMsg() throws CloudException, InternalException,
+            FileFaultFaultMsg, CustomizationFaultFaultMsg, InsufficientResourcesFaultFaultMsg, InvalidDatastoreFaultMsg,
+            InvalidStateFaultMsg, MigrationFaultFaultMsg, RuntimeFaultFaultMsg, ServerSOAPFaultException, TaskInProgressFaultMsg, VmConfigFaultFaultMsg {
+        new Expectations(Vm.class) {
+            {vimPortMock.cloneVMTask((ManagedObjectReference) any, (ManagedObjectReference) any, anyString, (VirtualMachineCloneSpec) any);
+                result = new RuntimeFaultFaultMsg("Clone fault", new RuntimeFault());
+            }
+        };
+        vm.cloneVmTask(new ManagedObjectReference(), new ManagedObjectReference(), "", new VirtualMachineCloneSpec());
+    }
+
+    @Test(expected = CloudException.class)
+    public void cloneVmTaskShouldThrowCloudExceptionIfCloudReturnTaskInProgressFaultMsg() throws CloudException, InternalException,
+            FileFaultFaultMsg, CustomizationFaultFaultMsg, InsufficientResourcesFaultFaultMsg, InvalidDatastoreFaultMsg,
+            InvalidStateFaultMsg, MigrationFaultFaultMsg, RuntimeFaultFaultMsg, ServerSOAPFaultException, TaskInProgressFaultMsg, VmConfigFaultFaultMsg {
+        new Expectations(Vm.class) {
+            {vimPortMock.cloneVMTask((ManagedObjectReference) any, (ManagedObjectReference) any, anyString, (VirtualMachineCloneSpec) any);
+                result = new TaskInProgressFaultMsg("Clone fault", new TaskInProgress());
+            }
+        };
+        vm.cloneVmTask(new ManagedObjectReference(), new ManagedObjectReference(), "", new VirtualMachineCloneSpec());
+    }
+
+    @Test(expected = CloudException.class)
+    public void cloneVmTaskShouldThrowCloudExceptionIfCloudReturnVmConfigFaultFaultMsg() throws CloudException, InternalException,
+            FileFaultFaultMsg, CustomizationFaultFaultMsg, InsufficientResourcesFaultFaultMsg, InvalidDatastoreFaultMsg,
+            InvalidStateFaultMsg, MigrationFaultFaultMsg, RuntimeFaultFaultMsg, ServerSOAPFaultException, TaskInProgressFaultMsg, VmConfigFaultFaultMsg {
+        new Expectations(Vm.class) {
+            {vimPortMock.cloneVMTask((ManagedObjectReference) any, (ManagedObjectReference) any, anyString, (VirtualMachineCloneSpec) any);
+                result = new VmConfigFaultFaultMsg("Clone fault", new VmConfigFault());
+            }
+        };
+        vm.cloneVmTask(new ManagedObjectReference(), new ManagedObjectReference(), "", new VirtualMachineCloneSpec());
     }
 }

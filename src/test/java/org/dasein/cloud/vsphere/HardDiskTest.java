@@ -1205,7 +1205,8 @@ public class HardDiskTest extends VsphereTestBase {
         hd.createVolume(options);
     }
 
-    //this test loops for 5 minutes searching for new volume so not great for frequent test runs
+    //this test loops for 20 minutes searching for new volume so not great for frequent test runs
+    //update the timeout in the code if you wish to run this test
     @Ignore
     @Test(expected = CloudException.class)
     public void createVolumeShouldThrowExceptionIfNewVolumeIsNotFound() throws CloudException, InternalException {

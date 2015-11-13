@@ -185,9 +185,9 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
             ManagedObjectReference taskmor = vmSupport.reconfigVMTask(vmRef, spec);
 
             VsphereMethod method = new VsphereMethod(getProvider());
-            TimePeriod interval = new TimePeriod<Second>(15, TimePeriod.SECOND);
+            TimePeriod interval = new TimePeriod<Second>(30, TimePeriod.SECOND);
 
-            if( taskmor != null && !method.getOperationComplete(taskmor, interval, 4) ) {
+            if( taskmor != null && !method.getOperationComplete(taskmor, interval, 10) ) {
                 lastError = new CloudException("Failed to attach volume: " + method.getTaskError().getVal());
             }
             if( lastError != null ) {
@@ -289,10 +289,10 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
             ManagedObjectReference taskmor = vmSupport.reconfigVMTask(vmRef, spec);
 
             VsphereMethod method = new VsphereMethod(getProvider());
-            TimePeriod interval = new TimePeriod<Second>(15, TimePeriod.SECOND);
+            TimePeriod interval = new TimePeriod<Second>(30, TimePeriod.SECOND);
 
-            if( method.getOperationComplete(taskmor, interval, 4) ) {
-                long timeout = System.currentTimeMillis() + (CalendarWrapper.MINUTE * 5L);
+            if( method.getOperationComplete(taskmor, interval, 10) ) {
+                long timeout = System.currentTimeMillis() + (CalendarWrapper.MINUTE * 20L);
 
                 while( System.currentTimeMillis() < timeout ) {
                     try { Thread.sleep(10000L); }
@@ -400,9 +400,9 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
                 ManagedObjectReference taskmor = vmSupport.reconfigVMTask(vmRef, spec);
 
                 VsphereMethod method = new VsphereMethod(getProvider());
-                TimePeriod interval = new TimePeriod<Second>(15, TimePeriod.SECOND);
+                TimePeriod interval = new TimePeriod<Second>(30, TimePeriod.SECOND);
 
-                if( !method.getOperationComplete(taskmor, interval, 4) ) {
+                if( !method.getOperationComplete(taskmor, interval, 10) ) {
                     lastError = new CloudException("Failed to update VM: " + method.getTaskError().getVal());
                 }
                 if( lastError != null ) {
@@ -433,7 +433,7 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
         APITrace.begin(getProvider(), "HardDisk.listVolumes");
         try {
             VsphereMethod method = new VsphereMethod(getProvider());
-            TimePeriod interval = new TimePeriod<Second>(15, TimePeriod.SECOND);
+            TimePeriod interval = new TimePeriod<Second>(30, TimePeriod.SECOND);
 
             List<Volume> list = new ArrayList<Volume>();
             List<String> fileNames = new ArrayList<String>();
@@ -563,7 +563,7 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
                     if (dsName != null && hostDatastoreBrowser != null) {
                         try {
                             ManagedObjectReference taskmor = searchDatastores(getProvider(), hostDatastoreBrowser, "[" + dsName + "]", null);
-                            if (taskmor != null && method.getOperationComplete(taskmor, interval, 4)) {
+                            if (taskmor != null && method.getOperationComplete(taskmor, interval, 10)) {
                                 PropertyChange taskResult = method.getTaskResult();
                                 if (taskResult != null && taskResult.getVal() != null) {
                                     ArrayOfHostDatastoreBrowserSearchResults result = (ArrayOfHostDatastoreBrowserSearchResults) taskResult.getVal();
@@ -635,11 +635,11 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
 
                 String filePath = volume.getTag("filePath");
                 taskMor = vimPortType.deleteDatastoreFileTask(fileManager, filePath, datacenter);
-                if (method.getOperationComplete(taskMor, interval, 4)) {
+                if (method.getOperationComplete(taskMor, interval, 10)) {
                     //also delete the flat file
                     String flatfile = filePath.substring(0, filePath.indexOf(".vmdk")) + "-flat.vmdk";
                     taskMor = vimPortType.deleteDatastoreFileTask(fileManager, flatfile, datacenter);
-                    if (method.getOperationComplete(taskMor, interval, 4)) {
+                    if (method.getOperationComplete(taskMor, interval, 10)) {
                         return;
                     }
                 }

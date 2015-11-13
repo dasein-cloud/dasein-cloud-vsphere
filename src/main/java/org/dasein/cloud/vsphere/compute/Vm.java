@@ -153,9 +153,9 @@ public class Vm extends AbstractVMSupport<Vsphere> {
             CloudException lastError;
             ManagedObjectReference taskMor = reconfigVMTask(vmRef, spec);
             VsphereMethod method = new VsphereMethod(getProvider());
-            TimePeriod interval = new TimePeriod<Second>(15, TimePeriod.SECOND);
+            TimePeriod interval = new TimePeriod<Second>(30, TimePeriod.SECOND);
 
-            if( taskMor != null && method.getOperationComplete(taskMor, interval, 4) ) {
+            if( taskMor != null && method.getOperationComplete(taskMor, interval, 10) ) {
                 long timeout = System.currentTimeMillis() + ( CalendarWrapper.MINUTE * 20L );
 
                 while( System.currentTimeMillis() < timeout ) {
@@ -248,8 +248,8 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                 taskMor = cloneVmTask(vmRef, vmFolder, name, spec);
 
                 VsphereMethod method = new VsphereMethod(getProvider());
-                TimePeriod interval = new TimePeriod<Second>(15, TimePeriod.SECOND);
-                if (method.getOperationComplete(taskMor, interval, 4)) {
+                TimePeriod interval = new TimePeriod<Second>(30, TimePeriod.SECOND);
+                if (method.getOperationComplete(taskMor, interval, 20)) {
                     PropertyChange pChange = method.getTaskResult();
                     ManagedObjectReference newVmRef = (ManagedObjectReference) pChange.getVal();
 
@@ -1287,8 +1287,8 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                 if (!vm.getCurrentState().equals(VmState.STOPPED)) {
                     ManagedObjectReference taskMor = vimPortType.powerOffVMTask(vmRef);
                     VsphereMethod method = new VsphereMethod(getProvider());
-                    TimePeriod interval = new TimePeriod<Second>(15, TimePeriod.SECOND);
-                    if (!method.getOperationComplete(taskMor, interval, 4)) {
+                    TimePeriod interval = new TimePeriod<Second>(30, TimePeriod.SECOND);
+                    if (!method.getOperationComplete(taskMor, interval, 10)) {
                         throw new CloudException("Error stopping vm prior to termination: "+method.getTaskError().getVal());
                     }
                 }

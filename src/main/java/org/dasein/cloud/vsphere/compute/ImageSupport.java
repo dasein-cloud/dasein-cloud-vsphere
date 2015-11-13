@@ -186,8 +186,8 @@ public class ImageSupport extends AbstractImageSupport<Vsphere> {
             MachineImage img;
             ManagedObjectReference taskMor = getProvider().getComputeServices().getVirtualMachineSupport().cloneVmTask(templateRef, vmFolderRef, options.getName(), spec);
             VsphereMethod method = new VsphereMethod(getProvider());
-            TimePeriod interval = new TimePeriod<Second>(15, TimePeriod.SECOND);
-            if (method.getOperationComplete(taskMor, interval, 4)) {
+            TimePeriod interval = new TimePeriod<Second>(30, TimePeriod.SECOND);
+            if (method.getOperationComplete(taskMor, interval, 10)) {
                 PropertyChange pChange = method.getTaskResult();
                 ManagedObjectReference newVmRef = (ManagedObjectReference) pChange.getVal();
 
@@ -227,8 +227,8 @@ public class ImageSupport extends AbstractImageSupport<Vsphere> {
         try {
             ManagedObjectReference taskmor = vimPort.destroyTask(templateToBeDeleted);
             VsphereMethod method = new VsphereMethod(getProvider());
-            TimePeriod<Second> interval = new TimePeriod<Second>(5, TimePeriod.SECOND);
-            method.getOperationComplete(taskmor, interval, 20);
+            TimePeriod<Second> interval = new TimePeriod<Second>(30, TimePeriod.SECOND);
+            method.getOperationComplete(taskmor, interval, 10);
         }
         catch (RuntimeFaultFaultMsg runtimeFaultFaultMsg) {
             throw new CloudException("RuntimeFaultFaultMsg when deleting image", runtimeFaultFaultMsg);

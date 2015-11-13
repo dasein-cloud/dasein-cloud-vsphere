@@ -1,0 +1,185 @@
+{
+  "type" : "com.vmware.vim25.RetrieveResult",
+  "token" : null,
+  "objects" : [ "java.util.ArrayList", [ {
+    "type" : "com.vmware.vim25.ObjectContent",
+    "obj" : {
+      "type" : "com.vmware.vim25.ManagedObjectReference",
+      "value" : "vm-281",
+      "type" : "VirtualMachine"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "type" : "com.vmware.vim25.DynamicProperty",
+      "name" : "customValue",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfCustomFieldValue",
+        "customFieldValue" : [ "java.util.ArrayList", [ ] ]
+      }
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "type" : "com.vmware.vim25.ObjectContent",
+    "obj" : {
+      "type" : "com.vmware.vim25.ManagedObjectReference",
+      "value" : "vm-276",
+      "type" : "VirtualMachine"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "type" : "com.vmware.vim25.DynamicProperty",
+      "name" : "customValue",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfCustomFieldValue",
+        "customFieldValue" : [ "java.util.ArrayList", [ ] ]
+      }
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "type" : "com.vmware.vim25.ObjectContent",
+    "obj" : {
+      "type" : "com.vmware.vim25.ManagedObjectReference",
+      "value" : "vm-279",
+      "type" : "VirtualMachine"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "type" : "com.vmware.vim25.DynamicProperty",
+      "name" : "customValue",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfCustomFieldValue",
+        "customFieldValue" : [ "java.util.ArrayList", [ ] ]
+      }
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "type" : "com.vmware.vim25.ObjectContent",
+    "obj" : {
+      "type" : "com.vmware.vim25.ManagedObjectReference",
+      "value" : "vm-270",
+      "type" : "VirtualMachine"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "type" : "com.vmware.vim25.DynamicProperty",
+      "name" : "customValue",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfCustomFieldValue",
+        "customFieldValue" : [ "java.util.ArrayList", [ ] ]
+      }
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "type" : "com.vmware.vim25.ObjectContent",
+    "obj" : {
+      "type" : "com.vmware.vim25.ManagedObjectReference",
+      "value" : "vm-244",
+      "type" : "VirtualMachine"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "type" : "com.vmware.vim25.DynamicProperty",
+      "name" : "customValue",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfCustomFieldValue",
+        "customFieldValue" : [ "java.util.ArrayList", [ ] ]
+      }
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "type" : "com.vmware.vim25.ObjectContent",
+    "obj" : {
+      "type" : "com.vmware.vim25.ManagedObjectReference",
+      "value" : "vm-246",
+      "type" : "VirtualMachine"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "type" : "com.vmware.vim25.DynamicProperty",
+      "name" : "customValue",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfCustomFieldValue",
+        "customFieldValue" : [ "java.util.ArrayList", [ ] ]
+      }
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "type" : "com.vmware.vim25.ObjectContent",
+    "obj" : {
+      "type" : "com.vmware.vim25.ManagedObjectReference",
+      "value" : "vm-85",
+      "type" : "VirtualMachine"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "type" : "com.vmware.vim25.DynamicProperty",
+      "name" : "customValue",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfCustomFieldValue",
+        "customFieldValue" : [ "java.util.ArrayList", [ ] ]
+      }
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "type" : "com.vmware.vim25.ObjectContent",
+    "obj" : {
+      "type" : "com.vmware.vim25.ManagedObjectReference",
+      "value" : "vm-80",
+      "type" : "VirtualMachine"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "type" : "com.vmware.vim25.DynamicProperty",
+      "name" : "customValue",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfCustomFieldValue",
+        "customFieldValue" : [ "java.util.ArrayList", [ ] ]
+      }
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "type" : "com.vmware.vim25.ObjectContent",
+    "obj" : {
+      "type" : "com.vmware.vim25.ManagedObjectReference",
+      "value" : "vm-206",
+      "type" : "VirtualMachine"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "type" : "com.vmware.vim25.DynamicProperty",
+      "name" : "customValue",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfCustomFieldValue",
+        "customFieldValue" : [ "java.util.ArrayList", [ ] ]
+      }
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "type" : "com.vmware.vim25.ObjectContent",
+    "obj" : {
+      "type" : "com.vmware.vim25.ManagedObjectReference",
+      "value" : "vm-87",
+      "type" : "VirtualMachine"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "type" : "com.vmware.vim25.DynamicProperty",
+      "name" : "customValue",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfCustomFieldValue",
+        "customFieldValue" : [ "java.util.ArrayList", [ {
+          "type" : "com.vmware.vim25.CustomFieldStringValue",
+          "key" : 101,
+          "value" : "2k12r2"
+        } ] ]
+      }
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "type" : "com.vmware.vim25.ObjectContent",
+    "obj" : {
+      "type" : "com.vmware.vim25.ManagedObjectReference",
+      "value" : "vm-224",
+      "type" : "VirtualMachine"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "type" : "com.vmware.vim25.DynamicProperty",
+      "name" : "customValue",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfCustomFieldValue",
+        "customFieldValue" : [ "java.util.ArrayList", [ ] ]
+      }
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  } ] ]
+}

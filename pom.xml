@@ -22,7 +22,7 @@
 
   <groupId>org.dasein</groupId>
   <artifactId>dasein-cloud-vsphere</artifactId>
-  <version>2015.10.2-SNAPSHOT</version>
+  <version>2015.10.2</version>
   <packaging>jar</packaging>
 
   <name>dasein-cloud-vsphere</name>
@@ -51,7 +51,7 @@
         <connection>scm:git:git://github.com/dasein-cloud/dasein-cloud-vsphere.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/dasein-cloud/dasein-cloud-vsphere.git</developerConnection>
         <url>http://github.com/dasein-cloud/dasein-cloud-vsphere</url>
-      <tag>HEAD</tag>
+      <tag>dasein-cloud-vsphere-2015.10.2</tag>
   </scm>
 
   <dependencies>

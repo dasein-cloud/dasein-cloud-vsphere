@@ -336,10 +336,11 @@
           </systemProperties>
           <excludes>
             <exclude>**/org.dasein.cloud.vsphere/**Test.class</exclude>
+            <exclude>**/TestSuite.java</exclude>
           </excludes>
-          <includes>
+          <!--<includes>
             <include>**/TestSuite.java</include>
-          </includes>
+          </includes>-->
         </configuration>
         <executions>
           <execution>

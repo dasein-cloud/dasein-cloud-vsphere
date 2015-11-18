@@ -135,11 +135,12 @@
             <vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>
           </vmArgs>
           <!--wsdls file directory -->
-          <wsdlDirectory>src/wsdl/vim25</wsdlDirectory>
+          <wsdlDirectory>${project.basedir}/src/main/resources/wsdl/vim25</wsdlDirectory>
           <!-- which wsdl file -->
           <wsdlFiles>
             <wsdlFile>vimService.wsdl</wsdlFile>
           </wsdlFiles>
+          <wsdlLocation>/wsdl/vim25/*</wsdlLocation>
           <!-- Keep generated files -->
           <keep>true</keep>
           <!-- Package name -->

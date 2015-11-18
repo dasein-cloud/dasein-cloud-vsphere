@@ -220,6 +220,7 @@ public class Vsphere extends AbstractCloud {
             try {
                 getServiceInstance();
             } catch (Exception e) {
+                log.error("Exception getting serviceInstance: "+ e.getMessage());
                 return null;
             }
 

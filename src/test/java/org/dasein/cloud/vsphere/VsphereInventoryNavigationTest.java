@@ -1,6 +1,8 @@
 package org.dasein.cloud.vsphere;
 
-import com.vmware.vim25.PropertySpec;
+import com.vmware.vim25.*;
+import mockit.Expectations;
+import org.dasein.cloud.AuthenticationException;
 import org.dasein.cloud.CloudException;
 import org.dasein.cloud.InternalException;
 import org.junit.Before;
@@ -36,5 +38,15 @@ public class VsphereInventoryNavigationTest extends VsphereTestBase {
         props.add(new PropertySpec());
 
         vin.retrieveObjectList(vsphereMock, "", null, props);
+    }
+
+    @Test(expected = AuthenticationException.class)
+    public void searchDatastoresShouldThrowAuthenticationExceptionIfNoPermissionFaultIsThrown() throws CloudException, InternalException, RuntimeFaultFaultMsg, FileFaultFaultMsg, InvalidDatastoreFaultMsg {
+        new Expectations() {
+            {vimPortMock.searchDatastoreSubFoldersTask((ManagedObjectReference) any, anyString, (HostDatastoreBrowserSearchSpec) any);
+                result = new RuntimeFaultFaultMsg("Invalid permissions", new NoPermission());}
+        };
+
+        vin.searchDatastores(vsphereMock, new ManagedObjectReference(), "blah", new HostDatastoreBrowserSearchSpec());
     }
 }

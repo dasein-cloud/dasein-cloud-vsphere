@@ -9,10 +9,7 @@ import javax.annotation.Nullable;
 
 import com.vmware.vim25.*;
 import org.apache.log4j.Logger;
-import org.dasein.cloud.AsynchronousTask;
-import org.dasein.cloud.CloudException;
-import org.dasein.cloud.InternalException;
-import org.dasein.cloud.ProviderContext;
+import org.dasein.cloud.*;
 import org.dasein.cloud.compute.AbstractImageSupport;
 import org.dasein.cloud.compute.Architecture;
 import org.dasein.cloud.compute.ImageClass;
@@ -135,8 +132,6 @@ public class ImageSupport extends AbstractImageSupport<Vsphere> {
                     }
                 }
             }
-        } catch (Exception e) {
-            throw new CloudException(e);
         } finally {
             APITrace.end();
         }
@@ -231,6 +226,9 @@ public class ImageSupport extends AbstractImageSupport<Vsphere> {
             method.getOperationComplete(taskmor, interval, 10);
         }
         catch (RuntimeFaultFaultMsg runtimeFaultFaultMsg) {
+            if (runtimeFaultFaultMsg.getFaultInfo() instanceof NoPermission) {
+                throw new AuthenticationException("NoPermission fault when deleting image", AuthenticationException.AuthenticationFaultType.FORBIDDEN, runtimeFaultFaultMsg);
+            }
             throw new CloudException("RuntimeFaultFaultMsg when deleting image", runtimeFaultFaultMsg);
         } catch (VimFaultFaultMsg vimFaultFaultMsg) {
             throw new CloudException("VimFaultFaultMsg when deleting image", vimFaultFaultMsg);

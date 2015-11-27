@@ -2,6 +2,7 @@ package org.dasein.cloud.vsphere;
 
 import com.vmware.vim25.*;
 
+import org.dasein.cloud.AuthenticationException;
 import org.dasein.cloud.CloudException;
 import org.dasein.cloud.InternalException;
 
@@ -55,6 +56,9 @@ public class VsphereInventoryNavigation {
             ref.setValue(VIMSERVICEINSTANCEVALUE);
             vimServiceContent = vimPortType.retrieveServiceContent(ref);
         } catch ( RuntimeFaultFaultMsg e ) {
+            if (e.getFaultInfo() instanceof NoPermission) {
+                throw new AuthenticationException("NoPermission fault when retrieving service content", AuthenticationException.AuthenticationFaultType.FORBIDDEN, e);
+            }
             throw new CloudException(e);
         }
 
@@ -64,6 +68,9 @@ public class VsphereInventoryNavigation {
         } catch ( InvalidPropertyFaultMsg e ) {
             throw new InternalException("InvalidPropertyFault", e);
         } catch ( RuntimeFaultFaultMsg e ) {
+            if (e.getFaultInfo() instanceof NoPermission) {
+                throw new AuthenticationException("NoPermission fault when searching inventory", AuthenticationException.AuthenticationFaultType.FORBIDDEN, e);
+            }
             throw new CloudException("RuntimeFault", e);
         } catch ( Exception e ) {
             throw new CloudException(e);
@@ -82,6 +89,9 @@ public class VsphereInventoryNavigation {
         } catch (InvalidDatastoreFaultMsg invalidDatastoreFaultMsg) {
             throw new CloudException("InvalidDatastoreFaultMsg searching datastores", invalidDatastoreFaultMsg);
         } catch (RuntimeFaultFaultMsg runtimeFaultFaultMsg) {
+            if (runtimeFaultFaultMsg.getFaultInfo() instanceof NoPermission) {
+                throw new AuthenticationException("NoPermission fault when searching datastores", AuthenticationException.AuthenticationFaultType.FORBIDDEN, runtimeFaultFaultMsg);
+            }
             throw new CloudException("RuntimeFaultFaultMsg searching datastores", runtimeFaultFaultMsg);
         }
     }

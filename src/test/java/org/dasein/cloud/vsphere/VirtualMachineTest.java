@@ -1,6 +1,5 @@
 package org.dasein.cloud.vsphere;
 
-import com.sun.xml.ws.fault.ServerSOAPFaultException;
 import com.vmware.vim25.*;
 import mockit.Expectations;
 import mockit.Mocked;
@@ -3398,13 +3397,9 @@ public class VirtualMachineTest extends VsphereTestBase {
     }
 
     @Test(expected = CloudException.class)
-    public void launchCustomisedWindowsVmShouldThrowExceptionIfOwnerPropertyIsMissing() throws CloudException, InternalException,
-            SOAPException, CustomizationFaultFaultMsg, FileFaultFaultMsg, InsufficientResourcesFaultFaultMsg,
+    public void launchCustomisedWindowsVmShouldThrowExceptionIfOwnerPropertyIsMissing() throws CloudException, InternalException, CustomizationFaultFaultMsg, FileFaultFaultMsg, InsufficientResourcesFaultFaultMsg,
             InvalidDatastoreFaultMsg, InvalidStateFaultMsg, MigrationFaultFaultMsg, RuntimeFaultFaultMsg,
             TaskInProgressFaultMsg, VmConfigFaultFaultMsg {
-
-        final SOAPFault fault = SOAPFactory.newInstance().createFault();
-        fault.setFaultString("Missing param fullName");
 
         new Expectations(Vm.class) {
             {vm.retrieveObjectList(vsphereMock, "vmFolder", null, launchVmPSpec);
@@ -3414,7 +3409,7 @@ public class VirtualMachineTest extends VsphereTestBase {
                 times = 0;
             }
             {vimPortMock.cloneVMTask((ManagedObjectReference) any, (ManagedObjectReference) any, anyString, (VirtualMachineCloneSpec) any);
-                result = new ServerSOAPFaultException(fault);
+                result = new CloudException("Missing param: owner");
             }
             {vm.reconfigVMTask((ManagedObjectReference) any, (VirtualMachineConfigSpec) any);
                 result = task;
@@ -3467,13 +3462,9 @@ public class VirtualMachineTest extends VsphereTestBase {
     }
 
     @Test(expected = CloudException.class)
-    public void launchCustomisedWindowsVmShouldThrowExceptionIfOrgNamePropertyIsMissing() throws CloudException, InternalException,
-            SOAPException, CustomizationFaultFaultMsg, FileFaultFaultMsg, InsufficientResourcesFaultFaultMsg,
+    public void launchCustomisedWindowsVmShouldThrowExceptionIfOrgNamePropertyIsMissing() throws CloudException, InternalException, CustomizationFaultFaultMsg, FileFaultFaultMsg, InsufficientResourcesFaultFaultMsg,
             InvalidDatastoreFaultMsg, InvalidStateFaultMsg, MigrationFaultFaultMsg, RuntimeFaultFaultMsg,
             TaskInProgressFaultMsg, VmConfigFaultFaultMsg {
-
-        final SOAPFault fault = SOAPFactory.newInstance().createFault();
-        fault.setFaultString("Missing param orgName");
 
         new Expectations(Vm.class) {
             {vm.retrieveObjectList(vsphereMock, "vmFolder", null, launchVmPSpec);
@@ -3483,7 +3474,7 @@ public class VirtualMachineTest extends VsphereTestBase {
                 times = 0;
             }
             {vimPortMock.cloneVMTask((ManagedObjectReference) any, (ManagedObjectReference) any, anyString, (VirtualMachineCloneSpec) any);
-                result = new ServerSOAPFaultException(fault);
+                result = new CloudException("Missing param: org");
             }
             {vm.reconfigVMTask((ManagedObjectReference) any, (VirtualMachineConfigSpec) any);
                 result = task;
@@ -3657,7 +3648,7 @@ public class VirtualMachineTest extends VsphereTestBase {
     @Test(expected = CloudException.class)
     public void cloneVmTaskShouldThrowCloudExceptionIfCloudReturnFileFaultFaultMsg() throws CloudException, InternalException,
             FileFaultFaultMsg, CustomizationFaultFaultMsg, InsufficientResourcesFaultFaultMsg, InvalidDatastoreFaultMsg,
-            InvalidStateFaultMsg, MigrationFaultFaultMsg, RuntimeFaultFaultMsg, ServerSOAPFaultException, TaskInProgressFaultMsg, VmConfigFaultFaultMsg {
+            InvalidStateFaultMsg, MigrationFaultFaultMsg, RuntimeFaultFaultMsg, TaskInProgressFaultMsg, VmConfigFaultFaultMsg {
         new Expectations(Vm.class) {
             {vimPortMock.cloneVMTask((ManagedObjectReference) any, (ManagedObjectReference) any, anyString, (VirtualMachineCloneSpec) any);
                 result = new FileFaultFaultMsg("Clone fault", new FileFault());
@@ -3669,7 +3660,7 @@ public class VirtualMachineTest extends VsphereTestBase {
     @Test(expected = CloudException.class)
     public void cloneVmTaskShouldThrowCloudExceptionIfCloudReturnCustomisationFaultFaultMsg() throws CloudException, InternalException,
             FileFaultFaultMsg, CustomizationFaultFaultMsg, InsufficientResourcesFaultFaultMsg, InvalidDatastoreFaultMsg,
-            InvalidStateFaultMsg, MigrationFaultFaultMsg, RuntimeFaultFaultMsg, ServerSOAPFaultException, TaskInProgressFaultMsg, VmConfigFaultFaultMsg {
+            InvalidStateFaultMsg, MigrationFaultFaultMsg, RuntimeFaultFaultMsg, TaskInProgressFaultMsg, VmConfigFaultFaultMsg {
         new Expectations(Vm.class) {
             {vimPortMock.cloneVMTask((ManagedObjectReference) any, (ManagedObjectReference) any, anyString, (VirtualMachineCloneSpec) any);
                 result = new CustomizationFaultFaultMsg("Clone fault", new CustomizationFault());
@@ -3681,7 +3672,7 @@ public class VirtualMachineTest extends VsphereTestBase {
     @Test(expected = CloudException.class)
     public void cloneVmTaskShouldThrowCloudExceptionIfCloudReturnInsufficientResourcesFaultFaultMsg() throws CloudException, InternalException,
             FileFaultFaultMsg, CustomizationFaultFaultMsg, InsufficientResourcesFaultFaultMsg, InvalidDatastoreFaultMsg,
-            InvalidStateFaultMsg, MigrationFaultFaultMsg, RuntimeFaultFaultMsg, ServerSOAPFaultException, TaskInProgressFaultMsg, VmConfigFaultFaultMsg {
+            InvalidStateFaultMsg, MigrationFaultFaultMsg, RuntimeFaultFaultMsg, TaskInProgressFaultMsg, VmConfigFaultFaultMsg {
         new Expectations(Vm.class) {
             {vimPortMock.cloneVMTask((ManagedObjectReference) any, (ManagedObjectReference) any, anyString, (VirtualMachineCloneSpec) any);
                 result = new InsufficientResourcesFaultFaultMsg("Clone fault", new InsufficientResourcesFault());
@@ -3693,7 +3684,7 @@ public class VirtualMachineTest extends VsphereTestBase {
     @Test(expected = CloudException.class)
     public void cloneVmTaskShouldThrowCloudExceptionIfCloudReturnInvalidDatastoreFaultMsg() throws CloudException, InternalException,
             FileFaultFaultMsg, CustomizationFaultFaultMsg, InsufficientResourcesFaultFaultMsg, InvalidDatastoreFaultMsg,
-            InvalidStateFaultMsg, MigrationFaultFaultMsg, RuntimeFaultFaultMsg, ServerSOAPFaultException, TaskInProgressFaultMsg, VmConfigFaultFaultMsg {
+            InvalidStateFaultMsg, MigrationFaultFaultMsg, RuntimeFaultFaultMsg, TaskInProgressFaultMsg, VmConfigFaultFaultMsg {
         new Expectations(Vm.class) {
             {vimPortMock.cloneVMTask((ManagedObjectReference) any, (ManagedObjectReference) any, anyString, (VirtualMachineCloneSpec) any);
                 result = new InvalidDatastoreFaultMsg("Clone fault", new InvalidDatastore());
@@ -3705,7 +3696,7 @@ public class VirtualMachineTest extends VsphereTestBase {
     @Test(expected = CloudException.class)
     public void cloneVmTaskShouldThrowCloudExceptionIfCloudReturnInvalidStateFaultMsg() throws CloudException, InternalException,
             FileFaultFaultMsg, CustomizationFaultFaultMsg, InsufficientResourcesFaultFaultMsg, InvalidDatastoreFaultMsg,
-            InvalidStateFaultMsg, MigrationFaultFaultMsg, RuntimeFaultFaultMsg, ServerSOAPFaultException, TaskInProgressFaultMsg, VmConfigFaultFaultMsg {
+            InvalidStateFaultMsg, MigrationFaultFaultMsg, RuntimeFaultFaultMsg, TaskInProgressFaultMsg, VmConfigFaultFaultMsg {
         new Expectations(Vm.class) {
             {vimPortMock.cloneVMTask((ManagedObjectReference) any, (ManagedObjectReference) any, anyString, (VirtualMachineCloneSpec) any);
                 result = new InvalidStateFaultMsg("Clone fault", new InvalidState());
@@ -3717,7 +3708,7 @@ public class VirtualMachineTest extends VsphereTestBase {
     @Test(expected = CloudException.class)
     public void cloneVmTaskShouldThrowCloudExceptionIfCloudReturnMigrationFaultFaultMsg() throws CloudException, InternalException,
             FileFaultFaultMsg, CustomizationFaultFaultMsg, InsufficientResourcesFaultFaultMsg, InvalidDatastoreFaultMsg,
-            InvalidStateFaultMsg, MigrationFaultFaultMsg, RuntimeFaultFaultMsg, ServerSOAPFaultException, TaskInProgressFaultMsg, VmConfigFaultFaultMsg {
+            InvalidStateFaultMsg, MigrationFaultFaultMsg, RuntimeFaultFaultMsg, TaskInProgressFaultMsg, VmConfigFaultFaultMsg {
         new Expectations(Vm.class) {
             {vimPortMock.cloneVMTask((ManagedObjectReference) any, (ManagedObjectReference) any, anyString, (VirtualMachineCloneSpec) any);
                 result = new MigrationFaultFaultMsg("Clone fault", new MigrationFault());
@@ -3729,7 +3720,7 @@ public class VirtualMachineTest extends VsphereTestBase {
     @Test(expected = CloudException.class)
     public void cloneVmTaskShouldThrowCloudExceptionIfCloudReturnRuntimeFaultFaultMsg() throws CloudException, InternalException,
             FileFaultFaultMsg, CustomizationFaultFaultMsg, InsufficientResourcesFaultFaultMsg, InvalidDatastoreFaultMsg,
-            InvalidStateFaultMsg, MigrationFaultFaultMsg, RuntimeFaultFaultMsg, ServerSOAPFaultException, TaskInProgressFaultMsg, VmConfigFaultFaultMsg {
+            InvalidStateFaultMsg, MigrationFaultFaultMsg, RuntimeFaultFaultMsg, TaskInProgressFaultMsg, VmConfigFaultFaultMsg {
         new Expectations(Vm.class) {
             {vimPortMock.cloneVMTask((ManagedObjectReference) any, (ManagedObjectReference) any, anyString, (VirtualMachineCloneSpec) any);
                 result = new RuntimeFaultFaultMsg("Clone fault", new RuntimeFault());
@@ -3741,7 +3732,7 @@ public class VirtualMachineTest extends VsphereTestBase {
     @Test(expected = CloudException.class)
     public void cloneVmTaskShouldThrowCloudExceptionIfCloudReturnTaskInProgressFaultMsg() throws CloudException, InternalException,
             FileFaultFaultMsg, CustomizationFaultFaultMsg, InsufficientResourcesFaultFaultMsg, InvalidDatastoreFaultMsg,
-            InvalidStateFaultMsg, MigrationFaultFaultMsg, RuntimeFaultFaultMsg, ServerSOAPFaultException, TaskInProgressFaultMsg, VmConfigFaultFaultMsg {
+            InvalidStateFaultMsg, MigrationFaultFaultMsg, RuntimeFaultFaultMsg, TaskInProgressFaultMsg, VmConfigFaultFaultMsg {
         new Expectations(Vm.class) {
             {vimPortMock.cloneVMTask((ManagedObjectReference) any, (ManagedObjectReference) any, anyString, (VirtualMachineCloneSpec) any);
                 result = new TaskInProgressFaultMsg("Clone fault", new TaskInProgress());
@@ -3753,7 +3744,7 @@ public class VirtualMachineTest extends VsphereTestBase {
     @Test(expected = CloudException.class)
     public void cloneVmTaskShouldThrowCloudExceptionIfCloudReturnVmConfigFaultFaultMsg() throws CloudException, InternalException,
             FileFaultFaultMsg, CustomizationFaultFaultMsg, InsufficientResourcesFaultFaultMsg, InvalidDatastoreFaultMsg,
-            InvalidStateFaultMsg, MigrationFaultFaultMsg, RuntimeFaultFaultMsg, ServerSOAPFaultException, TaskInProgressFaultMsg, VmConfigFaultFaultMsg {
+            InvalidStateFaultMsg, MigrationFaultFaultMsg, RuntimeFaultFaultMsg, TaskInProgressFaultMsg, VmConfigFaultFaultMsg {
         new Expectations(Vm.class) {
             {vimPortMock.cloneVMTask((ManagedObjectReference) any, (ManagedObjectReference) any, anyString, (VirtualMachineCloneSpec) any);
                 result = new VmConfigFaultFaultMsg("Clone fault", new VmConfigFault());

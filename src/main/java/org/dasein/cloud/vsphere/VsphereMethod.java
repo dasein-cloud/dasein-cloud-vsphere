@@ -7,7 +7,6 @@ import javax.annotation.Nonnull;
 
 import com.vmware.vim25.*;
 
-import org.dasein.cloud.AuthenticationException;
 import org.dasein.cloud.CloudException;
 import org.dasein.cloud.InternalException;
 import org.dasein.cloud.util.APITrace;
@@ -96,22 +95,12 @@ public class VsphereMethod {
                     }
                 }
             }
-        } catch (InvalidPropertyFaultMsg e) {
-            throw new CloudException(e);
-        } catch (RuntimeFaultFaultMsg e) {
-            if (e.getFaultInfo() instanceof NoPermission) {
-                throw new AuthenticationException("NoPermission fault when retrieving task status", AuthenticationException.AuthenticationFaultType.FORBIDDEN, e);
-            }
-            throw new CloudException(e);
-        }catch (InvalidCollectorVersionFaultMsg e) {
+        } catch (Exception e) {
             throw new CloudException(e);
         } finally {
             try {
                 vimPort.destroyPropertyFilter(filterSpecRef);
-            } catch (RuntimeFaultFaultMsg e) {
-                if (e.getFaultInfo() instanceof NoPermission) {
-                    throw new AuthenticationException("NoPermission fault when destroying property filter", AuthenticationException.AuthenticationFaultType.FORBIDDEN, e);
-                }
+            } catch (Exception e) {
                 throw new CloudException(e);
             }
             APITrace.end();

@@ -1,6 +1,5 @@
 package org.dasein.cloud.vsphere.compute;
 
-import com.sun.xml.ws.fault.ServerSOAPFaultException;
 import com.vmware.vim25.*;
 import org.apache.log4j.Logger;
 import org.dasein.cloud.CloudException;
@@ -1359,8 +1358,6 @@ public class Vm extends AbstractVMSupport<Vsphere> {
             throw new CloudException("InvalidDatastoreFaultMsg when cloning vm", invalidDatastoreFaultMsg);
         } catch (MigrationFaultFaultMsg migrationFaultFaultMsg) {
             throw new CloudException("MigrationFaultFaultMsg when cloning vm", migrationFaultFaultMsg);
-        } catch (ServerSOAPFaultException serverSoapFaultException) {
-            throw new CloudException("ServerSOAPFaultException when cloning vm: "+serverSoapFaultException.getFault().getFaultString(), serverSoapFaultException);
         }
     }
 

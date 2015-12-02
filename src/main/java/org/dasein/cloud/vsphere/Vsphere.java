@@ -95,7 +95,7 @@ public class Vsphere extends AbstractCloud {
     }
 
     public Vsphere() { 
-        System.out.println("CREATED Vsphere extends AbstractCloud");
+
     }
 
     @Override
@@ -179,9 +179,6 @@ public class Vsphere extends AbstractCloud {
             apiMajorVersion = Integer.parseInt(apiVersion);
 
             vsphereConnection = new VsphereConnection(vimService, vimPortType, userSession, serviceContent);
-        }
-        else {
-            System.out.println("Reusing connection "+vsphereConnection);
         }
         return vsphereConnection;
     }
@@ -299,13 +296,10 @@ public class Vsphere extends AbstractCloud {
     private void cleanUp() {
         super.close();
         try {
-            getServiceInstance().getVimPort().logout(getServiceInstance().getServiceContent().getSessionManager());
-        }
-        catch( CloudException ignore ) {
-            // ignore
-        }
-        catch( InternalException ignore ) {
-            // ignore
+            if (vsphereConnection != null) {
+                vsphereConnection.getVimPort().logout(vsphereConnection.getServiceContent().getSessionManager());
+            }
+
         }
         catch( NullPointerException ignore ) {
             // ignore

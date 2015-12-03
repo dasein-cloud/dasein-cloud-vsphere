@@ -70,7 +70,7 @@ public class VmCapabilities extends AbstractCapabilities<Vsphere> implements Vir
 
     @Override
     public boolean canTerminate(@Nonnull VmState fromState) throws CloudException, InternalException {
-        return fromState.equals(VmState.STOPPED);
+        return !fromState.equals(VmState.TERMINATED);
     }
 
     @Override

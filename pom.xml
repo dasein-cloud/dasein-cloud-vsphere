@@ -41,6 +41,27 @@
     <version>5</version>
   </parent>
 
+  <profiles>
+    <profile>
+      <id>default</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <skip.unit.tests>false</skip.unit.tests>
+        <skip.int.tests>true</skip.int.tests>
+      </properties>
+    </profile>
+    <profile>
+      <id>integration</id>
+      <properties>
+        <skip.unit.tests>true</skip.unit.tests>
+        <skip.int.tests>false</skip.int.tests>
+      </properties>
+    </profile>
+  </profiles>
+
+
   <dependencies>
     <!-- Compile -->
     <dependency>
@@ -265,6 +286,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>2.6</version>
         <configuration>
+          <skipTests>${skip.unit.tests}</skipTests>
           <excludes>
             <exclude>**/TestSuite.class</exclude>
           </excludes>
@@ -280,6 +302,7 @@
         <artifactId>maven-failsafe-plugin</artifactId>
         <version>2.6</version>
         <configuration>
+          <skipTests>${skip.int.tests}</skipTests>
           <systemProperties>
             <property>
               <name>providerClass</name>
@@ -332,11 +355,10 @@
           </systemProperties>
           <excludes>
             <exclude>**/org.dasein.cloud.vsphere/**Test.class</exclude>
-            <exclude>**/TestSuite.java</exclude>
           </excludes>
-          <!--<includes>
+          <includes>
             <include>**/TestSuite.java</include>
-          </includes>-->
+          </includes>
         </configuration>
         <executions>
           <execution>

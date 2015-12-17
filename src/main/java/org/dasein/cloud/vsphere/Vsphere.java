@@ -182,9 +182,6 @@ public class Vsphere extends AbstractCloud {
 
             vsphereConnection = new VsphereConnection(vimService, vimPortType, userSession, serviceContent);
         }
-        else {
-            System.out.println("Reusing connection "+vsphereConnection);
-        }
         return vsphereConnection;
     }
 

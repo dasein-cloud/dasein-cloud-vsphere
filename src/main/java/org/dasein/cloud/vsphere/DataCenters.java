@@ -23,9 +23,7 @@ import com.vmware.vim25.*;
 
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.log4j.Logger;
-import org.dasein.cloud.CloudException;
-import org.dasein.cloud.InternalException;
-import org.dasein.cloud.ProviderContext;
+import org.dasein.cloud.*;
 import org.dasein.cloud.compute.AffinityGroup;
 import org.dasein.cloud.compute.AffinityGroupFilterOptions;
 import org.dasein.cloud.compute.AffinityGroupSupport;
@@ -152,13 +150,10 @@ public class DataCenters extends AbstractDataCenterServices<Vsphere> {
             Region region = getRegion(providerRegionId);
 
             if( region == null ) {
-                throw new CloudException("No such region: " + providerRegionId);
+                throw new ResourceNotFoundException("No such region: " + providerRegionId);
             }
             ProviderContext ctx = getProvider().getContext();
 
-            if( ctx == null ) {
-                throw new NoContextException();
-            }
             Cache<DataCenter> cache = Cache.getInstance(getProvider(), "dataCenters", DataCenter.class, CacheLevel.REGION_ACCOUNT, new TimePeriod<Day>(1, TimePeriod.DAY));
             Collection<DataCenter> dcList = (Collection<DataCenter>)cache.get(ctx);
 
@@ -215,9 +210,6 @@ public class DataCenters extends AbstractDataCenterServices<Vsphere> {
         try {
             ProviderContext ctx = getProvider().getContext();
 
-            if( ctx == null ) {
-                throw new NoContextException(); 
-            }
             Cache<Region> cache = Cache.getInstance(getProvider(), "regions", Region.class, CacheLevel.CLOUD_ACCOUNT, new TimePeriod<Hour>(10, TimePeriod.HOUR));
             Collection<Region> regions = (Collection<Region>)cache.get(ctx);
 
@@ -338,9 +330,6 @@ public class DataCenters extends AbstractDataCenterServices<Vsphere> {
         try {
             ProviderContext ctx = getProvider().getContext();
 
-            if( ctx == null ) {
-                throw new NoContextException();
-            }
             Cache<StoragePool> cache = Cache.getInstance(getProvider(), "storagePools", StoragePool.class, CacheLevel.CLOUD_ACCOUNT, new TimePeriod<Hour>(10, TimePeriod.HOUR));
             Collection<StoragePool> storagePools = (Collection<StoragePool>)cache.get(ctx);
 
@@ -444,9 +433,6 @@ public class DataCenters extends AbstractDataCenterServices<Vsphere> {
         try {
             ProviderContext ctx = getProvider().getContext();
 
-            if( ctx == null ) {
-                throw new NoContextException();
-            }
             Cache<Folder> cache = Cache.getInstance(getProvider(), "folders", Folder.class, CacheLevel.CLOUD_ACCOUNT, new TimePeriod<Hour>(10, TimePeriod.HOUR));
             Collection<Folder> folders = (Collection<Folder>)cache.get(ctx);
             Map<String, Folder> folderMap = new HashMap<String, Folder>();
@@ -590,7 +576,7 @@ public class DataCenters extends AbstractDataCenterServices<Vsphere> {
         return sp;
     }
 
-    private Folder toFolder(@Nonnull String folderId, @Nonnull String folderName, String folderParent, List<String> folderChildren, FolderType type) throws CloudException, InternalException{
+    private Folder toFolder(@Nonnull String folderId, @Nonnull String folderName, String folderParent, List<String> folderChildren, FolderType type){
         Folder f = new Folder();
         f.setId(folderId);
         f.setName(folderName);

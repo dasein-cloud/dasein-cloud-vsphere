@@ -2,10 +2,7 @@ package org.dasein.cloud.vsphere.network;
 
 import com.vmware.vim25.*;
 import org.apache.log4j.Logger;
-import org.dasein.cloud.CloudException;
-import org.dasein.cloud.InternalException;
-import org.dasein.cloud.ProviderContext;
-import org.dasein.cloud.VisibleScope;
+import org.dasein.cloud.*;
 import org.dasein.cloud.network.*;
 import org.dasein.cloud.util.APITrace;
 import org.dasein.cloud.util.Cache;
@@ -55,22 +52,9 @@ public class VSphereNetwork extends AbstractVLANSupport<Vsphere> {
         return capabilities;
     }
 
-    @Nonnull
     @Override
-    public String getProviderTermForNetworkInterface(@Nonnull Locale locale) {
-        return capabilities.getProviderTermForNetworkInterface(locale);
-    }
-
-    @Nonnull
-    @Override
-    public String getProviderTermForSubnet(@Nonnull Locale locale) {
-        return capabilities.getProviderTermForSubnet(locale);
-    }
-
-    @Nonnull
-    @Override
-    public String getProviderTermForVlan(@Nonnull Locale locale) {
-        return capabilities.getProviderTermForVlan(locale);
+    public boolean isNetworkInterfaceSupportEnabled() throws CloudException, InternalException {
+        return false;
     }
 
     @Override
@@ -84,9 +68,6 @@ public class VSphereNetwork extends AbstractVLANSupport<Vsphere> {
         APITrace.begin(getProvider(), "VSphereNetwork.listVlans");
         try {
             ProviderContext ctx = getProvider().getContext();
-            if( ctx == null ) {
-                throw new NoContextException();
-            }
             Cache<VLAN> cache = Cache.getInstance(getProvider(), "networks", VLAN.class, CacheLevel.REGION_ACCOUNT, new TimePeriod<Day>(1, TimePeriod.DAY));
             Collection<VLAN> netList = (Collection<VLAN>)cache.get(ctx);
 

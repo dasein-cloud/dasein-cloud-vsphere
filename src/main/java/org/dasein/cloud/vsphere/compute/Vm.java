@@ -1,12 +1,8 @@
 package org.dasein.cloud.vsphere.compute;
 
-import com.sun.xml.ws.fault.ServerSOAPFaultException;
 import com.vmware.vim25.*;
 import org.apache.log4j.Logger;
-import org.dasein.cloud.CloudException;
-import org.dasein.cloud.InternalException;
-import org.dasein.cloud.OperationNotSupportedException;
-import org.dasein.cloud.ProviderContext;
+import org.dasein.cloud.*;
 import org.dasein.cloud.compute.*;
 import org.dasein.cloud.dc.DataCenter;
 import org.dasein.cloud.dc.Folder;
@@ -44,6 +40,7 @@ import java.util.*;
 public class Vm extends AbstractVMSupport<Vsphere> {
     static private final Logger logger = Vsphere.getLogger(Vm.class);
     private List<PropertySpec> virtualMachinePSpec;
+    private List<PropertySpec> launchVirtualMachinePSpec;
     private List<PropertySpec> rpPSpecs;
     private List<SelectionSpec> rpSSpecs;
     private DataCenters dc;
@@ -64,8 +61,8 @@ public class Vm extends AbstractVMSupport<Vsphere> {
     }
 
     public List<PropertySpec> getLaunchVirtualMachinePSpec() {
-        virtualMachinePSpec = VsphereTraversalSpec.createPropertySpec(virtualMachinePSpec, "VirtualMachine", false, "config", "customValue");
-        return virtualMachinePSpec;
+        launchVirtualMachinePSpec = VsphereTraversalSpec.createPropertySpec(launchVirtualMachinePSpec, "VirtualMachine", false, "config", "customValue");
+        return launchVirtualMachinePSpec;
     }
 
     public List<SelectionSpec> getResourcePoolSelectionSpec() {
@@ -113,7 +110,7 @@ public class Vm extends AbstractVMSupport<Vsphere> {
     }
 
     @Override
-    public boolean isSubscribed() throws CloudException, InternalException {
+    public boolean isSubscribed() {
         return true;
     }
 
@@ -124,11 +121,13 @@ public class Vm extends AbstractVMSupport<Vsphere> {
         try {
             VirtualMachine vm = getVirtualMachine(virtualMachineId);
             if( vm == null ) {
-                throw new CloudException("Unable to find vm with id " + virtualMachineId);
+                throw new ResourceNotFoundException("Unable to find vm with id " + virtualMachineId);
             }
 
             if( cpuCount == null && ramInMB == null ) {
-                throw new CloudException("No cpu count or ram change provided");
+                //todo
+                //should we have a new exception for errors caused by user/client provided data?
+                throw new InternalException("No cpu count or ram change provided");
             }
             int cpuCountVal;
             long memoryVal;
@@ -171,10 +170,11 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                         }
                     }
                 }
-                lastError = new CloudException("Unable to identify updated server.");
+                //todo is ResourceNotFoundException appropriate here?
+                lastError = new ResourceNotFoundException("Unable to identify updated server.");
             }
             else {
-                lastError = new CloudException("Failed to update VM: " + method.getTaskError().getVal());
+                lastError = new GeneralCloudException("Failed to update VM: " + method.getTaskError().getVal(), CloudErrorType.GENERAL);
             }
             throw lastError;
         }
@@ -190,7 +190,7 @@ public class Vm extends AbstractVMSupport<Vsphere> {
         try {
             VirtualMachine vm = getVirtualMachine(vmId);
             if (vm == null) {
-                throw new CloudException("Unable to find vm with id " + vmId);
+                throw new ResourceNotFoundException("Unable to find vm with id " + vmId);
             }
 
             ManagedObjectReference vmRef = new ManagedObjectReference();
@@ -255,9 +255,9 @@ public class Vm extends AbstractVMSupport<Vsphere> {
 
                     return getVirtualMachine(newVmRef.getValue());
                 }
-                throw new CloudException("Failed to create VM: " + method.getTaskError().getVal());
+                throw new GeneralCloudException("Failed to create VM: " + method.getTaskError().getVal(), CloudErrorType.GENERAL);
             }
-            throw new InternalException("Unable to clone vm due to invalid request properties (host, folder, resourcePool");
+            throw new ResourceNotFoundException("Unable to clone vm due to inability to find host and/or resource pool");
         }
         finally {
             APITrace.end();
@@ -535,12 +535,8 @@ public class Vm extends AbstractVMSupport<Vsphere> {
         try {
             ProviderContext ctx = getProvider().getContext();
 
-            if( ctx == null ) {
-                throw new NoContextException();
-            }
-
             if (ctx.getRegionId() == null) {
-                throw new CloudException("Unable to launch vm as no region was set for this request");
+                throw new InternalException("Unable to launch vm as no region was set for this request");
             }
 
             List<PropertySpec> pSpecs = getLaunchVirtualMachinePSpec();
@@ -573,7 +569,7 @@ public class Vm extends AbstractVMSupport<Vsphere> {
             }
 
             if (!foundTemplate) {
-                throw new CloudException("No such template: " + options.getMachineImageId());
+                throw new ResourceNotFoundException("No such template: " + options.getMachineImageId());
             }
             if (templateConfigInfo != null) {
                 int apiMajorVersion = getProvider().getApiMajorVersion();
@@ -922,7 +918,7 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                             start(newVmRef.getValue());
                         }
                         else {
-                            throw new CloudException("Failed to reconfigure VM: " + method.getTaskError().getVal());
+                            throw new GeneralCloudException("Failed to reconfigure VM: " + method.getTaskError().getVal(), CloudErrorType.GENERAL);
                         }
                     }
 
@@ -942,10 +938,11 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                             }
                         }
                     }
-                    lastError = new CloudException("Unable to find newly created vm");
+                    //todo is ResourceNotFoundException appropriate here?
+                    lastError = new ResourceNotFoundException("Unable to find newly created vm");
                 }
                 if (lastError == null) {
-                    lastError = new CloudException("Failed to create VM: " + method.getTaskError().getVal());
+                    lastError = new GeneralCloudException("Failed to create VM: " + method.getTaskError().getVal(), CloudErrorType.GENERAL);
                 }
                 throw lastError;
             }
@@ -963,11 +960,8 @@ public class Vm extends AbstractVMSupport<Vsphere> {
         try {
             List<VirtualMachine> list = new ArrayList<VirtualMachine>();
             ProviderContext ctx = getProvider().getContext();
-            if (ctx == null) {
-                throw new NoContextException();
-            }
             if (ctx.getRegionId() == null) {
-                throw new CloudException("Region id is not set");
+                throw new InternalException("Region id is not set");
             }
 
             List<PropertySpec> pSpecs = getVirtualMachinePSpec();
@@ -1070,10 +1064,12 @@ public class Vm extends AbstractVMSupport<Vsphere> {
         try {
             VirtualMachine vm = getVirtualMachine(vmId);
             if (vm == null) {
-                throw new CloudException("Unable to find vm with id "+vmId);
+                throw new ResourceNotFoundException("Unable to find vm with id "+vmId);
             }
             if (!getCapabilities().canReboot(vm.getCurrentState())) {
-                throw new OperationNotSupportedException("Unable to reboot vm in state "+vm.getCurrentState());
+                //todo
+                //should we have a new exception for errors caused by user/client provided data?
+                throw new InternalException("Unable to reboot vm in state "+vm.getCurrentState());
             }
 
             ManagedObjectReference vmRef = new ManagedObjectReference();
@@ -1085,13 +1081,16 @@ public class Vm extends AbstractVMSupport<Vsphere> {
             try {
                 vimPortType.rebootGuest(vmRef);
             } catch (InvalidStateFaultMsg invalidStateFaultMsg) {
-                throw new CloudException("InvalidStateFaultMsg when rebooting vm", invalidStateFaultMsg);
+                throw new InvalidStateException("Vm is in invalid state for reboot: " + invalidStateFaultMsg.getMessage(), invalidStateFaultMsg);
             } catch (RuntimeFaultFaultMsg runtimeFaultFaultMsg) {
-                throw new CloudException("RuntimeFaultFaultMsg when rebooting vm", runtimeFaultFaultMsg);
+                if (runtimeFaultFaultMsg.getFaultInfo() instanceof NoPermission) {
+                    throw new AuthenticationException("NoPermission fault when rebooting vm", runtimeFaultFaultMsg).withFaultType(AuthenticationException.AuthenticationFaultType.FORBIDDEN);
+                }
+                throw new GeneralCloudException("Error when rebooting vm", runtimeFaultFaultMsg, CloudErrorType.GENERAL);
             } catch (TaskInProgressFaultMsg taskInProgressFaultMsg) {
-                throw new CloudException("TaskInProgressFaultMsg when rebooting vm", taskInProgressFaultMsg);
-            } catch (ToolsUnavailableFaultMsg toolsUnavailableFaultMsg) {
-                throw new CloudException("ToolsUnavailableFaultMsg when rebooting vm", toolsUnavailableFaultMsg);
+                throw new TaskInProgressException("TaskInProgressFaultMsg when rebooting vm", taskInProgressFaultMsg);
+            } catch (Exception e) {
+                throw new GeneralCloudException("Error when rebooting vm", e, CloudErrorType.GENERAL);
             }
         }
         finally {
@@ -1105,11 +1104,13 @@ public class Vm extends AbstractVMSupport<Vsphere> {
         try {
             VirtualMachine vm = getVirtualMachine(vmId);
             if (vm == null) {
-                throw new CloudException("Unable to find vm with id "+vmId);
+                throw new ResourceNotFoundException("Unable to find vm with id "+vmId);
             }
 
             if (!getCapabilities().canResume(vm.getCurrentState())) {
-                throw new OperationNotSupportedException("Unable to resume vm in state "+vm.getCurrentState());
+                //todo
+                //should we have a new exception for errors caused by user/client provided data?
+                throw new InternalException("Unable to resume vm in state "+vm.getCurrentState());
             }
 
             ManagedObjectReference vmRef = new ManagedObjectReference();
@@ -1124,18 +1125,19 @@ public class Vm extends AbstractVMSupport<Vsphere> {
             VimPortType vimPortType = vsphereConnection.getVimPort();
             try {
                 vimPortType.powerOnVMTask(vmRef, hostRef);
-            } catch (FileFaultFaultMsg fileFaultFaultMsg) {
-                throw new CloudException("FileFaultFaultMsg when resuming vm", fileFaultFaultMsg);
             } catch (InsufficientResourcesFaultFaultMsg insufficientResourcesFaultFaultMsg) {
-                throw new CloudException("InsufficientResourcesFaultFaultMsg when resuming vm", insufficientResourcesFaultFaultMsg);
+                throw new GeneralCloudException("InsufficientResourcesFaultFaultMsg when resuming vm", insufficientResourcesFaultFaultMsg, CloudErrorType.CAPACITY);
             } catch (InvalidStateFaultMsg invalidStateFaultMsg) {
-                throw new CloudException("InvalidStateFaultMsg when resuming vm", invalidStateFaultMsg);
+                throw new InvalidStateException("Vm is in invalid state for resume: " + invalidStateFaultMsg.getMessage(), invalidStateFaultMsg);
             } catch (RuntimeFaultFaultMsg runtimeFaultFaultMsg) {
-                throw new CloudException("RuntimeFaultFaultMsg when resuming vm", runtimeFaultFaultMsg);
+                if (runtimeFaultFaultMsg.getFaultInfo() instanceof NoPermission) {
+                    throw new AuthenticationException("NoPermission fault when resuming vm", runtimeFaultFaultMsg).withFaultType(AuthenticationException.AuthenticationFaultType.FORBIDDEN);
+                }
+                throw new GeneralCloudException("Error when resuming vm", runtimeFaultFaultMsg, CloudErrorType.GENERAL);
             } catch (TaskInProgressFaultMsg taskInProgressFaultMsg) {
-                throw new CloudException("TaskInProgressFaultMsg when resuming vm", taskInProgressFaultMsg);
-            } catch (VmConfigFaultFaultMsg vmConfigFaultFaultMsg) {
-                throw new CloudException("VmConfigFaultFaultMsg when resuming vm", vmConfigFaultFaultMsg);
+                throw new TaskInProgressException("TaskInProgressFaultMsg when resuming vm", taskInProgressFaultMsg);
+            } catch (Exception e) {
+                throw new GeneralCloudException("Error when resuming vm", e, CloudErrorType.GENERAL);
             }
         }
         finally {
@@ -1149,11 +1151,13 @@ public class Vm extends AbstractVMSupport<Vsphere> {
         try {
             VirtualMachine vm = getVirtualMachine(vmId);
             if (vm == null) {
-                throw new CloudException("Unable to find vm with id "+vmId);
+                throw new ResourceNotFoundException("Unable to find vm with id "+vmId);
             }
 
             if (!getCapabilities().canStart(vm.getCurrentState())) {
-                throw new OperationNotSupportedException("Unable to start vm in state "+vm.getCurrentState());
+                //todo
+                //should we have a new exception for errors caused by user/client provided data?
+                throw new InternalException("Unable to start vm in state "+vm.getCurrentState());
             }
 
             ManagedObjectReference vmRef = new ManagedObjectReference();
@@ -1171,18 +1175,19 @@ public class Vm extends AbstractVMSupport<Vsphere> {
 
                 try {
                     vimPortType.powerOnVMTask(vmRef, hostRef);
-                } catch (FileFaultFaultMsg fileFaultFaultMsg) {
-                    throw new CloudException("FileFaultFaultMsg when starting vm", fileFaultFaultMsg);
                 } catch (InsufficientResourcesFaultFaultMsg insufficientResourcesFaultFaultMsg) {
-                    throw new CloudException("InsufficientResourcesFaultFaultMsg when starting vm", insufficientResourcesFaultFaultMsg);
+                    throw new GeneralCloudException("InsufficientResourcesFaultFaultMsg when starting vm", insufficientResourcesFaultFaultMsg, CloudErrorType.CAPACITY);
                 } catch (InvalidStateFaultMsg invalidStateFaultMsg) {
-                    throw new CloudException("InvalidStateFaultMsg when starting vm", invalidStateFaultMsg);
+                    throw new InvalidStateException("Vm is in invalid state for start: " + invalidStateFaultMsg.getMessage(), invalidStateFaultMsg);
                 } catch (RuntimeFaultFaultMsg runtimeFaultFaultMsg) {
-                    throw new CloudException("RuntimeFaultFaultMsg when starting vm", runtimeFaultFaultMsg);
+                    if (runtimeFaultFaultMsg.getFaultInfo() instanceof NoPermission) {
+                        throw new AuthenticationException("NoPermission fault when starting vm", runtimeFaultFaultMsg).withFaultType(AuthenticationException.AuthenticationFaultType.FORBIDDEN);
+                    }
+                    throw new GeneralCloudException("Error when starting vm", runtimeFaultFaultMsg, CloudErrorType.GENERAL);
                 } catch (TaskInProgressFaultMsg taskInProgressFaultMsg) {
-                    throw new CloudException("TaskInProgressFaultMsg when starting vm", taskInProgressFaultMsg);
-                } catch (VmConfigFaultFaultMsg vmConfigFaultFaultMsg) {
-                    throw new CloudException("VmConfigFaultFaultMsg when starting vm", vmConfigFaultFaultMsg);
+                    throw new TaskInProgressException("TaskInProgressFaultMsg when starting vm", taskInProgressFaultMsg);
+                } catch (Exception e) {
+                    throw new GeneralCloudException("Error when starting vm", e, CloudErrorType.GENERAL);
                 }
             }
         }
@@ -1197,11 +1202,13 @@ public class Vm extends AbstractVMSupport<Vsphere> {
         try {
             VirtualMachine vm = getVirtualMachine(vmId);
             if (vm == null) {
-                throw new CloudException("Unable to find vm with id "+vmId);
+                throw new ResourceNotFoundException("Unable to find vm with id "+vmId);
             }
 
             if (!getCapabilities().canStop(vm.getCurrentState())) {
-                throw new OperationNotSupportedException("Unable to stop vm in state "+vm.getCurrentState());
+                //todo
+                //should we have a new exception for errors caused by user/client provided data?
+                throw new InternalException("Unable to stop vm in state "+vm.getCurrentState());
             }
 
             ManagedObjectReference vmRef = new ManagedObjectReference();
@@ -1218,13 +1225,16 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                     vimPortType.shutdownGuest(vmRef);
                 }
             } catch (InvalidStateFaultMsg invalidStateFaultMsg) {
-                throw new CloudException("InvalidStateFaultMsg when stopping vm", invalidStateFaultMsg);
+                throw new InvalidStateException("Vm is in invalid state for stop: " + invalidStateFaultMsg.getMessage(), invalidStateFaultMsg);
             } catch (RuntimeFaultFaultMsg runtimeFaultFaultMsg) {
-                throw new CloudException("RuntimeFaultFaultMsg when stopping vm", runtimeFaultFaultMsg);
+                if (runtimeFaultFaultMsg.getFaultInfo() instanceof NoPermission) {
+                    throw new AuthenticationException("NoPermission fault when stopping vm", runtimeFaultFaultMsg).withFaultType(AuthenticationException.AuthenticationFaultType.FORBIDDEN);
+                }
+                throw new GeneralCloudException("Error when stopping vm", runtimeFaultFaultMsg, CloudErrorType.GENERAL);
             } catch (TaskInProgressFaultMsg taskInProgressFaultMsg) {
-                throw new CloudException("TaskInProgressFaultMsg when stopping vm", taskInProgressFaultMsg);
-            } catch (ToolsUnavailableFaultMsg toolsUnavailableFaultMsg) {
-                throw new CloudException("ToolsUnavailableFaultMsg when stopping vm", toolsUnavailableFaultMsg);
+                throw new TaskInProgressException("TaskInProgressFaultMsg when stopping vm", taskInProgressFaultMsg);
+            } catch (Exception e) {
+                throw new GeneralCloudException("Error when stopping vm", e, CloudErrorType.GENERAL);
             }
         }
         finally {
@@ -1238,11 +1248,13 @@ public class Vm extends AbstractVMSupport<Vsphere> {
         try {
             VirtualMachine vm = getVirtualMachine(vmId);
             if (vm == null) {
-                throw new CloudException("Unable to find vm with id "+vmId);
+                throw new ResourceNotFoundException("Unable to find vm with id "+vmId);
             }
 
             if (!getCapabilities().canSuspend(vm.getCurrentState())) {
-                throw new OperationNotSupportedException("Unable to suspend vm in state "+vm.getCurrentState());
+                //todo
+                //should we have a new exception for errors caused by user/client provided data?
+                throw new InternalException("Unable to suspend vm in state "+vm.getCurrentState());
             }
 
             ManagedObjectReference vmRef = new ManagedObjectReference();
@@ -1254,11 +1266,14 @@ public class Vm extends AbstractVMSupport<Vsphere> {
             try {
                 vimPortType.suspendVMTask(vmRef);
             } catch (InvalidStateFaultMsg invalidStateFaultMsg) {
-                throw new CloudException("InvalidStateFaultMsg when suspending vm", invalidStateFaultMsg);
+                throw new InvalidStateException("Vm is in invalid state for suspend: " + invalidStateFaultMsg.getMessage(), invalidStateFaultMsg);
             } catch (RuntimeFaultFaultMsg runtimeFaultFaultMsg) {
-                throw new CloudException("RuntimeFaultFaultMsg when suspending vm", runtimeFaultFaultMsg);
+                if (runtimeFaultFaultMsg.getFaultInfo() instanceof NoPermission) {
+                    throw new AuthenticationException("NoPermission fault when suspending vm", runtimeFaultFaultMsg).withFaultType(AuthenticationException.AuthenticationFaultType.FORBIDDEN);
+                }
+                throw new GeneralCloudException("Error when suspending vm", runtimeFaultFaultMsg, CloudErrorType.GENERAL);
             } catch (TaskInProgressFaultMsg taskInProgressFaultMsg) {
-                throw new CloudException("TaskInProgressFaultMsg when suspending vm", taskInProgressFaultMsg);
+                throw new TaskInProgressException("TaskInProgressFaultMsg when suspending vm", taskInProgressFaultMsg);
             }
         }
         finally {
@@ -1289,18 +1304,21 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                     VsphereMethod method = new VsphereMethod(getProvider());
                     TimePeriod interval = new TimePeriod<Second>(30, TimePeriod.SECOND);
                     if (!method.getOperationComplete(taskMor, interval, 10)) {
-                        throw new CloudException("Error stopping vm prior to termination: "+method.getTaskError().getVal());
+                        throw new GeneralCloudException("Error stopping vm prior to termination: "+method.getTaskError().getVal(), CloudErrorType.GENERAL);
                     }
                 }
                 vimPortType.destroyTask(vmRef);
             } catch (InvalidStateFaultMsg invalidStateFaultMsg) {
-                throw new CloudException("InvalidStateFaultMsg when terminating vm", invalidStateFaultMsg);
+                throw new InvalidStateException("Vm is in invalid state for terminate: " + invalidStateFaultMsg.getMessage(), invalidStateFaultMsg);
             } catch (RuntimeFaultFaultMsg runtimeFaultFaultMsg) {
-                throw new CloudException("RuntimeFaultFaultMsg when terminating vm", runtimeFaultFaultMsg);
+                if (runtimeFaultFaultMsg.getFaultInfo() instanceof NoPermission) {
+                    throw new AuthenticationException("NoPermission fault when terminating vm", runtimeFaultFaultMsg).withFaultType(AuthenticationException.AuthenticationFaultType.FORBIDDEN);
+                }
+                throw new GeneralCloudException("Error when terminating vm", runtimeFaultFaultMsg, CloudErrorType.GENERAL);
             } catch (TaskInProgressFaultMsg taskInProgressFaultMsg) {
-                throw new CloudException("TaskInProgressFaultMsg when terminating vm", taskInProgressFaultMsg);
-            } catch (VimFaultFaultMsg vimFaultFaultMsg) {
-                throw new CloudException("VimFaultFaultMsg when terminating vm", vimFaultFaultMsg);
+                throw new TaskInProgressException("TaskInProgressFaultMsg when terminating vm", taskInProgressFaultMsg);
+            } catch (Exception e) {
+                throw new GeneralCloudException("Error when terminating vm", e, CloudErrorType.GENERAL);
             }
         }
         finally {
@@ -1313,26 +1331,28 @@ public class Vm extends AbstractVMSupport<Vsphere> {
         VimPortType vimPort = vsphereConnection.getVimPort();
         try {
             return vimPort.reconfigVMTask(vmRef, spec);
-        } catch (ConcurrentAccessFaultMsg concurrentAccessFaultMsg) {
-            throw new CloudException("ConcurrentAccessFaultMsg when altering vm", concurrentAccessFaultMsg);
         } catch (DuplicateNameFaultMsg duplicateNameFaultMsg) {
-            throw new CloudException("DuplicateNameFaultMsg when altering vm", duplicateNameFaultMsg);
-        } catch (FileFaultFaultMsg fileFaultFaultMsg) {
-            throw new CloudException("FileFaultFaultMsg when altering vm", fileFaultFaultMsg);
+            throw new GeneralCloudException("DuplicateName when altering vm: " + duplicateNameFaultMsg.getFaultInfo().getName(), duplicateNameFaultMsg, CloudErrorType.INVALID_USER_DATA);
         } catch (InsufficientResourcesFaultFaultMsg insufficientResourcesFaultFaultMsg) {
-            throw new CloudException("InsufficientResourcesFaultFaultMsg when altering vm", insufficientResourcesFaultFaultMsg);
+            throw new GeneralCloudException("InsufficientResourcesFaultFaultMsg when altering vm", insufficientResourcesFaultFaultMsg, CloudErrorType.CAPACITY);
         } catch (InvalidDatastoreFaultMsg invalidDatastoreFaultMsg) {
-            throw new CloudException("InvalidDatastoreFaultMsg when altering vm", invalidDatastoreFaultMsg);
+            if (invalidDatastoreFaultMsg.getFaultInfo() instanceof InvalidDatastorePath) {
+                throw new GeneralCloudException("InvalidDatastore when altering vm: "+((InvalidDatastorePath) invalidDatastoreFaultMsg.getFaultInfo()).getDatastorePath(), invalidDatastoreFaultMsg, CloudErrorType.INVALID_USER_DATA);
+            }
+            throw new GeneralCloudException("Error when altering vm", invalidDatastoreFaultMsg, CloudErrorType.GENERAL);
         } catch (InvalidNameFaultMsg invalidNameFaultMsg) {
-            throw new CloudException("InvalidNameFaultMsg when altering vm", invalidNameFaultMsg);
+            throw new GeneralCloudException("InvalidNameFault when altering vm: " + invalidNameFaultMsg.getFaultInfo().getName(), invalidNameFaultMsg, CloudErrorType.INVALID_USER_DATA);
         } catch (InvalidStateFaultMsg invalidStateFaultMsg) {
-            throw new CloudException("InvalidStateFaultMsg when altering vm", invalidStateFaultMsg);
+            throw new InvalidStateException("Vm is in invalid state for reconfig: " + invalidStateFaultMsg.getMessage(), invalidStateFaultMsg);
         } catch (RuntimeFaultFaultMsg runtimeFaultFaultMsg) {
-            throw new CloudException("RuntimeFaultFaultMsg when altering vm", runtimeFaultFaultMsg);
+            if (runtimeFaultFaultMsg.getFaultInfo() instanceof NoPermission) {
+                throw new AuthenticationException("NoPermission fault when altering vm", runtimeFaultFaultMsg).withFaultType(AuthenticationException.AuthenticationFaultType.FORBIDDEN);
+            }
+            throw new GeneralCloudException("Error when altering vm", runtimeFaultFaultMsg, CloudErrorType.GENERAL);
         } catch (TaskInProgressFaultMsg taskInProgressFaultMsg) {
-            throw new CloudException("TaskInProgressFaultMsg when altering vm", taskInProgressFaultMsg);
-        } catch (VmConfigFaultFaultMsg vmConfigFaultFaultMsg) {
-            throw new CloudException("VmConfigFaultFaultMsg when altering vm", vmConfigFaultFaultMsg);
+            throw new TaskInProgressException("TaskInProgressFaultMsg when altering vm", taskInProgressFaultMsg);
+        } catch (Exception e) {
+            throw new GeneralCloudException("Error when altering vm", e, CloudErrorType.GENERAL);
         }
     }
 
@@ -1341,26 +1361,24 @@ public class Vm extends AbstractVMSupport<Vsphere> {
         VimPortType vimPort = vsphereConnection.getVimPort();
         try {
             return vimPort.cloneVMTask(vmRef, vmFolder, name, spec);
-        } catch (FileFaultFaultMsg fileFaultFaultMsg) {
-            throw new CloudException("FileFaultFaultMsg when cloning vm", fileFaultFaultMsg);
         } catch (InsufficientResourcesFaultFaultMsg insufficientResourcesFaultFaultMsg) {
-            throw new CloudException("InsufficientResourcesFaultFaultMsg when cloning vm", insufficientResourcesFaultFaultMsg);
+            throw new GeneralCloudException("InsufficientResourcesFaultFaultMsg when cloning vm", insufficientResourcesFaultFaultMsg, CloudErrorType.CAPACITY);
         } catch (InvalidStateFaultMsg invalidStateFaultMsg) {
-            throw new CloudException("InvalidStateFaultMsg when cloning vm", invalidStateFaultMsg);
+            throw new InvalidStateException("Vm is in invalid state for clone: " + invalidStateFaultMsg.getMessage(), invalidStateFaultMsg);
         } catch (RuntimeFaultFaultMsg runtimeFaultFaultMsg) {
-            throw new CloudException("RuntimeFaultFaultMsg when cloning vm", runtimeFaultFaultMsg);
+            if (runtimeFaultFaultMsg.getFaultInfo() instanceof NoPermission) {
+                throw new AuthenticationException("NoPermission fault when cloning vm", runtimeFaultFaultMsg).withFaultType(AuthenticationException.AuthenticationFaultType.FORBIDDEN);
+            }
+            throw new GeneralCloudException("Error when cloning vm", runtimeFaultFaultMsg, CloudErrorType.GENERAL);
         } catch (TaskInProgressFaultMsg taskInProgressFaultMsg) {
-            throw new CloudException("TaskInProgressFaultMsg when cloning vm", taskInProgressFaultMsg);
-        } catch (VmConfigFaultFaultMsg vmConfigFaultFaultMsg) {
-            throw new CloudException("VmConfigFaultFaultMsg when cloning vm", vmConfigFaultFaultMsg);
-        } catch (CustomizationFaultFaultMsg customizationFaultFaultMsg) {
-            throw new CloudException("CustomizationFaultFaultMsg when cloning vm", customizationFaultFaultMsg);
+            throw new TaskInProgressException("TaskInProgressFaultMsg when cloning vm", taskInProgressFaultMsg);
         } catch (InvalidDatastoreFaultMsg invalidDatastoreFaultMsg) {
-            throw new CloudException("InvalidDatastoreFaultMsg when cloning vm", invalidDatastoreFaultMsg);
-        } catch (MigrationFaultFaultMsg migrationFaultFaultMsg) {
-            throw new CloudException("MigrationFaultFaultMsg when cloning vm", migrationFaultFaultMsg);
-        } catch (ServerSOAPFaultException serverSoapFaultException) {
-            throw new CloudException("ServerSOAPFaultException when cloning vm: "+serverSoapFaultException.getFault().getFaultString(), serverSoapFaultException);
+            if (invalidDatastoreFaultMsg.getFaultInfo() instanceof InvalidDatastorePath) {
+                throw new GeneralCloudException("InvalidDatastore when cloning vm: " + ((InvalidDatastorePath) invalidDatastoreFaultMsg.getFaultInfo()).getDatastorePath(), invalidDatastoreFaultMsg, CloudErrorType.INVALID_USER_DATA);
+            }
+            throw new GeneralCloudException("Error when cloning vm", invalidDatastoreFaultMsg, CloudErrorType.GENERAL);
+        } catch (Exception e) {
+            throw new GeneralCloudException("Error when cloning vm", e, CloudErrorType.GENERAL);
         }
     }
 

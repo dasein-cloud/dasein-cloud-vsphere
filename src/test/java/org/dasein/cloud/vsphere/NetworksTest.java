@@ -4,6 +4,7 @@ import com.vmware.vim25.PropertySpec;
 import com.vmware.vim25.RetrieveResult;
 import mockit.Expectations;
 import mockit.NonStrictExpectations;
+import org.dasein.cloud.AuthenticationException;
 import org.dasein.cloud.CloudException;
 import org.dasein.cloud.InternalException;
 import org.dasein.cloud.network.VLAN;
@@ -14,6 +15,7 @@ import org.dasein.cloud.vsphere.network.VSphereNetwork;
 import org.dasein.util.uom.time.Day;
 import org.dasein.util.uom.time.TimePeriod;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.List;
@@ -26,16 +28,24 @@ import static org.junit.Assert.*;
  * Time: 12:35
  */
 public class NetworksTest extends VsphereTestBase {
-    private ObjectManagement om = new ObjectManagement();
-    private final RetrieveResult networks = om.readJsonFile("src/test/resources/Networks/networks.json", RetrieveResult.class);
-    private final RetrieveResult networksNoProperties = om.readJsonFile("src/test/resources/Networks/missingPropertiesNetworks.json", RetrieveResult.class);
-    private final RetrieveResult networksNoSummaryProperty = om.readJsonFile("src/test/resources/Networks/missingSummaryPropertyNetworks.json", RetrieveResult.class);
-    private final RetrieveResult networksNoConfigProperty = om.readJsonFile("src/test/resources/Networks/missingConfigPropertyNetworks.json", RetrieveResult.class);
+    static private RetrieveResult networks;
+    static private RetrieveResult networksNoProperties;
+    static private RetrieveResult networksNoSummaryProperty;
+    static private RetrieveResult networksNoConfigProperty;
 
     private VSphereNetwork network = null;
     private List<PropertySpec> networkPSpec = null;
 
     private Cache<VLAN> cache = null;
+
+    @BeforeClass
+    static public void setupFixtures() {
+        ObjectManagement om = new ObjectManagement();
+        networks = om.readJsonFile("src/test/resources/Networks/networks.json", RetrieveResult.class);
+        networksNoProperties = om.readJsonFile("src/test/resources/Networks/missingPropertiesNetworks.json", RetrieveResult.class);
+        networksNoSummaryProperty = om.readJsonFile("src/test/resources/Networks/missingSummaryPropertyNetworks.json", RetrieveResult.class);
+        networksNoConfigProperty = om.readJsonFile("src/test/resources/Networks/missingConfigPropertyNetworks.json", RetrieveResult.class);
+    }
 
     @Before
     public void setUp() throws Exception {
@@ -206,14 +216,5 @@ public class NetworksTest extends VsphereTestBase {
         assertEquals("Number of vlans returned is incorrect", 2, count);
 
         cache.clear();
-    }
-
-    @Test(expected = NoContextException.class)
-    public void listShouldThrowExceptionIfNullContext() throws CloudException, InternalException {
-        new Expectations(VSphereNetwork.class) {
-            { vsphereMock.getContext(); result = null; }
-        };
-
-        network.listVlans();
     }
 }

@@ -2,8 +2,7 @@ package org.dasein.cloud.vsphere;
 
 import com.vmware.vim25.*;
 
-import org.dasein.cloud.CloudException;
-import org.dasein.cloud.InternalException;
+import org.dasein.cloud.*;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -24,10 +23,10 @@ public class VsphereInventoryNavigation {
 
     public RetrieveResult retrieveObjectList(@Nonnull Vsphere provider, @Nonnull String baseFolder, @Nullable List<SelectionSpec> selectionSpecsArr, @Nonnull List<PropertySpec> pSpecs) throws InternalException, CloudException {
         if ("".equals(baseFolder)) {
-            throw new CloudException("baseFolder must be non-empty string");
+            throw new InternalException("baseFolder must be non-empty string");
         }
         if (pSpecs.size() == 0) {
-            throw new CloudException("PropertySpec list must have at least one element");
+            throw new InternalException("PropertySpec list must have at least one element");
         }
 
         VsphereConnection vsphereConnection = provider.getServiceInstance();
@@ -55,7 +54,10 @@ public class VsphereInventoryNavigation {
             ref.setValue(VIMSERVICEINSTANCEVALUE);
             vimServiceContent = vimPortType.retrieveServiceContent(ref);
         } catch ( RuntimeFaultFaultMsg e ) {
-            throw new CloudException(e);
+            if (e.getFaultInfo() instanceof NoPermission) {
+                throw new AuthenticationException("NoPermission fault when retrieving service content", e).withFaultType(AuthenticationException.AuthenticationFaultType.FORBIDDEN);
+            }
+            throw new GeneralCloudException("Error retrieving service content for inventory search", e, CloudErrorType.GENERAL);
         }
 
         RetrieveResult props;
@@ -64,25 +66,29 @@ public class VsphereInventoryNavigation {
         } catch ( InvalidPropertyFaultMsg e ) {
             throw new InternalException("InvalidPropertyFault", e);
         } catch ( RuntimeFaultFaultMsg e ) {
-            throw new CloudException("RuntimeFault", e);
+            if (e.getFaultInfo() instanceof NoPermission) {
+                throw new AuthenticationException("NoPermission fault when searching inventory", e).withFaultType(AuthenticationException.AuthenticationFaultType.FORBIDDEN);
+            }
+            throw new GeneralCloudException("Error retrieving object list", e, CloudErrorType.GENERAL);
         } catch ( Exception e ) {
-            throw new CloudException(e);
+            throw new GeneralCloudException("Error retrieving object list", e, CloudErrorType.GENERAL);
         }
 
         return props;
     }
 
-    public ManagedObjectReference searchDatastores(Vsphere provider, @Nonnull ManagedObjectReference hostDatastoreBrowser, @Nonnull String datastoreFolder, @Nullable HostDatastoreBrowserSearchSpec searchSpec) throws CloudException, InternalException{
+    public ManagedObjectReference searchDatastores(Vsphere provider, @Nonnull ManagedObjectReference hostDatastoreBrowser, @Nonnull String datastoreFolder, @Nullable HostDatastoreBrowserSearchSpec searchSpec) throws CloudException, InternalException {
         VsphereConnection vsphereConnection = provider.getServiceInstance();
         VimPortType vimPortType = vsphereConnection.getVimPort();
         try {
             return vimPortType.searchDatastoreSubFoldersTask(hostDatastoreBrowser, datastoreFolder, searchSpec);
-        } catch (FileFaultFaultMsg fileFaultFaultMsg) {
-            throw new CloudException("FileFaultFaultMessage searching datastores", fileFaultFaultMsg);
-        } catch (InvalidDatastoreFaultMsg invalidDatastoreFaultMsg) {
-            throw new CloudException("InvalidDatastoreFaultMsg searching datastores", invalidDatastoreFaultMsg);
-        } catch (RuntimeFaultFaultMsg runtimeFaultFaultMsg) {
-            throw new CloudException("RuntimeFaultFaultMsg searching datastores", runtimeFaultFaultMsg);
+        }catch (RuntimeFaultFaultMsg runtimeFaultFaultMsg) {
+            if (runtimeFaultFaultMsg.getFaultInfo() instanceof NoPermission) {
+                throw new AuthenticationException("NoPermission fault when searching datastores", runtimeFaultFaultMsg).withFaultType(AuthenticationException.AuthenticationFaultType.FORBIDDEN);
+            }
+            throw new GeneralCloudException("Error searching datastores", runtimeFaultFaultMsg, CloudErrorType.GENERAL);
+        }catch (Exception e) {
+            throw new GeneralCloudException("Error searching datastores", e, CloudErrorType.GENERAL);
         }
     }
 }

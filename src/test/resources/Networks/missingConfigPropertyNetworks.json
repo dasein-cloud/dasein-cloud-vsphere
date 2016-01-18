@@ -1,0 +1,738 @@
+{
+  "token" : null,
+  "objects" : [ "java.util.ArrayList", [ {
+    "obj" : {
+      "value" : "network-57",
+      "type" : "Network"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "alarmActionsEnabled",
+      "val" : true
+    }, {
+      "name" : "availableField",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfCustomFieldDef",
+        "customFieldDef" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "configIssue",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfEvent",
+        "event" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "configStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "GREEN" ]
+    }, {
+      "name" : "customValue",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfCustomFieldValue",
+        "customFieldValue" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "declaredAlarmState",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfAlarmState",
+        "alarmState" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "disabledMethod",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfString",
+        "string" : [ "java.util.ArrayList", [ ] ]
+      }
+    },  {
+      "name" : "host",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
+        "managedObjectReference" : [ "java.util.ArrayList", [ {
+          "value" : "host-43",
+          "type" : "HostSystem"
+        }, {
+          "value" : "host-72",
+          "type" : "HostSystem"
+        }, {
+          "value" : "host-74",
+          "type" : "HostSystem"
+        }, {
+          "value" : "host-36",
+          "type" : "HostSystem"
+        } ] ]
+      }
+    }, {
+      "name" : "name",
+      "val" : "1-My Fancy Test Network"
+    }, {
+      "name" : "overallStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "GREEN" ]
+    }, {
+      "name" : "parent",
+      "val" : {
+        "type" : "com.vmware.vim25.ManagedObjectReference",
+        "value" : "group-n25",
+        "type" : "Folder"
+      }
+    }, {
+      "name" : "permission",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfPermission",
+        "permission" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "recentTask",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
+        "managedObjectReference" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "summary",
+      "val" : {
+        "type" : "com.vmware.vim25.NetworkSummary",
+        "network" : {
+          "value" : "network-57",
+          "type" : "Network"
+        },
+        "name" : "1-My Fancy Test Network",
+        "accessible" : true,
+        "ipPoolName" : "",
+        "ipPoolId" : null
+      }
+    }, {
+      "name" : "tag",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfTag",
+        "tag" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "triggeredAlarmState",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfAlarmState",
+        "alarmState" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "value",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfCustomFieldValue",
+        "customFieldValue" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "vm",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
+        "managedObjectReference" : [ "java.util.ArrayList", [ {
+          "value" : "vm-1970",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-1823",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-1782",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-1783",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-1976",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-1835",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-1843",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-1853",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-1674",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-1863",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-2093",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-2145",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-2148",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-2151",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-2152",
+          "type" : "VirtualMachine"
+        } ] ]
+      }
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "network-58",
+      "type" : "Network"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "alarmActionsEnabled",
+      "val" : true
+    }, {
+      "name" : "availableField",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfCustomFieldDef",
+        "customFieldDef" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "configIssue",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfEvent",
+        "event" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "configStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "GREEN" ]
+    }, {
+      "name" : "customValue",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfCustomFieldValue",
+        "customFieldValue" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "declaredAlarmState",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfAlarmState",
+        "alarmState" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "disabledMethod",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfString",
+        "string" : [ "java.util.ArrayList", [ ] ]
+      }
+    },  {
+      "name" : "host",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
+        "managedObjectReference" : [ "java.util.ArrayList", [ {
+          "value" : "host-43",
+          "type" : "HostSystem"
+        }, {
+          "value" : "host-72",
+          "type" : "HostSystem"
+        }, {
+          "value" : "host-74",
+          "type" : "HostSystem"
+        }, {
+          "value" : "host-36",
+          "type" : "HostSystem"
+        } ] ]
+      }
+    }, {
+      "name" : "name",
+      "val" : "2-VM Test Network"
+    }, {
+      "name" : "overallStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "GREEN" ]
+    }, {
+      "name" : "parent",
+      "val" : {
+        "type" : "com.vmware.vim25.ManagedObjectReference",
+        "value" : "group-n25",
+        "type" : "Folder"
+      }
+    }, {
+      "name" : "permission",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfPermission",
+        "permission" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "recentTask",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
+        "managedObjectReference" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "summary",
+      "val" : {
+        "type" : "com.vmware.vim25.NetworkSummary",
+        "network" : {
+          "value" : "network-58",
+          "type" : "Network"
+        },
+        "name" : "2-VM Test Network",
+        "accessible" : true,
+        "ipPoolName" : "",
+        "ipPoolId" : null
+      }
+    }, {
+      "name" : "tag",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfTag",
+        "tag" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "triggeredAlarmState",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfAlarmState",
+        "alarmState" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "value",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfCustomFieldValue",
+        "customFieldValue" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "vm",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
+        "managedObjectReference" : [ "java.util.ArrayList", [ {
+          "value" : "vm-1955",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-1801",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-2013",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-2017",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-59",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-1919",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-2089",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-2106",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-2112",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-2134",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-2135",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-2136",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-2137",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-2138",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-2153",
+          "type" : "VirtualMachine"
+        } ] ]
+      }
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "dvportgroup-52",
+      "type" : "DistributedVirtualPortgroup"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "alarmActionsEnabled",
+      "val" : true
+    }, {
+      "name" : "availableField",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfCustomFieldDef",
+        "customFieldDef" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "configIssue",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfEvent",
+        "event" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "configStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "GREEN" ]
+    }, {
+      "name" : "customValue",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfCustomFieldValue",
+        "customFieldValue" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "declaredAlarmState",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfAlarmState",
+        "alarmState" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "disabledMethod",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfString",
+        "string" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "host",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
+        "managedObjectReference" : [ "java.util.ArrayList", [ {
+          "value" : "host-43",
+          "type" : "HostSystem"
+        }, {
+          "value" : "host-36",
+          "type" : "HostSystem"
+        }, {
+          "value" : "host-72",
+          "type" : "HostSystem"
+        }, {
+          "value" : "host-74",
+          "type" : "HostSystem"
+        } ] ]
+      }
+    }, {
+      "name" : "key",
+      "val" : "dvportgroup-52"
+    }, {
+      "name" : "name",
+      "val" : "DSwitch-DVUplinks-51"
+    }, {
+      "name" : "overallStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "GREEN" ]
+    }, {
+      "name" : "parent",
+      "val" : {
+        "type" : "com.vmware.vim25.ManagedObjectReference",
+        "value" : "group-n25",
+        "type" : "Folder"
+      }
+    }, {
+      "name" : "permission",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfPermission",
+        "permission" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "portKeys",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfString",
+        "string" : [ "java.util.ArrayList", [ "36", "37", "38", "39", "56", "57", "58", "59", "60", "61", "62", "63", "74", "75", "76", "77" ] ]
+      }
+    }, {
+      "name" : "recentTask",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
+        "managedObjectReference" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "summary",
+      "val" : {
+        "type" : "com.vmware.vim25.NetworkSummary",
+        "network" : {
+          "value" : "dvportgroup-52",
+          "type" : "DistributedVirtualPortgroup"
+        },
+        "name" : "DSwitch-DVUplinks-51",
+        "accessible" : true,
+        "ipPoolName" : "",
+        "ipPoolId" : null
+      }
+    }, {
+      "name" : "tag",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfTag",
+        "tag" : [ "java.util.ArrayList", [ {
+          "key" : "SYSTEM/DVS.UPLINKPG"
+        } ] ]
+      }
+    }, {
+      "name" : "triggeredAlarmState",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfAlarmState",
+        "alarmState" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "value",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfCustomFieldValue",
+        "customFieldValue" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "vm",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
+        "managedObjectReference" : [ "java.util.ArrayList", [ ] ]
+      }
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "dvportgroup-56",
+      "type" : "DistributedVirtualPortgroup"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "alarmActionsEnabled",
+      "val" : true
+    }, {
+      "name" : "availableField",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfCustomFieldDef",
+        "customFieldDef" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "configIssue",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfEvent",
+        "event" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "configStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "GREEN" ]
+    }, {
+      "name" : "customValue",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfCustomFieldValue",
+        "customFieldValue" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "declaredAlarmState",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfAlarmState",
+        "alarmState" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "disabledMethod",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfString",
+        "string" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "host",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
+        "managedObjectReference" : [ "java.util.ArrayList", [ {
+          "value" : "host-43",
+          "type" : "HostSystem"
+        }, {
+          "value" : "host-36",
+          "type" : "HostSystem"
+        }, {
+          "value" : "host-72",
+          "type" : "HostSystem"
+        }, {
+          "value" : "host-74",
+          "type" : "HostSystem"
+        } ] ]
+      }
+    }, {
+      "name" : "key",
+      "val" : "dvportgroup-56"
+    }, {
+      "name" : "name",
+      "val" : "VM Network"
+    }, {
+      "name" : "overallStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "GREEN" ]
+    }, {
+      "name" : "parent",
+      "val" : {
+        "type" : "com.vmware.vim25.ManagedObjectReference",
+        "value" : "group-n25",
+        "type" : "Folder"
+      }
+    }, {
+      "name" : "permission",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfPermission",
+        "permission" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "portKeys",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfString",
+        "string" : [ "java.util.ArrayList", [ "48", "49", "50", "51", "52", "53", "54", "55" ] ]
+      }
+    }, {
+      "name" : "recentTask",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
+        "managedObjectReference" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "summary",
+      "val" : {
+        "type" : "com.vmware.vim25.NetworkSummary",
+        "network" : {
+          "value" : "dvportgroup-56",
+          "type" : "DistributedVirtualPortgroup"
+        },
+        "name" : "VM Network",
+        "accessible" : true,
+        "ipPoolName" : "",
+        "ipPoolId" : null
+      }
+    }, {
+      "name" : "tag",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfTag",
+        "tag" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "triggeredAlarmState",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfAlarmState",
+        "alarmState" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "value",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfCustomFieldValue",
+        "customFieldValue" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "vm",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
+        "managedObjectReference" : [ "java.util.ArrayList", [ ] ]
+      }
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "dvportgroup-55",
+      "type" : "DistributedVirtualPortgroup"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "alarmActionsEnabled",
+      "val" : true
+    }, {
+      "name" : "availableField",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfCustomFieldDef",
+        "customFieldDef" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "configIssue",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfEvent",
+        "event" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "configStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "GREEN" ]
+    }, {
+      "name" : "customValue",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfCustomFieldValue",
+        "customFieldValue" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "declaredAlarmState",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfAlarmState",
+        "alarmState" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "disabledMethod",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfString",
+        "string" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "host",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
+        "managedObjectReference" : [ "java.util.ArrayList", [ {
+          "value" : "host-43",
+          "type" : "HostSystem"
+        }, {
+          "value" : "host-36",
+          "type" : "HostSystem"
+        }, {
+          "value" : "host-72",
+          "type" : "HostSystem"
+        }, {
+          "value" : "host-74",
+          "type" : "HostSystem"
+        } ] ]
+      }
+    }, {
+      "name" : "key",
+      "val" : "dvportgroup-55"
+    }, {
+      "name" : "name",
+      "val" : "vKernel"
+    }, {
+      "name" : "overallStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "GREEN" ]
+    }, {
+      "name" : "parent",
+      "val" : {
+        "type" : "com.vmware.vim25.ManagedObjectReference",
+        "value" : "group-n25",
+        "type" : "Folder"
+      }
+    }, {
+      "name" : "permission",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfPermission",
+        "permission" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "portKeys",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfString",
+        "string" : [ "java.util.ArrayList", [ "24", "25", "26", "27", "28", "29", "30", "31", "64", "65", "66", "67", "68", "69", "70", "71" ] ]
+      }
+    }, {
+      "name" : "recentTask",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
+        "managedObjectReference" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "summary",
+      "val" : {
+        "type" : "com.vmware.vim25.NetworkSummary",
+        "network" : {
+          "value" : "dvportgroup-55",
+          "type" : "DistributedVirtualPortgroup"
+        },
+        "name" : "vKernel",
+        "accessible" : true,
+        "ipPoolName" : "",
+        "ipPoolId" : null
+      }
+    }, {
+      "name" : "tag",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfTag",
+        "tag" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "triggeredAlarmState",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfAlarmState",
+        "alarmState" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "value",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfCustomFieldValue",
+        "customFieldValue" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "vm",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
+        "managedObjectReference" : [ "java.util.ArrayList", [ ] ]
+      }
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  } ] ]
+}

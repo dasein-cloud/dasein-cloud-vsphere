@@ -1,0 +1,14 @@
+{
+  "token" : null,
+  "objects" : [ "java.util.ArrayList", [ {
+    "obj" : {
+      "value" : "datacenter-21",
+      "type" : "Datacenter"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "name",
+      "val" : "WTC"
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  } ] ]
+}

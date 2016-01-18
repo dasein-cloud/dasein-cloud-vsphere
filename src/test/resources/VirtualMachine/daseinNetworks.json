@@ -1,0 +1,39 @@
+[ {
+  "type" : "org.dasein.cloud.network.VLAN",
+  "cidr" : "",
+  "currentState" : "AVAILABLE",
+  "description" : "Dev2-Internal (network-77)",
+  "dnsServers" : [ ],
+  "domainName" : null,
+  "name" : "Dev2-Internal",
+  "ntpServers" : [ ],
+  "providerDataCenterId" : null,
+  "providerOwnerId" : "myAccount",
+  "providerRegionId" : "datacenter-2",
+  "providerVlanId" : "network-77",
+  "networkType" : null,
+  "supportedTraffic" : [ "IPV4" ],
+  "tags" : {
+    "type" : "java.util.HashMap"
+  },
+  "visibleScope" : "ACCOUNT_REGION"
+}, {
+  "type" : "org.dasein.cloud.network.VLAN",
+  "cidr" : "",
+  "currentState" : "AVAILABLE",
+  "description" : "Dev3-Internal (network-78)",
+  "dnsServers" : [ ],
+  "domainName" : null,
+  "name" : "Dev3-Internal",
+  "ntpServers" : [ ],
+  "providerDataCenterId" : null,
+  "providerOwnerId" : "myAccount",
+  "providerRegionId" : "datacenter-2",
+  "providerVlanId" : "network-78",
+  "networkType" : null,
+  "supportedTraffic" : [ "IPV4" ],
+  "tags" : {
+    "type" : "java.util.HashMap"
+  },
+  "visibleScope" : "ACCOUNT_REGION"
+} ]

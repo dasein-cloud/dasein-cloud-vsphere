@@ -1,0 +1,160 @@
+{
+  "token" : null,
+  "objects" : [ "java.util.ArrayList", [ {
+    "obj" : {
+      "value" : "resgroup-76",
+      "type" : "ResourcePool"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "name",
+      "val" : "Cluster1-Resource_Pool1"
+    }, {
+      "name" : "owner",
+      "val" : {
+        "type" : "com.vmware.vim25.ManagedObjectReference",
+        "value" : "domain-c26",
+        "type" : "ClusterComputeResource"
+      }
+    }, {
+      "name" : "runtime",
+      "val" : {
+        "type" : "com.vmware.vim25.ResourcePoolRuntimeInfo",
+        "memory" : {
+          "reservationUsed" : 0,
+          "reservationUsedForVm" : 0,
+          "unreservedForPool" : 395212488704,
+          "unreservedForVm" : 395212488704,
+          "overallUsage" : 0,
+          "maxUsage" : 396300910592
+        },
+        "cpu" : {
+          "reservationUsed" : 0,
+          "reservationUsedForVm" : 0,
+          "unreservedForPool" : 45364,
+          "unreservedForVm" : 45364,
+          "overallUsage" : 0,
+          "maxUsage" : 45364
+        },
+        "overallStatus" : "GREEN"
+      }
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "resgroup-77",
+      "type" : "ResourcePool"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "name",
+      "val" : "Cluster1-Resource_Pool2"
+    }, {
+      "name" : "owner",
+      "val" : {
+        "type" : "com.vmware.vim25.ManagedObjectReference",
+        "value" : "domain-c26",
+        "type" : "ClusterComputeResource"
+      }
+    }, {
+      "name" : "runtime",
+      "val" : {
+        "type" : "com.vmware.vim25.ResourcePoolRuntimeInfo",
+        "memory" : {
+          "reservationUsed" : 0,
+          "reservationUsedForVm" : 0,
+          "unreservedForPool" : 395212488704,
+          "unreservedForVm" : 395212488704,
+          "overallUsage" : 0,
+          "maxUsage" : 396300910592
+        },
+        "cpu" : {
+          "reservationUsed" : 0,
+          "reservationUsedForVm" : 0,
+          "unreservedForPool" : 45364,
+          "unreservedForVm" : 45364,
+          "overallUsage" : 0,
+          "maxUsage" : 45364
+        },
+        "overallStatus" : "GREEN"
+      }
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "resgroup-78",
+      "type" : "ResourcePool"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "name",
+      "val" : "Cluster2-Resource_Pool1"
+    }, {
+      "name" : "owner",
+      "val" : {
+        "type" : "com.vmware.vim25.ManagedObjectReference",
+        "value" : "domain-c70",
+        "type" : "ClusterComputeResource"
+      }
+    }, {
+      "name" : "runtime",
+      "val" : {
+        "type" : "com.vmware.vim25.ResourcePoolRuntimeInfo",
+        "memory" : {
+          "reservationUsed" : 0,
+          "reservationUsedForVm" : 0,
+          "unreservedForPool" : 395661279232,
+          "unreservedForVm" : 395661279232,
+          "overallUsage" : 0,
+          "maxUsage" : 396451905536
+        },
+        "cpu" : {
+          "reservationUsed" : 0,
+          "reservationUsedForVm" : 0,
+          "unreservedForPool" : 45364,
+          "unreservedForVm" : 45364,
+          "overallUsage" : 0,
+          "maxUsage" : 45364
+        },
+        "overallStatus" : "GREEN"
+      }
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "resgroup-79",
+      "type" : "ResourcePool"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "name",
+      "val" : "Cluster2-Resource_Pool2"
+    }, {
+      "name" : "owner",
+      "val" : {
+        "type" : "com.vmware.vim25.ManagedObjectReference",
+        "value" : "domain-c70",
+        "type" : "ClusterComputeResource"
+      }
+    }, {
+      "name" : "runtime",
+      "val" : {
+        "type" : "com.vmware.vim25.ResourcePoolRuntimeInfo",
+        "memory" : {
+          "reservationUsed" : 0,
+          "reservationUsedForVm" : 0,
+          "unreservedForPool" : 395661279232,
+          "unreservedForVm" : 395661279232,
+          "overallUsage" : 0,
+          "maxUsage" : 396451905536
+        },
+        "cpu" : {
+          "reservationUsed" : 0,
+          "reservationUsedForVm" : 0,
+          "unreservedForPool" : 45364,
+          "unreservedForVm" : 45364,
+          "overallUsage" : 0,
+          "maxUsage" : 45364
+        },
+        "overallStatus" : "GREEN"
+      }
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  } ] ]
+}

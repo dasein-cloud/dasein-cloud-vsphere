@@ -1,0 +1,41 @@
+[ {
+  "type" : "org.dasein.cloud.compute.AffinityGroup",
+  "affinityGroupId" : "host-43",
+  "affinityGroupName" : "esquin-dev-vrtx-1-bl02.esquin.dev",
+  "description" : "Affinity group for esquin-dev-vrtx-1-bl02.esquin.dev",
+  "dataCenterId" : "domain-c26",
+  "creationTimestamp" : 0,
+  "tags" : {
+    "type" : "java.util.HashMap"
+  }
+}, {
+  "type" : "org.dasein.cloud.compute.AffinityGroup",
+  "affinityGroupId" : "host-36",
+  "affinityGroupName" : "esquin-dev-vrtx-1-bl01.esquin.dev",
+  "description" : "Affinity group for esquin-dev-vrtx-1-bl01.esquin.dev",
+  "dataCenterId" : "domain-c26",
+  "creationTimestamp" : 0,
+  "tags" : {
+    "type" : "java.util.HashMap"
+  }
+}, {
+  "type" : "org.dasein.cloud.compute.AffinityGroup",
+  "affinityGroupId" : "host-74",
+  "affinityGroupName" : "esquin-dev-vrtx-1-bl04.esquin.dev",
+  "description" : "Affinity group for esquin-dev-vrtx-1-bl04.esquin.dev",
+  "dataCenterId" : "domain-c70",
+  "creationTimestamp" : 0,
+  "tags" : {
+    "type" : "java.util.HashMap"
+  }
+}, {
+  "type" : "org.dasein.cloud.compute.AffinityGroup",
+  "affinityGroupId" : "host-72",
+  "affinityGroupName" : "esquin-dev-vrtx-1-bl03.esquin.dev",
+  "description" : "Affinity group for esquin-dev-vrtx-1-bl03.esquin.dev",
+  "dataCenterId" : "domain-c70",
+  "creationTimestamp" : 0,
+  "tags" : {
+    "type" : "java.util.HashMap"
+  }
+} ]

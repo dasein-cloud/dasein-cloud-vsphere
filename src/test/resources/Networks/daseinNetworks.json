@@ -1,0 +1,99 @@
+[ {
+  "type" : "org.dasein.cloud.network.VLAN",
+  "cidr" : "",
+  "currentState" : "AVAILABLE",
+  "description" : "1-My Fancy Test Network (network-57)",
+  "dnsServers" : [ ],
+  "domainName" : null,
+  "name" : "1-My Fancy Test Network",
+  "ntpServers" : [ ],
+  "providerDataCenterId" : null,
+  "providerOwnerId" : "myAccount",
+  "providerRegionId" : "datacenter-21",
+  "providerVlanId" : "network-57",
+  "networkType" : null,
+  "supportedTraffic" : [ "IPV4" ],
+  "tags" : {
+    "type" : "java.util.HashMap"
+  },
+  "visibleScope" : "ACCOUNT_REGION"
+}, {
+  "type" : "org.dasein.cloud.network.VLAN",
+  "cidr" : "",
+  "currentState" : "AVAILABLE",
+  "description" : "2-VM Test Network (network-58)",
+  "dnsServers" : [ ],
+  "domainName" : null,
+  "name" : "2-VM Test Network",
+  "ntpServers" : [ ],
+  "providerDataCenterId" : null,
+  "providerOwnerId" : "myAccount",
+  "providerRegionId" : "datacenter-21",
+  "providerVlanId" : "network-58",
+  "networkType" : null,
+  "supportedTraffic" : [ "IPV4" ],
+  "tags" : {
+    "type" : "java.util.HashMap"
+  },
+  "visibleScope" : "ACCOUNT_REGION"
+}, {
+  "type" : "org.dasein.cloud.network.VLAN",
+  "cidr" : "",
+  "currentState" : "AVAILABLE",
+  "description" : "DSwitch-DVUplinks-51 (dvportgroup-52)",
+  "dnsServers" : [ ],
+  "domainName" : null,
+  "name" : "DSwitch-DVUplinks-51",
+  "ntpServers" : [ ],
+  "providerDataCenterId" : null,
+  "providerOwnerId" : "myAccount",
+  "providerRegionId" : "datacenter-21",
+  "providerVlanId" : "dvportgroup-52",
+  "networkType" : null,
+  "supportedTraffic" : [ "IPV4" ],
+  "tags" : {
+    "type" : "java.util.HashMap",
+    "switch.uuid" : "dvs-51"
+  },
+  "visibleScope" : "ACCOUNT_REGION"
+}, {
+  "type" : "org.dasein.cloud.network.VLAN",
+  "cidr" : "",
+  "currentState" : "AVAILABLE",
+  "description" : "VM Network (dvportgroup-56)",
+  "dnsServers" : [ ],
+  "domainName" : null,
+  "name" : "VM Network",
+  "ntpServers" : [ ],
+  "providerDataCenterId" : null,
+  "providerOwnerId" : "myAccount",
+  "providerRegionId" : "datacenter-21",
+  "providerVlanId" : "dvportgroup-56",
+  "networkType" : null,
+  "supportedTraffic" : [ "IPV4" ],
+  "tags" : {
+    "type" : "java.util.HashMap",
+    "switch.uuid" : "dvs-51"
+  },
+  "visibleScope" : "ACCOUNT_REGION"
+}, {
+  "type" : "org.dasein.cloud.network.VLAN",
+  "cidr" : "",
+  "currentState" : "AVAILABLE",
+  "description" : "vKernel (dvportgroup-55)",
+  "dnsServers" : [ ],
+  "domainName" : null,
+  "name" : "vKernel",
+  "ntpServers" : [ ],
+  "providerDataCenterId" : null,
+  "providerOwnerId" : "myAccount",
+  "providerRegionId" : "datacenter-21",
+  "providerVlanId" : "dvportgroup-55",
+  "networkType" : null,
+  "supportedTraffic" : [ "IPV4" ],
+  "tags" : {
+    "type" : "java.util.HashMap",
+    "switch.uuid" : "dvs-51"
+  },
+  "visibleScope" : "ACCOUNT_REGION"
+} ]

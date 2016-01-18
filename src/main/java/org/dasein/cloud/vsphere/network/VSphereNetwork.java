@@ -1,5 +1,6 @@
 /**
- * Copyright (C) 2010-2015 Dell, Inc
+ * Copyright (C) 2012-2016 Dell, Inc.
+ * See annotations for authorship information
  *
  * ====================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,42 +20,48 @@
 package org.dasein.cloud.vsphere.network;
 
 import com.vmware.vim25.*;
-import com.vmware.vim25.mo.*;
 import org.apache.log4j.Logger;
-import org.dasein.cloud.*;
-import org.dasein.cloud.Tag;
-import org.dasein.cloud.dc.DataCenter;
+import org.dasein.cloud.CloudException;
+import org.dasein.cloud.InternalException;
+import org.dasein.cloud.ProviderContext;
+import org.dasein.cloud.VisibleScope;
 import org.dasein.cloud.network.*;
 import org.dasein.cloud.util.APITrace;
-import org.dasein.cloud.vsphere.PrivateCloud;
-import org.dasein.cloud.vsphere.compute.Vm;
+import org.dasein.cloud.util.Cache;
+import org.dasein.cloud.util.CacheLevel;
+import org.dasein.cloud.vsphere.*;
+import org.dasein.util.uom.time.Day;
+import org.dasein.util.uom.time.TimePeriod;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.servlet.http.HttpServletResponse;
-import java.rmi.RemoteException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * User: daniellemayne
- * Date: 11/06/2014
- * Time: 12:33
+ * Date: 21/09/2015
+ * Time: 12:34
  */
-public class VSphereNetwork extends AbstractVLANSupport<PrivateCloud> {
+public class VSphereNetwork extends AbstractVLANSupport<Vsphere> {
+    private List<PropertySpec> networkPSpec;
 
-    static private final Logger log = PrivateCloud.getLogger(VSphereNetwork.class, "std");
-
-    VSphereNetwork(PrivateCloud provider) {
+    public VSphereNetwork(Vsphere provider) {
         super(provider);
     }
 
-    private @Nonnull ServiceInstance getServiceInstance() throws CloudException, InternalException {
-        ServiceInstance instance = getProvider().getServiceInstance();
+    public RetrieveResult retrieveObjectList(Vsphere provider, @Nonnull String baseFolder, @Nullable List<SelectionSpec> selectionSpecsArr, @Nonnull List<PropertySpec> pSpecs) throws InternalException, CloudException {
+        VsphereInventoryNavigation nav = new VsphereInventoryNavigation();
+        return nav.retrieveObjectList(provider, baseFolder, selectionSpecsArr, pSpecs);
+    }
 
-        if( instance == null ) {
-            throw new CloudException(CloudErrorType.AUTHENTICATION, HttpServletResponse.SC_UNAUTHORIZED, null, "Unauthorized");
+    public List<PropertySpec> getNetworkPSpec() {
+        if (networkPSpec == null) {
+            networkPSpec = VsphereTraversalSpec.createPropertySpec(networkPSpec, "Network", true);
         }
-        return instance;
+        return networkPSpec;
     }
 
     private transient volatile VSphereNetworkCapabilities capabilities;
@@ -67,29 +74,22 @@ public class VSphereNetwork extends AbstractVLANSupport<PrivateCloud> {
         return capabilities;
     }
 
-    @Nonnull @Override
+    @Nonnull
+    @Override
     public String getProviderTermForNetworkInterface(@Nonnull Locale locale) {
-        return "nic";
+        return capabilities.getProviderTermForNetworkInterface(locale);
     }
 
-    @Nonnull @Override
+    @Nonnull
+    @Override
     public String getProviderTermForSubnet(@Nonnull Locale locale) {
-        return "network";
+        return capabilities.getProviderTermForSubnet(locale);
     }
 
-    @Nonnull @Override
+    @Nonnull
+    @Override
     public String getProviderTermForVlan(@Nonnull Locale locale) {
-        return "network";
-    }
-
-    @Nullable @Override
-    public String getAttachedInternetGatewayId(@Nonnull String vlanId) throws CloudException, InternalException {
-        return null;
-    }
-
-    @Nullable @Override
-    public InternetGateway getInternetGatewayById(@Nonnull String gatewayId) throws CloudException, InternalException {
-        return null;
+        return capabilities.getProviderTermForVlan(locale);
     }
 
     @Override
@@ -99,114 +99,83 @@ public class VSphereNetwork extends AbstractVLANSupport<PrivateCloud> {
 
     @Nonnull
     @Override
-    public Collection<InternetGateway> listInternetGateways(@Nullable String vlanId) throws CloudException, InternalException {
-        return Collections.emptyList();
-    }
-
-    @Override
-    public void removeInternetGatewayById(@Nonnull String id) throws CloudException, InternalException {
-        throw new OperationNotSupportedException("Internet gateways not supported in vSphere");
-    }
-
-    @Override
-    public void removeInternetGatewayTags(@Nonnull String internetGatewayId, @Nonnull Tag... tags) throws CloudException, InternalException {
-        //NO-OP
-    }
-
-    @Override
-    public void removeRoutingTableTags(@Nonnull String routingTableId, @Nonnull Tag... tags) throws CloudException, InternalException {
-        //NO-OP
-    }
-
-    @Override
-    public void updateRoutingTableTags(@Nonnull String routingTableId, @Nonnull Tag... tags) throws CloudException, InternalException {
-        //NO-OP
-    }
-
-    @Override
-    public void updateInternetGatewayTags(@Nonnull String internetGatewayId, @Nonnull Tag... tags) throws CloudException, InternalException {
-        //NO-OP
-    }
-
-    @Nonnull
-    @Override
     public Iterable<VLAN> listVlans() throws CloudException, InternalException {
-        APITrace.begin(getProvider(), "Network.listVlans");
-
+        APITrace.begin(getProvider(), "VSphereNetwork.listVlans");
         try {
-            ServiceInstance instance = getServiceInstance();
+            ProviderContext ctx = getProvider().getContext();
+            if( ctx == null ) {
+                throw new NoContextException();
+            }
+            Cache<VLAN> cache = Cache.getInstance(getProvider(), "networks", VLAN.class, CacheLevel.REGION_ACCOUNT, new TimePeriod<Day>(1, TimePeriod.DAY));
+            Collection<VLAN> netList = (Collection<VLAN>)cache.get(ctx);
 
-            List<VLAN> networkList = new ArrayList<VLAN>();
-            Map<String, String> dvsMap = new HashMap<String, String>();
-            Datacenter dc;
-            Network[] nets;
-            String rid = getContext().getRegionId();
-            if( rid != null ) {
-                dc = getProvider().getDataCenterServices().getVmwareDatacenterFromVDCId(instance, rid);
+            if( netList != null ) {
+                return netList;
+            }
 
-                try {
-                    nets = dc.getNetworks();
-                    if (nets != null) {
-                        for( Network network : nets ) {
-                            if (network.getMOR().getType().equals("Network")) {
-                                log.debug("Adding network " + network.getName());
-                                networkList.add(toVlan(network));
+            List<VLAN> list = new ArrayList<VLAN>();
+            List<PropertySpec> pSpecs = getNetworkPSpec();
+
+            RetrieveResult listobcont = retrieveObjectList(getProvider(), "networkFolder", null, pSpecs);
+
+            if (listobcont != null) {
+                List<ObjectContent> objectContents = listobcont.getObjects();
+                for (ObjectContent oc : objectContents) {
+                    ManagedObjectReference mo = oc.getObj();
+                    String id = mo.getValue();
+                    String networkType = mo.getType();
+                    if (networkType.equals("Network") || networkType.equals("DistributedVirtualPortgroup")) {
+                        List<DynamicProperty> props = oc.getPropSet();
+                        String networkName = null, dvsId = null;
+                        boolean state = false;
+                        for (DynamicProperty dp : props) {
+                            if (dp.getName().equals("summary")) {
+                                NetworkSummary ns = (NetworkSummary) dp.getVal();
+                                state = ns.isAccessible();
+                                networkName = ns.getName();
                             }
-                            else if( network.getMOR().getType().equals("DistributedVirtualPortgroup") ) {
-                                log.debug("Adding DVP " + network.getName());
-                                networkList.add(toVlan((DistributedVirtualPortgroup)network));
+                            else if (dp.getVal() instanceof DVPortgroupConfigInfo) {
+                                DVPortgroupConfigInfo di = (DVPortgroupConfigInfo) dp.getVal();
+                                ManagedObjectReference switchMO = di.getDistributedVirtualSwitch();
+                                dvsId = switchMO.getValue();
                             }
-                            else {
-                                log.debug("Skipping " + network.getMOR().getType() + " " + network.getName());
+                        }
+                        if ( networkName != null ) {
+                            if (networkType.equals("DistributedVirtualPortgroup")) {
+                                if (dvsId == null) {
+                                    continue;
+                                }
+                            }
+                            VLAN vlan = toVlan(id, networkName, state, dvsId);
+                            if (vlan != null) {
+                                list.add(vlan);
                             }
                         }
                     }
-                    else {
-                        log.debug("dc.getNetworks() returned null");
-                    }
-                }
-                catch( InvalidProperty e ) {
-                    throw new CloudException("No network support in cluster: " + e.getMessage());
-                }
-                catch( RuntimeFault e ) {
-                    throw new CloudException("Error in processing request to cluster: " + e.getMessage());
-                }
-                catch( RemoteException e ) {
-                    throw new CloudException("Error in cluster processing request: " + e.getMessage());
                 }
             }
-            log.debug("listVlans() returning " + networkList.size() + " elements");
-            return networkList;
+            cache.put(ctx, list);
+            return list;
         }
         finally {
             APITrace.end();
         }
     }
 
-    private VLAN toVlan(Network network) throws InternalException, CloudException {
-        if (network == null) {
-            return null;
-        }
+    private VLAN toVlan(@Nonnull String id, @Nonnull String name, boolean available, @Nullable String switchID) throws InternalException, CloudException {
         VLAN vlan = new VLAN();
-        vlan.setName(network.getName());
-        vlan.setDescription(vlan.getName() + " ("+network.getMOR().getVal()+")");
-        vlan.setProviderVlanId(network.getMOR().getVal());
+        vlan.setName(name);
+        vlan.setDescription(name + " ("+id+")");
+        vlan.setProviderVlanId(id);
         vlan.setCidr("");
-        if( network instanceof DistributedVirtualPortgroup ) {
-            DistributedVirtualPortgroup pg = (DistributedVirtualPortgroup) network;
-            ManagedObjectReference mor = pg.getConfig().getDistributedVirtualSwitch();
-            DistributedVirtualSwitch dvs = new DistributedVirtualSwitch(getServiceInstance().getServerConnection(), mor);
-            vlan.setTag("switch.uuid", dvs.getUuid());
+        if( switchID != null) {
+            vlan.setTag("switch.uuid", switchID);
         }
         vlan.setProviderRegionId(getContext().getRegionId());
         vlan.setProviderOwnerId(getContext().getAccountNumber());
         vlan.setSupportedTraffic(IPVersion.IPV4);
         vlan.setVisibleScope(VisibleScope.ACCOUNT_REGION);
-        NetworkSummary s = network.getSummary();
-        vlan.setCurrentState(VLANState.PENDING);
-        if (s.isAccessible()) {
-            vlan.setCurrentState(VLANState.AVAILABLE);
-        }
+        vlan.setCurrentState(available ? VLANState.AVAILABLE : VLANState.PENDING);
         return vlan;
     }
 }

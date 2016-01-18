@@ -1,0 +1,61 @@
+[ {
+  "type" : "org.dasein.cloud.dc.StoragePool",
+  "storagePoolId" : "datastore-84",
+  "storagePoolName" : "bl01-datastore",
+  "regionId" : "datacenter-21",
+  "dataCenterId" : "domain-c26",
+  "affinityGroupId" : "host-36",
+  "capacity" : null,
+  "provisioned" : null,
+  "freeSpace" : null
+}, {
+  "type" : "org.dasein.cloud.dc.StoragePool",
+  "storagePoolId" : "datastore-44",
+  "storagePoolName" : "local-storage-1 (1)",
+  "regionId" : "datacenter-21",
+  "dataCenterId" : "domain-c26",
+  "affinityGroupId" : "host-43",
+  "capacity" : null,
+  "provisioned" : null,
+  "freeSpace" : null
+}, {
+  "type" : "org.dasein.cloud.dc.StoragePool",
+  "storagePoolId" : "datastore-73",
+  "storagePoolName" : "local-storage-1 (2)",
+  "regionId" : "datacenter-21",
+  "dataCenterId" : "domain-c70",
+  "affinityGroupId" : "host-72",
+  "capacity" : null,
+  "provisioned" : null,
+  "freeSpace" : null
+}, {
+  "type" : "org.dasein.cloud.dc.StoragePool",
+  "storagePoolId" : "datastore-75",
+  "storagePoolName" : "local-storage-1 (3)",
+  "regionId" : "datacenter-21",
+  "dataCenterId" : "domain-c70",
+  "affinityGroupId" : "host-74",
+  "capacity" : null,
+  "provisioned" : null,
+  "freeSpace" : null
+}, {
+  "type" : "org.dasein.cloud.dc.StoragePool",
+  "storagePoolId" : "datastore-521",
+  "storagePoolName" : "local-storage-1 (4)",
+  "regionId" : "datacenter-21",
+  "dataCenterId" : "domain-c26",
+  "affinityGroupId" : "host-36",
+  "capacity" : null,
+  "provisioned" : null,
+  "freeSpace" : null
+}, {
+  "type" : "org.dasein.cloud.dc.StoragePool",
+  "storagePoolId" : "datastore-37",
+  "storagePoolName" : "shared-datastore-1",
+  "regionId" : "datacenter-21",
+  "dataCenterId" : null,
+  "affinityGroupId" : null,
+  "capacity" : null,
+  "provisioned" : null,
+  "freeSpace" : null
+} ]

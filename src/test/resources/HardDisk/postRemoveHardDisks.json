@@ -1,0 +1,2309 @@
+{
+  "name" : "info.result",
+  "op" : "ASSIGN",
+  "val" : {
+    "type" : "com.vmware.vim25.ArrayOfHostDatastoreBrowserSearchResults",
+    "hostDatastoreBrowserSearchResults" : [ "java.util.ArrayList", [ {
+      "datastore" : {
+        "value" : "datastore-37",
+        "type" : "Datastore"
+      },
+      "folderPath" : "[shared-datastore-1] mpwintest_vcent-template/",
+      "file" : [ "java.util.ArrayList", [ {
+        "path" : "mpwintest_vcent-template.vmxf",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "mpwintest_vcent-template.vmsd",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "mpwintest_vcent-template.nvram",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "mpwintest_vcent-template.vmtx",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      } ] ]
+    }, {
+      "datastore" : {
+        "value" : "datastore-37",
+        "type" : "Datastore"
+      },
+      "folderPath" : "[shared-datastore-1] jonshaun/",
+      "file" : [ "java.util.ArrayList", [ {
+        "path" : "jonshaun-flat.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "jonshaun.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "jonshaun.nvram",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "jonshaun.vmx",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "jonshaun.vmxf",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "jonshaun.vmsd",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmx-jonshaun-366356102-1.vswp",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "jonshaun.vmx.lck",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "jonshaun.vmx~",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmware.log",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "jonshaun-15d62686.vswp",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      } ] ]
+    }, {
+      "datastore" : {
+        "value" : "datastore-37",
+        "type" : "Datastore"
+      },
+      "folderPath" : "[shared-datastore-1] d3vmmw-template/",
+      "file" : [ "java.util.ArrayList", [ {
+        "path" : "d3vmmw-template.vmxf",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "d3vmmw-template.vmsd",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "d3vmmw-template.nvram",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "d3vmmw-template.vmtx",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      } ] ]
+    }, {
+      "datastore" : {
+        "value" : "datastore-37",
+        "type" : "Datastore"
+      },
+      "folderPath" : "[shared-datastore-1] .dvsData/",
+      "file" : [ "java.util.ArrayList", [ {
+        "path" : "cb dc 2e 50 f1 cb 4e 18-ee 60 b5 54 eb 4c 8e d6",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      } ] ]
+    }, {
+      "datastore" : {
+        "value" : "datastore-37",
+        "type" : "Datastore"
+      },
+      "folderPath" : "[shared-datastore-1] gatewayvm/",
+      "file" : [ "java.util.ArrayList", [ {
+        "path" : "gatewayvm.vmx",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "gatewayvm.vmxf",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "gatewayvm.vmsd",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "gatewayvm-flat.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmware.log",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmware-2.log",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "gatewayvm.nvram",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "gatewayvm-35d0b5b5.hlog",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmware-1.log",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "gatewayvm-35d0b5b5.vswp",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "gatewayvm.vmx.lck",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmx-gatewayvm-902870453-1.vswp",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmware-3.log",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "gatewayvm.vmx~",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      } ] ]
+    }, {
+      "datastore" : {
+        "value" : "datastore-37",
+        "type" : "Datastore"
+      },
+      "folderPath" : "[shared-datastore-1] shaunsp2-dc-0/",
+      "file" : [ "java.util.ArrayList", [ {
+        "path" : "shaunsp2-dc-0_2-flat.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "shaunsp2-dc-0_2.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "shaunsp2-dc-0.nvram",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "shaunsp2-dc-0.vmx",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "shaunsp2-dc-0.vmxf",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "shaunsp2-dc-0.vmsd",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmx-shaunsp2-dc-0-207263781-1.vswp",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "shaunsp2-dc-0.vmx.lck",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "shaunsp2-dc-0.vmx~",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmware.log",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "shaunsp2-dc-0-0c5a9825.vswp",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      } ] ]
+    }, {
+      "datastore" : {
+        "value" : "datastore-37",
+        "type" : "Datastore"
+      },
+      "folderPath" : "[shared-datastore-1] VM Template/",
+      "file" : [ "java.util.ArrayList", [ {
+        "path" : "VM Template.vmx",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "VM Template.vmxf",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "VM Template.vmsd",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "VM Template-flat.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "VM Template.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "VM Template.nvram",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmware-1.log",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmware-2.log",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmware-3.log",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmware.log",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "VM Template_1-flat.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "VM Template_1.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      } ] ]
+    }, {
+      "datastore" : {
+        "value" : "datastore-37",
+        "type" : "Datastore"
+      },
+      "folderPath" : "[shared-datastore-1] dsnfolder2164/",
+      "file" : [ "java.util.ArrayList", [ {
+        "path" : "dsnfolder2164-flat.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnfolder2164.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnfolder2164.nvram",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnfolder2164.vmx",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnfolder2164.vmxf",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnfolder2164.vmsd",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmx-dsnfolder2164-3892640334-1.vswp",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnfolder2164.vmx.lck",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnfolder2164.vmx~",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmware.log",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnfolder2164-e804fa4e.vswp",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      } ] ]
+    }, {
+      "datastore" : {
+        "value" : "datastore-37",
+        "type" : "Datastore"
+      },
+      "folderPath" : "[shared-datastore-1] gg!@#$%25^&_()vpimg/",
+      "file" : [ "java.util.ArrayList", [ {
+        "path" : "gg!@#$%25^&*()vpimg.nvram",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      } ] ]
+    }, {
+      "datastore" : {
+        "value" : "datastore-37",
+        "type" : "Datastore"
+      },
+      "folderPath" : "[shared-datastore-1] slav1-slav1-0/",
+      "file" : [ "java.util.ArrayList", [ {
+        "path" : "slav1-slav1-0-flat.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "slav1-slav1-0.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "slav1-slav1-0.nvram",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "slav1-slav1-0.vmx",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "slav1-slav1-0.vmxf",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "slav1-slav1-0.vmsd",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmx-slav1-slav1-0-3933956888-1.vswp",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "slav1-slav1-0.vmx.lck",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "slav1-slav1-0.vmx~",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmware.log",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "slav1-slav1-0-ea7b6b18.vswp",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      } ] ]
+    }, {
+      "datastore" : {
+        "value" : "datastore-37",
+        "type" : "Datastore"
+      },
+      "folderPath" : "[shared-datastore-1] dcm-dcd-agent-win2k12/",
+      "file" : [ "java.util.ArrayList", [ {
+        "path" : "dcm-dcd-agent-win2k12.vmxf",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dcm-dcd-agent-win2k12.vmsd",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dcm-dcd-agent-win2k12.nvram",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dcm-dcd-agent-win2k12.vmtx",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      } ] ]
+    }, {
+      "datastore" : {
+        "value" : "datastore-37",
+        "type" : "Datastore"
+      },
+      "folderPath" : "[shared-datastore-1] dsnfolder5276/",
+      "file" : [ "java.util.ArrayList", [ {
+        "path" : "dsnfolder5276-flat.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnfolder5276.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnfolder5276.nvram",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnfolder5276.vmx",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnfolder5276.vmxf",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnfolder5276.vmsd",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmx-dsnfolder5276-3892749269-1.vswp",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnfolder5276.vmx.lck",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnfolder5276.vmx~",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmware.log",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnfolder5276-e806a3d5.vswp",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      } ] ]
+    }, {
+      "datastore" : {
+        "value" : "datastore-37",
+        "type" : "Datastore"
+      },
+      "folderPath" : "[shared-datastore-1] .dvsData/cb dc 2e 50 f1 cb 4e 18-ee 60 b5 54 eb 4c 8e d6/",
+      "file" : [ "java.util.ArrayList", [ {
+        "path" : "48",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      } ] ]
+    }, {
+      "datastore" : {
+        "value" : "datastore-37",
+        "type" : "Datastore"
+      },
+      "folderPath" : "[shared-datastore-1] ubuntu-twdemo-dcmagent/",
+      "file" : [ "java.util.ArrayList", [ {
+        "path" : "ubuntu-twdemo-dcmagent-flat.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "ubuntu-twdemo-dcmagent.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "ubuntu-twdemo-dcmagent.nvram",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "ubuntu-twdemo-dcmagent.vmtx",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "ubuntu-twdemo-dcmagent.vmxf",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "ubuntu-twdemo-dcmagent.vmsd",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      } ] ]
+    }, {
+      "datastore" : {
+        "value" : "datastore-37",
+        "type" : "Datastore"
+      },
+      "folderPath" : "[shared-datastore-1] sm-wk12-agent-dc/",
+      "file" : [ "java.util.ArrayList", [ {
+        "path" : "sm-wk12-agent-dc-000002-flat.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "sm-wk12-agent-dc-000002.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "sm-wk12-agent-dc.nvram",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "sm-wk12-agent-dc.vmtx",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "sm-wk12-agent-dc.vmxf",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "sm-wk12-agent-dc.vmsd",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmware.log",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      } ] ]
+    }, {
+      "datastore" : {
+        "value" : "datastore-37",
+        "type" : "Datastore"
+      },
+      "folderPath" : "[shared-datastore-1] shaunsp2-db-4/",
+      "file" : [ "java.util.ArrayList", [ {
+        "path" : "shaunsp2-db-4-flat.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "shaunsp2-db-4.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "shaunsp2-db-4.nvram",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "shaunsp2-db-4.vmx",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "shaunsp2-db-4.vmxf",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "shaunsp2-db-4.vmsd",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmx-shaunsp2-db-4-207262696-1.vswp",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "shaunsp2-db-4.vmx.lck",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "shaunsp2-db-4.vmx~",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmware.log",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "shaunsp2-db-4-0c5a93e8.vswp",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      } ] ]
+    }, {
+      "datastore" : {
+        "value" : "datastore-37",
+        "type" : "Datastore"
+      },
+      "folderPath" : "[shared-datastore-1] VMware vCenter Server Appliance/",
+      "file" : [ "java.util.ArrayList", [ {
+        "path" : "VMware vCenter Server Appliance-df2bd60d.vswp",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmware-2.log",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "VMware vCenter Server Appliance.vmx",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "VMware vCenter Server Appliance.vmxf",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "VMware vCenter Server Appliance.vmsd",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "VMware vCenter Server Appliance_1-flat.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "VMware vCenter Server Appliance-df2bd60d.hlog",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "VMware vCenter Server Appliance_2-flat.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmware-3.log",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "VMware vCenter Server Appliance.nvram",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmware-1.log",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmx-VMware vCenter Server Appliance-3744192013-1.vswp",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmware-4.log",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmware-5.log",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmware-6.log",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "VMware vCenter Server Appliance.vmx.lck",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmware.log",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "VMware vCenter Server Appliance.vmx~",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      } ] ]
+    }, {
+      "datastore" : {
+        "value" : "datastore-37",
+        "type" : "Datastore"
+      },
+      "folderPath" : "[shared-datastore-1] ubuntu-dcmagent[dcm.shaunmarsh/",
+      "file" : [ "java.util.ArrayList", [ {
+        "path" : "ubuntu-dcmagent[dcm.shaunmarsh-flat.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "ubuntu-dcmagent[dcm.shaunmarsh.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "ubuntu-dcmagent[dcm.shaunmarsh.nvram",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "ubuntu-dcmagent[dcm.shaunmarsh.vmtx",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "ubuntu-dcmagent[dcm.shaunmarsh.vmxf",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "ubuntu-dcmagent[dcm.shaunmarsh.vmsd",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      } ] ]
+    }, {
+      "datastore" : {
+        "value" : "datastore-37",
+        "type" : "Datastore"
+      },
+      "folderPath" : "[shared-datastore-1] ubuntu-agent-demo-patrick/",
+      "file" : [ "java.util.ArrayList", [ {
+        "path" : "ubuntu-agent-demo-patrick-flat.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "ubuntu-agent-demo-patrick.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "ubuntu-agent-demo-patrick.nvram",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "ubuntu-agent-demo-patrick.vmtx",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "ubuntu-agent-demo-patrick.vmxf",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "ubuntu-agent-demo-patrick.vmsd",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      } ] ]
+    }, {
+      "datastore" : {
+        "value" : "datastore-37",
+        "type" : "Datastore"
+      },
+      "folderPath" : "[shared-datastore-1] vCenter/",
+      "file" : [ "java.util.ArrayList", [ {
+        "path" : "vCenter.vmx",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vCenter.vmxf",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vCenter.vmsd",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmware.log",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vCenter-aux.xml",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vCenter.nvram",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmware-1.log",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmware-2.log",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      } ] ]
+    }, {
+      "datastore" : {
+        "value" : "datastore-37",
+        "type" : "Datastore"
+      },
+      "folderPath" : "[shared-datastore-1] u1404-vm-test-network/",
+      "file" : [ "java.util.ArrayList", [ {
+        "path" : "u1404-vm-test-network.vmxf",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "u1404-vm-test-network.vmsd",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "u1404-vm-test-network.nvram",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "u1404-vm-test-network.vmtx",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      } ] ]
+    }, {
+      "datastore" : {
+        "value" : "datastore-37",
+        "type" : "Datastore"
+      },
+      "folderPath" : "[shared-datastore-1] vid-test/",
+      "file" : [ "java.util.ArrayList", [ {
+        "path" : "vid-test_2-flat.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vid-test_2.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      } ] ]
+    }, {
+      "datastore" : {
+        "value" : "datastore-37",
+        "type" : "Datastore"
+      },
+      "folderPath" : "[shared-datastore-1] dcm-dcd-agent-dc/",
+      "file" : [ "java.util.ArrayList", [ {
+        "path" : "dcm-dcd-agent-dc.vmxf",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dcm-dcd-agent-dc.vmsd",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dcm-dcd-agent-dc.nvram",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dcm-dcd-agent-dc.vmtx",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      } ] ]
+    }, {
+      "datastore" : {
+        "value" : "datastore-37",
+        "type" : "Datastore"
+      },
+      "folderPath" : "[shared-datastore-1] hotplugswindows/",
+      "file" : [ "java.util.ArrayList", [ {
+        "path" : "hotplugswindows.vmxf",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "hotplugswindows.vmsd",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "hotplugswindows.nvram",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "hotplugswindows.vmtx",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      } ] ]
+    }, {
+      "datastore" : {
+        "value" : "datastore-37",
+        "type" : "Datastore"
+      },
+      "folderPath" : "[shared-datastore-1] dsnfolder5695/",
+      "file" : [ "java.util.ArrayList", [ {
+        "path" : "dsnfolder5695-flat.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnfolder5695.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnfolder5695.nvram",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnfolder5695.vmx",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnfolder5695.vmxf",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnfolder5695.vmsd",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmx-dsnfolder5695-3892753690-1.vswp",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnfolder5695.vmx.lck",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnfolder5695.vmx~",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmware.log",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnfolder5695-e806b51a.vswp",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      } ] ]
+    }, {
+      "datastore" : {
+        "value" : "datastore-37",
+        "type" : "Datastore"
+      },
+      "folderPath" : "[shared-datastore-1] u1404-fancy-network/",
+      "file" : [ "java.util.ArrayList", [ {
+        "path" : "u1404-fancy-network.vmxf",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "u1404-fancy-network.vmsd",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "u1404-fancy-network.nvram",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "u1404-fancy-network.vmtx",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      } ] ]
+    }, {
+      "datastore" : {
+        "value" : "datastore-37",
+        "type" : "Datastore"
+      },
+      "folderPath" : "[shared-datastore-1] shaunsp2-db-0/",
+      "file" : [ "java.util.ArrayList", [ {
+        "path" : "shaunsp2-db-0-flat.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "shaunsp2-db-0.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "shaunsp2-db-0.nvram",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "shaunsp2-db-0.vmx",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "shaunsp2-db-0.vmxf",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "shaunsp2-db-0.vmsd",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmx-shaunsp2-db-0-207262692-1.vswp",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "shaunsp2-db-0.vmx.lck",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "shaunsp2-db-0.vmx~",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmware.log",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "shaunsp2-db-0-0c5a93e4.vswp",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      } ] ]
+    }, {
+      "datastore" : {
+        "value" : "datastore-37",
+        "type" : "Datastore"
+      },
+      "folderPath" : "[shared-datastore-1] dmTesting7Oct/",
+      "file" : [ "java.util.ArrayList", [ {
+        "path" : "dmTesting7Oct_2-flat.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dmTesting7Oct_2.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dmTesting7Oct.nvram",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dmTesting7Oct.vmx",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dmTesting7Oct.vmxf",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dmTesting7Oct.vmsd",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmx-dmTesting7Oct-4227469004-1.vswp",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dmTesting7Oct.vmx.lck",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dmTesting7Oct.vmx~",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmware.log",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dmTesting7Oct-fbfa0ecc.vswp",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dmTesting7Oct_4-flat.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dmTesting7Oct_4.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dmTesting7Oct_3-flat.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dmTesting7Oct_3.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      } ] ]
+    }, {
+      "datastore" : {
+        "value" : "datastore-37",
+        "type" : "Datastore"
+      },
+      "folderPath" : "[shared-datastore-1]",
+      "file" : [ "java.util.ArrayList", [ {
+        "path" : "scsi-megaraid-sas-06.803.52.00-1vmw.550.0.0.1331820.x86_64.vib",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "en_windows_server_2008_r2_with_sp1_x64_dvd_617601.iso",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vCenter",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "VMware vCenter Server Appliance",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "gatewayvm",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "ubuntu-14.04-server-amd64.iso",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "VM Template",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "u1404-fancy-network",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "mp-ununtuvm-templ2",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "u1404-vm-test-network",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "maria-t-vmt",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "jonwinc1p1",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "eriktest",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "sofancy",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dcm-dcd-agent-dc",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "timftmp-norp",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "en_windows_server_2012_x64_dvd_915478.iso",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "jondev1",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "jonwinc1p2",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "testvm-stateful-1409824216877",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "testvm-stateful-1414056195619",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "testvm-stateful-1414057873867",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "arvspherimageser",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "ubuntu-twdemo-dcmagent",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "Shaun-Ubuntu",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dasein-test-launch-14138033974",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dasein-test-launch-14138014730",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dasein-test-launch-14138020585",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "testvm-stateful-1413880868448",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "testvm-stateful-1413889107992",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "testvm-stateful-1413992451523",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "testvm-stateful-1414054249007",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "testvm-stateful-1416563243376",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "jonwithvolume",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "arvsphereprodu3",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "deleteme",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "tes7692824376",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "jonwithvol10",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "jonwithvol5",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "jonwithvol1-1-1",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "maria-templ-vmtools",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "shimtest269",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "drewtest",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "justpldisk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vspherearvolume",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "plvmtest",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "plvmtest2",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "hotplugson",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "hotplugswindows",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "mpwintest_vcenter",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "gg!@#$%25^&_()vpimg",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "daseinstatelessvm-142539471485",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "slvolser",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "daseinstatelessvm-142530301543",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnvmip8125",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "esserver-120109",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "mp",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dr3vmvmw-dr3vmvmwweb-0",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "sp-vsphere",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "am-vsh-srvol1",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "sp-vs",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "sm-win1",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "testvm-stateful-1439420730079",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "tgg",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "roger",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "roger_1",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "roger_2",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "roger-template",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "unwin",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dmTesting7Oct",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "mpwintest_vcent-template",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "d3vmmw-template",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "iso",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "coreos",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "ubuntu-dcmagent[dcm.shaunmarsh",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dasein-test-launch-uwnin-14399",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "testvm-stateful-1439922683729",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "testvm-stateful-1439923182064",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dasein-test-launch-uwnin-14399_1",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnvmip3535",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnfolder5695",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "testvm-stateful-1439924137453",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "testvm-stateful-1439924547417",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "jonshaun",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "roger_3",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "roger_4",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "ubuntu-agent-demo-patrick",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnfolder2164",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dasein-test-launch-uwnin-14399_2",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "testvm-stateful-1439941912468",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dasein-test-launch-uwnin-14399_3",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dasein-test-launch-uwnin-143-2",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dasein-test-launch-uwnin-143-1",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dasein-filter-test-14399431238",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnaffinity8620",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnstorage3330",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnfolder5276",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "testvm-stateful-1439945461170",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnfolder4061",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dcm-dcd-agent-win2k12",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnvmip8730",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnvmip2509",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnvmip4589",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnvmip4433",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnvmip4512",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnvmip7948",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnvmip4244",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "slav1-slav1-0",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "esserver-436017",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "ggvm01",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "null",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "jontest1",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "gg-vol-test",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vid-test",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "esservol-266883",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "pat-y-one",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "esservol-915318",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "esservol-992910",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "esservol-953172",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "esservol-906257",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "Tmpl-Win2012-DCMAgent",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "sm-w2k12-Agent",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "sm-wk12-agent-dc",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "shaunsp2-db-3",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "shaunsp2-dc-0",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "shaunsp2-db-0",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "shaunsp2-db-4",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      } ] ]
+    }, {
+      "datastore" : {
+        "value" : "datastore-37",
+        "type" : "Datastore"
+      },
+      "folderPath" : "[shared-datastore-1] Shaun-Ubuntu/",
+      "file" : [ "java.util.ArrayList", [ {
+        "path" : "Ubuntu-1404.vmsd",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "Ubuntu-1404.vmx",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "Ubuntu-1404.vmxf",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      } ] ]
+    }, {
+      "datastore" : {
+        "value" : "datastore-37",
+        "type" : "Datastore"
+      },
+      "folderPath" : "[shared-datastore-1] sm-w2k12-Agent/",
+      "file" : [ "java.util.ArrayList", [ {
+        "path" : "sm-w2k12-Agent-flat.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "sm-w2k12-Agent.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "sm-w2k12-Agent.nvram",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "sm-w2k12-Agent.vmtx",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "sm-w2k12-Agent.vmxf",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "sm-w2k12-Agent.vmsd",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmware-1.log",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmware.log",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      } ] ]
+    }, {
+      "datastore" : {
+        "value" : "datastore-37",
+        "type" : "Datastore"
+      },
+      "folderPath" : "[shared-datastore-1] pat-y-one/",
+      "file" : [ "java.util.ArrayList", [ {
+        "path" : "pat-y-one_1-flat.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "pat-y-one_1.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      } ] ]
+    }, {
+      "datastore" : {
+        "value" : "datastore-37",
+        "type" : "Datastore"
+      },
+      "folderPath" : "[shared-datastore-1] iso/",
+      "file" : [ "java.util.ArrayList", [ {
+        "path" : "coreos_production_iso_image.iso",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "rhel-server-7.1-x86_64-dvd.iso",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "debian-8.1.0-amd64-netinst.iso",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "CentOS-7-x86_64-Minimal-1503-01.iso",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "ubuntu-14.04.3-server-amd64.iso",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "rhel-server-6.7-x86_64-dvd.iso",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "en_windows_server_2012_r2_x64_dvd_2707946.iso",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      } ] ]
+    }, {
+      "datastore" : {
+        "value" : "datastore-37",
+        "type" : "Datastore"
+      },
+      "folderPath" : "[shared-datastore-1] dr3vmvmw-dr3vmvmwweb-0/",
+      "file" : [ "java.util.ArrayList", [ {
+        "path" : "dr3vmvmw-dr3vmvmwweb-0-flat.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dr3vmvmw-dr3vmvmwweb-0.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dr3vmvmw-dr3vmvmwweb-0.nvram",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dr3vmvmw-dr3vmvmwweb-0.vmx",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dr3vmvmw-dr3vmvmwweb-0.vmxf",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dr3vmvmw-dr3vmvmwweb-0.vmsd",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmware-1.log",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmware-2.log",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmx-dr3vmvmw-dr3vmvmwweb-0-118064628-1.vswp",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dr3vmvmw-dr3vmvmwweb-0.vmx.lck",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dr3vmvmw-dr3vmvmwweb-0.vmx~",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmware.log",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dr3vmvmw-dr3vmvmwweb-0-070985f4.vswp",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      } ] ]
+    }, {
+      "datastore" : {
+        "value" : "datastore-37",
+        "type" : "Datastore"
+      },
+      "folderPath" : "[shared-datastore-1] shaunsp2-db-3/",
+      "file" : [ "java.util.ArrayList", [ {
+        "path" : "shaunsp2-db-3-flat.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "shaunsp2-db-3.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "shaunsp2-db-3.nvram",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "shaunsp2-db-3.vmx",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "shaunsp2-db-3.vmxf",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "shaunsp2-db-3.vmsd",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmx-shaunsp2-db-3-207262695-1.vswp",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "shaunsp2-db-3.vmx.lck",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "shaunsp2-db-3.vmx~",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmware.log",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "shaunsp2-db-3-0c5a93e7.vswp",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      } ] ]
+    }, {
+      "datastore" : {
+        "value" : "datastore-37",
+        "type" : "Datastore"
+      },
+      "folderPath" : "[shared-datastore-1] Tmpl-Win2012-DCMAgent/",
+      "file" : [ "java.util.ArrayList", [ {
+        "path" : "Tmpl-Win2012-DCMAgent.vmtx",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "Tmpl-Win2012-DCMAgent.vmxf",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "Tmpl-Win2012-DCMAgent.vmsd",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "Tmpl-Win2012-DCMAgent-flat.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "Tmpl-Win2012-DCMAgent.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "Tmpl-Win2012-DCMAgent.nvram",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmware-1.log",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmware.log",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      } ] ]
+    }, {
+      "datastore" : {
+        "value" : "datastore-37",
+        "type" : "Datastore"
+      },
+      "folderPath" : "[shared-datastore-1] hotplugson/",
+      "file" : [ "java.util.ArrayList", [ {
+        "path" : "hotplugson.vmxf",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "hotplugson.vmsd",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "hotplugson.nvram",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "hotplugson.vmtx",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      } ] ]
+    }, {
+      "datastore" : {
+        "value" : "datastore-37",
+        "type" : "Datastore"
+      },
+      "folderPath" : "[shared-datastore-1] dsnfolder4061/",
+      "file" : [ "java.util.ArrayList", [ {
+        "path" : "dsnfolder4061-flat.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnfolder4061.vmdk",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnfolder4061.nvram",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnfolder4061.vmx",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnfolder4061.vmxf",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnfolder4061.vmsd",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmx-dsnfolder4061-3892711116-1.vswp",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnfolder4061.vmx.lck",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnfolder4061.vmx~",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "vmware.log",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      }, {
+        "path" : "dsnfolder4061-e8060ecc.vswp",
+        "fileSize" : null,
+        "modification" : null,
+        "owner" : null
+      } ] ]
+    } ] ]
+  }
+}

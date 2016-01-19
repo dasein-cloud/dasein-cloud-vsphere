@@ -197,8 +197,7 @@
         </configuration>
       </plugin>
 
-      <!-- Removing the javadoc temporarily as it fails on the generated code during release -->
-      <!--<plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>2.10.3</version>
@@ -214,6 +213,7 @@
               <failOnError>false</failOnError>
               <encoding>utf-8</encoding>
               <quiet>true</quiet>
+              <additionalparam>-Xdoclint:none</additionalparam>
               <javaApiLinks>
                 <property>
                   <name>api_1.8</name>
@@ -233,7 +233,7 @@
             </configuration>
           </execution>
         </executions>
-      </plugin>-->
+      </plugin>
 
       <plugin>
         <groupId>com.mycila.maven-license-plugin</groupId>

@@ -17,38 +17,25 @@
  * ====================================================================
  */
 
-package org.dasein.cloud.vsphere.compute;
+package org.dasein.cloud.vsphere;
+
+import org.dasein.cloud.CloudException;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
-import org.dasein.cloud.compute.AbstractComputeServices;
-import org.dasein.cloud.vsphere.Vsphere;
-
-
-public class VsphereCompute extends AbstractComputeServices<Vsphere> {
-
-
-    public VsphereCompute(Vsphere provider) {
-        super(provider);
+/**
+ * An error in configuring MyCloud's context in some manner.
+ * <p>Created by George Reese: 12/06/2012 9:44 AM</p>
+ * @author George Reese
+ * @version 2013.1 initial version
+ * @since 2013.1
+ */
+public class ConfigurationException extends CloudException {
+    public ConfigurationException(@Nonnull String message) {
+        super(message);
     }
 
-    @Nullable
-    @Override
-    public HostSupport getAffinityGroupSupport() {
-        return new HostSupport(getProvider());
-    }
-
-    @Override
-    public @Nullable Vm getVirtualMachineSupport() {
-        return new Vm(getProvider());
-    }
-
-    @Nullable
-    @Override
-    public HardDisk getVolumeSupport() { return new HardDisk(getProvider()); }
-
-    public @Nonnull ImageSupport getImageSupport() {
-        return new ImageSupport(getProvider());
+    public ConfigurationException(@Nonnull Throwable cause) {
+        super(cause);
     }
 }

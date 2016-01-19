@@ -25,8 +25,7 @@ import mockit.Mocked;
 import mockit.NonStrictExpectations;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
-import org.dasein.cloud.CloudException;
-import org.dasein.cloud.InternalException;
+import org.dasein.cloud.*;
 import org.dasein.cloud.compute.VirtualMachine;
 import org.dasein.cloud.compute.Volume;
 import org.dasein.cloud.compute.VolumeCreateOptions;
@@ -39,6 +38,7 @@ import org.dasein.util.uom.storage.Storage;
 import org.dasein.util.uom.storage.StorageUnit;
 import org.dasein.util.uom.time.TimePeriod;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -52,20 +52,20 @@ import java.util.List;
  * Time: 10:41
  */
 public class HardDiskTest extends VsphereTestBase {
-    private ObjectManagement om = new ObjectManagement();
-    private RetrieveResult hardDisks = om.readJsonFile("src/test/resources/HardDisk/hardDisks.json", RetrieveResult.class);
-    private final ResourcePool[] resourcePools = om.readJsonFile("src/test/resources/HardDisk/resourcePools.json", ResourcePool[].class);
-    private final RetrieveResult datastores = om.readJsonFile("src/test/resources/HardDisk/datastores.json", RetrieveResult.class);
-    private final StoragePool[] storagePools = om.readJsonFile("src/test/resources/HardDisk/storagePools.json", StoragePool[].class);
-    private final ManagedObjectReference task = om.readJsonFile("src/test/resources/HardDisk/task.json", ManagedObjectReference.class);
-    private final PropertyChange searchResult = om.readJsonFile("src/test/resources/HardDisk/searchResult.json", PropertyChange.class);
+    static private RetrieveResult hardDisks;
+    static private RetrieveResult newHardDisks;
+    static private RetrieveResult postAttachHardDisks;
+    static private RetrieveResult postDetachHardDisks;
 
-    private final RetrieveResult hardDisksNoProperties = om.readJsonFile("src/test/resources/HardDisk/hardDiskNoProperties.json", RetrieveResult.class);
-    private final RetrieveResult dcStoragePools = om.readJsonFile("src/test/resources/DataCenters/storagePools.json", RetrieveResult.class);
-    private RetrieveResult newHardDisks = om.readJsonFile("src/test/resources/HardDisk/newHardDisks.json", RetrieveResult.class);
-    private RetrieveResult postAttachHardDisks = om.readJsonFile("src/test/resources/HardDisk/postAttachHardDisks.json", RetrieveResult.class);
-    private RetrieveResult postDetachHardDisks = om.readJsonFile("src/test/resources/HardDisk/postDetachHardDisks.json", RetrieveResult.class);
-    private final PropertyChange postRemoveHardDisks = om.readJsonFile("src/test/resources/HardDisk/postRemoveHardDisks.json", PropertyChange.class);
+    static private ResourcePool[] resourcePools;
+    static private RetrieveResult datastores;
+    static private StoragePool[] storagePools;
+    static private ManagedObjectReference task;
+    static private PropertyChange searchResult;
+
+    static private RetrieveResult hardDisksNoProperties;
+    static private RetrieveResult dcStoragePools;
+    static private PropertyChange postRemoveHardDisks;
 
     private HardDisk hd = null;
     private VsphereMethod method = null;
@@ -79,6 +79,27 @@ public class HardDiskTest extends VsphereTestBase {
     @Mocked
     DataCenters dcMock;
 
+    @BeforeClass
+    static public void setupFixtures() {
+        ObjectManagement om = new ObjectManagement();
+        resourcePools = om.readJsonFile("src/test/resources/HardDisk/resourcePools.json", ResourcePool[].class);
+        datastores = om.readJsonFile("src/test/resources/HardDisk/datastores.json", RetrieveResult.class);
+        storagePools = om.readJsonFile("src/test/resources/HardDisk/storagePools.json", StoragePool[].class);
+        task = om.readJsonFile("src/test/resources/HardDisk/task.json", ManagedObjectReference.class);
+        searchResult = om.readJsonFile("src/test/resources/HardDisk/searchResult.json", PropertyChange.class);
+
+        hardDisksNoProperties = om.readJsonFile("src/test/resources/HardDisk/hardDiskNoProperties.json", RetrieveResult.class);
+        dcStoragePools = om.readJsonFile("src/test/resources/DataCenters/storagePools.json", RetrieveResult.class);
+        postRemoveHardDisks = om.readJsonFile("src/test/resources/HardDisk/postRemoveHardDisks.json", PropertyChange.class);
+
+        om.mapper.enableDefaultTypingAsProperty(ObjectMapper.DefaultTyping.NON_FINAL, "type");
+        om.mapper.configure(SerializationConfig.Feature.FAIL_ON_EMPTY_BEANS, false);
+        hardDisks = om.readJsonFile("src/test/resources/HardDisk/hardDisks.json", RetrieveResult.class);
+        newHardDisks = om.readJsonFile("src/test/resources/HardDisk/newHardDisks.json", RetrieveResult.class);
+        postAttachHardDisks = om.readJsonFile("src/test/resources/HardDisk/postAttachHardDisks.json", RetrieveResult.class);
+        postDetachHardDisks = om.readJsonFile("src/test/resources/HardDisk/postDetachHardDisks.json", RetrieveResult.class);
+    }
+
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -86,13 +107,7 @@ public class HardDiskTest extends VsphereTestBase {
         method = new VsphereMethod(vsphereMock);
         hardDiskPSpec = hd.getHardDiskPSpec();
         datastorePSpec = hd.getDatastorePropertySpec();
-        ObjectManagement om = new ObjectManagement();
-        om.mapper.enableDefaultTypingAsProperty(ObjectMapper.DefaultTyping.NON_FINAL, "type");
-        om.mapper.configure(SerializationConfig.Feature.FAIL_ON_EMPTY_BEANS, false);
-        hardDisks = om.readJsonFile("src/test/resources/HardDisk/hardDisks.json", RetrieveResult.class);
-        newHardDisks = om.readJsonFile("src/test/resources/HardDisk/newHardDisks.json", RetrieveResult.class);
-        postAttachHardDisks = om.readJsonFile("src/test/resources/HardDisk/postAttachHardDisks.json", RetrieveResult.class);
-        postDetachHardDisks = om.readJsonFile("src/test/resources/HardDisk/postDetachHardDisks.json", RetrieveResult.class);
+
     }
 
     @Test
@@ -118,11 +133,9 @@ public class HardDiskTest extends VsphereTestBase {
         new Expectations(VsphereMethod.class) {
             {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
                 result = true;
-                times=6;
             }
             {method.getTaskResult();
                 result = searchResult;
-                times=6;
             }
         };
 
@@ -174,11 +187,9 @@ public class HardDiskTest extends VsphereTestBase {
         new Expectations(VsphereMethod.class) {
             {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
                 result = true;
-                times=6;
             }
             {method.getTaskResult();
                 result = searchResult;
-                times=6;
             }
         };
 
@@ -186,7 +197,7 @@ public class HardDiskTest extends VsphereTestBase {
         assertNotNull("Valid volume object should not be null", volume);
         assertEquals("dmTesting7Oct_1.vmdk", volume.getProviderVolumeId());
         assertEquals("dmTesting7Oct_1.vmdk", volume.getName());
-        assertEquals("domain-c26", volume.getProviderDataCenterId());
+        assertNull(volume.getProviderDataCenterId());
         assertEquals("datacenter-21", volume.getProviderRegionId());
         assertEquals("dmTesting7Oct_1.vmdk", volume.getDescription());
         assertNull("Standalone file should not have vm id", volume.getProviderVirtualMachineId());
@@ -221,11 +232,9 @@ public class HardDiskTest extends VsphereTestBase {
         new Expectations(VsphereMethod.class) {
             {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
                 result = true;
-                times=6;
             }
             {method.getTaskResult();
                 result = searchResult;
-                times=6;
             }
         };
 
@@ -254,11 +263,9 @@ public class HardDiskTest extends VsphereTestBase {
         new Expectations(VsphereMethod.class) {
             {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
                 result = true;
-                times=6;
             }
             {method.getTaskResult();
                 result = searchResult;
-                times=6;
             }
         };
 
@@ -294,11 +301,9 @@ public class HardDiskTest extends VsphereTestBase {
         new Expectations(VsphereMethod.class) {
             {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
                 result = true;
-                times=6;
             }
             {method.getTaskResult();
                 result = searchResult;
-                times=6;
             }
         };
 
@@ -334,11 +339,9 @@ public class HardDiskTest extends VsphereTestBase {
         new Expectations(VsphereMethod.class) {
             {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
                 result = true;
-                times=6;
             }
             {method.getTaskResult();
                 result = searchResult;
-                times=6;
             }
         };
 
@@ -374,11 +377,9 @@ public class HardDiskTest extends VsphereTestBase {
         new Expectations(VsphereMethod.class) {
             {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
                 result = true;
-                times=6;
             }
             {method.getTaskResult();
                 result = searchResult;
-                times=6;
             }
         };
 
@@ -434,7 +435,7 @@ public class HardDiskTest extends VsphereTestBase {
             count ++;
             assertNotNull("Virtual machine id should not be null for attached volumes. "+v.getName()+" has null", v.getProviderVirtualMachineId());
         }
-        assertEquals("Number of attached volumes is incorrect", 11, count);
+        assertEquals("Number of attached volumes is incorrect", 2, count);
     }
 
     @Test
@@ -461,11 +462,9 @@ public class HardDiskTest extends VsphereTestBase {
         new Expectations(VsphereMethod.class) {
             {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
                 result = true;
-                times=6;
             }
             {method.getTaskResult();
                 result = searchResult;
-                times=6;
             }
         };
 
@@ -519,7 +518,7 @@ public class HardDiskTest extends VsphereTestBase {
             count ++;
             assertNotNull("Virtual machine id should not be null for attached volumes. " + v.getName() + " has null", v.getProviderVirtualMachineId());
         }
-        assertEquals("Number of attached volumes is incorrect", 11, count);
+        assertEquals("Number of attached volumes is incorrect", 2, count);
     }
 
     @Test
@@ -546,7 +545,6 @@ public class HardDiskTest extends VsphereTestBase {
         new Expectations(VsphereMethod.class) {
             {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
                 result = false;
-                times=6;
             }
             {method.getTaskResult();
                 result = searchResult;
@@ -562,7 +560,7 @@ public class HardDiskTest extends VsphereTestBase {
             count ++;
             assertNotNull("Virtual machine id should not be null for attached volumes. " + v.getName() + " has null", v.getProviderVirtualMachineId());
         }
-        assertEquals("Number of attached volumes is incorrect", 11, count);
+        assertEquals("Number of attached volumes is incorrect", 2, count);
     }
 
     @Test
@@ -589,11 +587,9 @@ public class HardDiskTest extends VsphereTestBase {
         new Expectations(VsphereMethod.class) {
             {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
                 result = true;
-                times=6;
             }
             {method.getTaskResult();
                 result = new PropertyChange();
-                times=6;
             }
         };
 
@@ -605,19 +601,10 @@ public class HardDiskTest extends VsphereTestBase {
             count ++;
             assertNotNull("Virtual machine id should not be null for attached volumes. " + v.getName() + " has null", v.getProviderVirtualMachineId());
         }
-        assertEquals("Number of attached volumes is incorrect", 11, count);
+        assertEquals("Number of attached volumes is incorrect", 2, count);
     }
 
-    @Test(expected = NoContextException.class)
-    public void listVolumesShouldThrowExceptionIfNullContext() throws CloudException, InternalException {
-        new Expectations(HardDisk.class) {
-            { vsphereMock.getContext(); result = null; }
-        };
-
-        hd.listVolumes();
-    }
-
-    @Test(expected = CloudException.class)
+    @Test(expected = InternalException.class)
     public void listVolumesShouldThrowExceptionIfNullRegion() throws CloudException, InternalException {
         new Expectations(HardDisk.class) {
             { providerContextMock.getRegionId(); result = null; }
@@ -684,7 +671,7 @@ public class HardDiskTest extends VsphereTestBase {
         assertEquals("Volume not attached to correct vm", "vm-2318", v.getProviderVirtualMachineId());
     }
 
-    @Test(expected = CloudException.class)
+    @Test(expected = ResourceNotFoundException.class)
     public void attachVolumeShouldThrowCloudExceptionIfVmIsNull() throws CloudException, InternalException {
         new NonStrictExpectations() {
             {vsphereMock.getComputeServices();
@@ -701,7 +688,7 @@ public class HardDiskTest extends VsphereTestBase {
         hd.attach("dmTesting7Oct_1.vmdk", "vm-0001", "1");
     }
 
-    @Test(expected = CloudException.class)
+    @Test(expected = ResourceNotFoundException.class)
     public void attachVolumeShouldThrowCloudExceptionIfVolumeIsNull() throws CloudException, InternalException {
         new NonStrictExpectations() {
             {vsphereMock.getComputeServices();
@@ -730,25 +717,22 @@ public class HardDiskTest extends VsphereTestBase {
             }
             {hd.searchDatastores(vsphereMock, (ManagedObjectReference) any, anyString, null);
                 result = task;
-                times = 6;
             }
         };
 
         new Expectations(VsphereMethod.class) {
             {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
                 result = true;
-                times=6;
             }
             {method.getTaskResult();
                 result = searchResult;
-                times=6;
             }
         };
 
         hd.attach("MyFakeVolume", "vm-2318", "1");
     }
 
-    @Test(expected = CloudException.class)
+    @Test(expected = GeneralCloudException.class)
     public void attachVolumeShouldThrowCloudExceptionIfOperationIsNotSuccessful() throws CloudException, InternalException {
         new NonStrictExpectations() {
             {vsphereMock.getComputeServices();
@@ -787,16 +771,10 @@ public class HardDiskTest extends VsphereTestBase {
         new Expectations(VsphereMethod.class) {
             {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
                 result = true;
-                result = true;
-                result = true;
-                result = true;
-                result = true;
-                result = true;
                 result = false;
             }
             {method.getTaskResult();
                 result = searchResult;
-                times=6;
             }
             {method.getTaskError().getVal();
                 result = "Attach failed";
@@ -806,7 +784,7 @@ public class HardDiskTest extends VsphereTestBase {
         hd.attach("dmTesting7Oct_1.vmdk", "vm-2318", "1");
     }
 
-    @Test(expected = CloudException.class)
+    @Test(expected = InternalException.class)
     public void attachVolumeShouldThrowExceptionIfVolumeIsAlreadyAttached() throws CloudException, InternalException {
         new NonStrictExpectations() {
             {vsphereMock.getComputeServices();
@@ -844,11 +822,9 @@ public class HardDiskTest extends VsphereTestBase {
         new Expectations(VsphereMethod.class) {
             {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
                 result = true;
-                times=6;
             }
             {method.getTaskResult();
                 result = searchResult;
-                times=6;
             }
         };
 
@@ -913,7 +889,7 @@ public class HardDiskTest extends VsphereTestBase {
         assertNull("Detach succeeded without error but volume still has vm id", v.getProviderVirtualMachineId());
     }
 
-    @Test(expected = CloudException.class)
+    @Test(expected = ResourceNotFoundException.class)
     public void detachVolumeShouldThrowCloudExceptionIfVolumeIsNull() throws CloudException, InternalException {
         new NonStrictExpectations() {
             {vsphereMock.getComputeServices();
@@ -942,25 +918,22 @@ public class HardDiskTest extends VsphereTestBase {
             }
             {hd.searchDatastores(vsphereMock, (ManagedObjectReference) any, anyString, null);
                 result = task;
-                times = 6;
             }
         };
 
         new Expectations(VsphereMethod.class) {
             {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
                 result = true;
-                times=6;
             }
             {method.getTaskResult();
                 result = searchResult;
-                times=6;
             }
         };
 
         hd.detach("MyFakeVolume", true);
     }
 
-    @Test(expected = CloudException.class)
+    @Test(expected = ResourceNotFoundException.class)
     public void detachVolumeShouldThrowCloudExceptionIfVmIsNull() throws CloudException, InternalException {
         new NonStrictExpectations() {
             {vsphereMock.getComputeServices();
@@ -989,25 +962,22 @@ public class HardDiskTest extends VsphereTestBase {
             }
             {hd.searchDatastores(vsphereMock, (ManagedObjectReference) any, anyString, null);
                 result = task;
-                times = 6;
             }
         };
 
         new Expectations(VsphereMethod.class) {
             {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
                 result = true;
-                times=6;
             }
             {method.getTaskResult();
                 result = searchResult;
-                times=6;
             }
         };
 
         hd.detach("dmTesting7Oct_4.vmdk", true);
     }
 
-    @Test(expected = CloudException.class)
+    @Test(expected = GeneralCloudException.class)
     public void detachVolumeShouldThrowCloudExceptionIfOperationIsNotSuccessful() throws CloudException, InternalException {
         new NonStrictExpectations() {
             {vsphereMock.getComputeServices();
@@ -1046,16 +1016,10 @@ public class HardDiskTest extends VsphereTestBase {
         new Expectations(VsphereMethod.class) {
             {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
                 result = true;
-                result = true;
-                result = true;
-                result = true;
-                result = true;
-                result = true;
                 result = false;
             }
             {method.getTaskResult();
                 result = searchResult;
-                times=6;
             }
             {method.getTaskError().getVal();
                 result = "detach failed";
@@ -1065,7 +1029,7 @@ public class HardDiskTest extends VsphereTestBase {
         hd.detach("dmTesting7Oct_4.vmdk", true);
     }
 
-    @Test(expected = CloudException.class)
+    @Test(expected = InternalException.class)
     public void detachVolumeShouldThrowExceptionIfVolumeIsAlreadyDetached() throws CloudException, InternalException {
         new NonStrictExpectations() {
             {vsphereMock.getComputeServices();
@@ -1103,11 +1067,9 @@ public class HardDiskTest extends VsphereTestBase {
         new Expectations(VsphereMethod.class) {
             {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
                 result = true;
-                times=6;
             }
             {method.getTaskResult();
                 result = searchResult;
-                times=6;
             }
         };
 
@@ -1156,13 +1118,13 @@ public class HardDiskTest extends VsphereTestBase {
         assertEquals("New volume id does not match expected", "myNewDisk.vmdk", newVolume);
     }
 
-    @Test(expected = CloudException.class)
+    @Test(expected = InternalException.class)
     public void createVolumeShouldThrowExceptionIfVmIdIsNull() throws CloudException, InternalException {
         VolumeCreateOptions options = VolumeCreateOptions.getInstance(new Storage<StorageUnit>(2, Storage.GIGABYTE), "myNewDisk", "myNewDiskDescription");
         hd.createVolume(options);
     }
 
-    @Test(expected = CloudException.class)
+    @Test(expected = ResourceNotFoundException.class)
     public void createVolumeShouldThrowExceptionIfVmIsNull() throws CloudException, InternalException {
         final List<PropertySpec> spPSpecs = dcMock.getStoragePoolPropertySpec();
         new NonStrictExpectations() {
@@ -1181,7 +1143,7 @@ public class HardDiskTest extends VsphereTestBase {
         hd.createVolume(options);
     }
 
-    @Test(expected = CloudException.class)
+    @Test(expected = GeneralCloudException.class)
     public void createVolumeShouldThrowExceptionIfOperationIsNotSuccessful() throws CloudException, InternalException {
         final List<PropertySpec> spPSpecs = dcMock.getStoragePoolPropertySpec();
         new NonStrictExpectations() {
@@ -1227,7 +1189,7 @@ public class HardDiskTest extends VsphereTestBase {
     //this test loops for 20 minutes searching for new volume so not great for frequent test runs
     //update the timeout in the code if you wish to run this test
     @Ignore
-    @Test(expected = CloudException.class)
+    @Test(expected = ResourceNotFoundException.class)
     public void createVolumeShouldThrowExceptionIfNewVolumeIsNotFound() throws CloudException, InternalException {
         final List<PropertySpec> spPSpecs = dcMock.getStoragePoolPropertySpec();
         new NonStrictExpectations() {
@@ -1325,8 +1287,8 @@ public class HardDiskTest extends VsphereTestBase {
         assertNull("Volume was deleted, but object was still returned", v);
     }
 
-    @Test(expected = CloudException.class)
-    public void removeVolumeShouldThrowExceptionIfVolumeIdIsNull() throws CloudException, InternalException, RuntimeFaultFaultMsg, FileFaultFaultMsg, InvalidDatastoreFaultMsg {
+    @Test(expected = ResourceNotFoundException.class)
+    public void removeVolumeShouldThrowExceptionIfVolumeIsNull() throws CloudException, InternalException, RuntimeFaultFaultMsg, FileFaultFaultMsg, InvalidDatastoreFaultMsg {
         new Expectations(HardDisk.class) {
             {hd.retrieveObjectList(vsphereMock, "vmFolder", null, hardDiskPSpec);
                 result = hardDisks;
@@ -1349,16 +1311,15 @@ public class HardDiskTest extends VsphereTestBase {
         new Expectations(VsphereMethod.class) {
             {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
                 result = true;
-                times=6;
             }
             {method.getTaskResult();
-                result = searchResult;times = 6;
+                result = searchResult;
             }
         };
         hd.remove("MyFakeVolume");
     }
 
-    @Test(expected = CloudException.class)
+    @Test(expected = InternalException.class)
     public void removeVolumeShouldThrowExceptionIfVmIdIsNotNull() throws CloudException, InternalException, RuntimeFaultFaultMsg, FileFaultFaultMsg, InvalidDatastoreFaultMsg {
         new Expectations(HardDisk.class) {
             {hd.retrieveObjectList(vsphereMock, "vmFolder", null, hardDiskPSpec);
@@ -1382,18 +1343,16 @@ public class HardDiskTest extends VsphereTestBase {
         new Expectations(VsphereMethod.class) {
             {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
                 result = true;
-                times=6;
             }
             {method.getTaskResult();
                 result = searchResult;
-                times = 6;
             }
         };
 
         hd.remove("dmTesting7Oct_4.vmdk");
     }
 
-    @Test(expected = CloudException.class)
+    @Test(expected = GeneralCloudException.class)
     public void removeVolumeShouldThrowExceptionIfOperationIsNotSuccessful() throws CloudException, InternalException, RuntimeFaultFaultMsg, FileFaultFaultMsg, InvalidDatastoreFaultMsg {
         new NonStrictExpectations() {
             {serviceContentMock.getFileManager();
@@ -1426,16 +1385,10 @@ public class HardDiskTest extends VsphereTestBase {
         new Expectations(VsphereMethod.class) {
             {method.getOperationComplete((ManagedObjectReference) any, (TimePeriod) any, anyInt);
                 result = true;
-                result = true;
-                result = true;
-                result = true;
-                result = true;
-                result = true;
                 result = false;
             }
             {method.getTaskResult();
                 result = searchResult;
-                times = 6;
             }
             {method.getTaskError().getVal();
                 result = "Remove failed";

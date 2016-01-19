@@ -20,11 +20,8 @@
 package org.dasein.cloud.vsphere.compute;
 
 import com.vmware.vim25.*;
-import org.dasein.cloud.CloudException;
-import org.dasein.cloud.InternalException;
-import org.dasein.cloud.ProviderContext;
+import org.dasein.cloud.*;
 import org.dasein.cloud.compute.*;
-import org.dasein.cloud.dc.Region;
 import org.dasein.cloud.dc.ResourcePool;
 import org.dasein.cloud.dc.StoragePool;
 import org.dasein.cloud.util.APITrace;
@@ -53,8 +50,6 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
     private List<SelectionSpec> rpSSpecs;
     private List<PropertySpec> spPSpecs;
     private DataCenters dc;
-
-    private ObjectManagement om = new ObjectManagement();
 
     public HardDisk(@Nonnull Vsphere provider) {
         super(provider);
@@ -127,15 +122,19 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
             Vm vmSupport = getProvider().getComputeServices().getVirtualMachineSupport();
             VirtualMachine vm = vmSupport.getVirtualMachine(toServer);
             if (vm == null) {
-                throw new CloudException("Unable to find vm with id "+toServer);
+                throw new ResourceNotFoundException("Unable to find vm with id "+toServer);
             }
 
             Volume volume = getVolume(volumeId);
             if (volume == null) {
-                throw new CloudException("Unable to find volume with id "+volumeId);
+                throw new ResourceNotFoundException("Unable to find volume with id "+volumeId);
             }
-            if (volume.getProviderVirtualMachineId() != null)
-                throw new CloudException("Volume is already attached");
+            if (volume.getProviderVirtualMachineId() != null) {
+                //todo
+                //this isn't really a dasein problem but neither is it a fault returned from the cloud
+                //should we have a new exception for errors due to user/client provided data?
+                throw new InternalException("Volume is already attached");
+            }
 
             List<PropertySpec> pSpecs = getHardDiskPSpec();
             RetrieveResult props = retrieveObjectList(getProvider(), "vmFolder", null, pSpecs);
@@ -150,7 +149,7 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
 
             Object vmMor = getVMProperty(props, toServer, "MOR");
             if (vmMor == null) {
-                throw new CloudException("Unable to find vm reference for attach task");
+                throw new ResourceNotFoundException("Unable to find vm reference for attach task");
             }
             ManagedObjectReference vmRef = (ManagedObjectReference) vmMor;
 
@@ -207,7 +206,7 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
             TimePeriod interval = new TimePeriod<Second>(30, TimePeriod.SECOND);
 
             if( taskmor != null && !method.getOperationComplete(taskmor, interval, 10) ) {
-                lastError = new CloudException("Failed to attach volume: " + method.getTaskError().getVal());
+                lastError = new GeneralCloudException("Failed to attach volume: " + method.getTaskError().getVal(), CloudErrorType.GENERAL);
             }
             if( lastError != null ) {
                 throw lastError;
@@ -224,12 +223,14 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
         APITrace.begin(getProvider(), "HardDisk.createVolume");
         try {
             if (options.getProviderVirtualMachineId() == null) {
-                throw new CloudException("Volumes can only be created in the context of a vm for "+getProvider().getCloudName()+". ProviderVirtualMachineId cannot be null");
+                //todo
+                //should we have a new exception for errors caused by user/client provided data?
+                throw new InternalException("Volumes can only be created in the context of a vm for "+getProvider().getCloudName()+". ProviderVirtualMachineId cannot be null");
             }
             Vm vmSupport = getProvider().getComputeServices().getVirtualMachineSupport();
             VirtualMachine vm = vmSupport.getVirtualMachine(options.getProviderVirtualMachineId());
             if( vm == null ) {
-                throw new CloudException("Unable to find vm with id " + options.getProviderVirtualMachineId());
+                throw new ResourceNotFoundException("Unable to find vm with id " + options.getProviderVirtualMachineId());
             }
 
             List<PropertySpec> pSpecs = getHardDiskPSpec();
@@ -304,7 +305,7 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
             VirtualMachineConfigSpec spec = new VirtualMachineConfigSpec();
             spec.getDeviceChange().addAll(machineSpecs);
 
-            CloudException lastError;
+            CloudException lastError = null;
             ManagedObjectReference taskmor = vmSupport.reconfigVMTask(vmRef, spec);
 
             VsphereMethod method = new VsphereMethod(getProvider());
@@ -318,7 +319,7 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
                     catch( InterruptedException ignore ) { }
 
                     props = retrieveObjectList(getProvider(), "vmFolder", null, pSpecs);
-                    array = (ArrayOfVirtualDevice) getVMProperty(props, options.getProviderVirtualMachineId(), "config.hardware.device");;
+                    array = (ArrayOfVirtualDevice) getVMProperty(props, options.getProviderVirtualMachineId(), "config.hardware.device");
                     devices = array.getVirtualDevice();
 
                     for (VirtualDevice device : devices) {
@@ -333,15 +334,16 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
                         }
                     }
                 }
-                lastError = new CloudException("Unable to identify new volume.");
+                //todo is ResourceNotFoundException appropriate here?
+                lastError = new ResourceNotFoundException("Unable to identify new volume.");
             }
             else {
-                lastError = new CloudException("Failed to create volume: " + method.getTaskError().getVal());
+                lastError = new GeneralCloudException("Failed to create volume: " + method.getTaskError().getVal(), CloudErrorType.GENERAL);
             }
             if( lastError != null ) {
                 throw lastError;
             }
-            throw new CloudException("No volume and no error");
+            throw new GeneralCloudException("No volume and no error", CloudErrorType.GENERAL);
         }
         finally {
             APITrace.end();
@@ -353,16 +355,18 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
         APITrace.begin(getProvider(), "HardDisk.detach");
         Volume volume = getVolume(volumeId);
         if (volume == null ) {
-            throw new CloudException("Volume not found with id "+volumeId);
+            throw new ResourceNotFoundException("Volume not found with id "+volumeId);
         }
         if ( volume.getProviderVirtualMachineId() == null) {
-            throw new CloudException("Volume not currently attached");
+            //todo
+            //should we have a new exception for errors caused by user/client provided data?
+            throw new InternalException("Volume not currently attached");
         }
 
         Vm vmSupport = getProvider().getComputeServices().getVirtualMachineSupport();
         VirtualMachine vm = vmSupport.getVirtualMachine(volume.getProviderVirtualMachineId());
         if (vm == null) {
-            throw new CloudException("Vm not found with id " + volume.getProviderVirtualMachineId());
+            throw new ResourceNotFoundException("Vm not found with id " + volume.getProviderVirtualMachineId());
         }
 
         List<PropertySpec> pSpecs = getHardDiskPSpec();
@@ -422,14 +426,14 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
                 TimePeriod interval = new TimePeriod<Second>(30, TimePeriod.SECOND);
 
                 if( !method.getOperationComplete(taskmor, interval, 10) ) {
-                    lastError = new CloudException("Failed to update VM: " + method.getTaskError().getVal());
+                    lastError = new GeneralCloudException("Failed to update VM: " + method.getTaskError().getVal(), CloudErrorType.GENERAL);
                 }
                 if( lastError != null ) {
                     throw lastError;
                 }
             }
             else {
-                throw new CloudException("Couldn't find device "+volumeId+" to detach in vm "+vm.getName());
+                throw new ResourceNotFoundException("Couldn't find device "+volumeId+" to detach in vm "+vm.getName());
             }
         }
         finally {
@@ -457,11 +461,8 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
             List<Volume> list = new ArrayList<Volume>();
             List<String> fileNames = new ArrayList<String>();
             ProviderContext ctx = getProvider().getContext();
-            if (ctx == null) {
-                throw new NoContextException();
-            }
             if (ctx.getRegionId() == null) {
-                throw new CloudException("Region id is not set");
+                throw new InternalException("Region id is not set");
             }
 
             //get attached volumes
@@ -580,26 +581,24 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
                     }
 
                     if (dsName != null && hostDatastoreBrowser != null) {
-                        try {
-                            ManagedObjectReference taskmor = searchDatastores(getProvider(), hostDatastoreBrowser, "[" + dsName + "]", null);
-                            if (taskmor != null && method.getOperationComplete(taskmor, interval, 10)) {
-                                PropertyChange taskResult = method.getTaskResult();
-                                if (taskResult != null && taskResult.getVal() != null) {
-                                    ArrayOfHostDatastoreBrowserSearchResults result = (ArrayOfHostDatastoreBrowserSearchResults) taskResult.getVal();
-                                    List<HostDatastoreBrowserSearchResults> res = result.getHostDatastoreBrowserSearchResults();
-                                    for (HostDatastoreBrowserSearchResults r : res) {
-                                        List<FileInfo> files = r.getFile();
-                                        if (files != null) {
-                                            for (FileInfo file : files) {
-                                                String filePath = file.getPath();
-                                                if (filePath.endsWith(".vmdk") && !filePath.endsWith("-flat.vmdk")) {
-                                                    if (!fileNames.contains(file.getPath())) {
-                                                        Volume d = toVolume(file, dataCenterId, ctx.getRegionId());
-                                                        if (d != null) {
-                                                            d.setTag("filePath", r.getFolderPath() + d.getProviderVolumeId());
-                                                            list.add(d);
-                                                            fileNames.add(file.getPath());
-                                                        }
+                        ManagedObjectReference taskmor = searchDatastores(getProvider(), hostDatastoreBrowser, "[" + dsName + "]", null);
+                        if (taskmor != null && method.getOperationComplete(taskmor, interval, 10)) {
+                            PropertyChange taskResult = method.getTaskResult();
+                            if (taskResult != null && taskResult.getVal() != null) {
+                                ArrayOfHostDatastoreBrowserSearchResults result = (ArrayOfHostDatastoreBrowserSearchResults) taskResult.getVal();
+                                List<HostDatastoreBrowserSearchResults> res = result.getHostDatastoreBrowserSearchResults();
+                                for (HostDatastoreBrowserSearchResults r : res) {
+                                    List<FileInfo> files = r.getFile();
+                                    if (files != null) {
+                                        for (FileInfo file : files) {
+                                            String filePath = file.getPath();
+                                            if (filePath.endsWith(".vmdk") && !filePath.endsWith("-flat.vmdk")) {
+                                                if (!fileNames.contains(file.getPath())) {
+                                                    Volume d = toVolume(file, dataCenterId, ctx.getRegionId());
+                                                    if (d != null) {
+                                                        d.setTag("filePath", r.getFolderPath() + d.getProviderVolumeId());
+                                                        list.add(d);
+                                                        fileNames.add(file.getPath());
                                                     }
                                                 }
                                             }
@@ -607,9 +606,6 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
                                     }
                                 }
                             }
-                        }
-                        catch (Exception e) {
-                            throw new CloudException("Error in processing search datastore request: " + e.getMessage());
                         }
                     }
                 }
@@ -633,16 +629,19 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
             Volume volume = getVolume(volumeId);
 
             if (volume == null) {
-                throw new CloudException("Unable to find volume with id " + volumeId);
+                throw new ResourceNotFoundException("Unable to find volume with id " + volumeId);
             }
             if (volume.getProviderVirtualMachineId() != null) {
-                throw new CloudException("Volume is attached to vm " + volume.getProviderVirtualMachineId() + " - removing not allowed");
+                //todo
+                //should we have a new exception for errors caused by user/client provided data?
+                throw new InternalException("Volume is attached to vm " + volume.getProviderVirtualMachineId() + " - removing not allowed");
             }
 
             VsphereConnection vsphereConnection = getProvider().getServiceInstance();
             ManagedObjectReference fileManager = vsphereConnection.getServiceContent().getFileManager();
             VimPortType vimPortType = vsphereConnection.getVimPort();
 
+            String filePath = null;
             try {
                 ManagedObjectReference datacenter = new ManagedObjectReference();
                 datacenter.setValue(volume.getProviderRegionId());
@@ -652,7 +651,7 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
                 VsphereMethod method = new VsphereMethod(getProvider());
                 TimePeriod interval = new TimePeriod<Second>(15, TimePeriod.SECOND);
 
-                String filePath = volume.getTag("filePath");
+                filePath = volume.getTag("filePath");
                 taskMor = vimPortType.deleteDatastoreFileTask(fileManager, filePath, datacenter);
                 if (method.getOperationComplete(taskMor, interval, 10)) {
                     //also delete the flat file
@@ -662,13 +661,14 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
                         return;
                     }
                 }
-                throw new CloudException("Error removing datastore file: " + method.getTaskError().getVal().toString());
-            } catch (FileFaultFaultMsg fileFaultFaultMsg) {
-                throw new CloudException("FileFaultFaultMsg while removing datastore file", fileFaultFaultMsg);
-            } catch (InvalidDatastoreFaultMsg invalidDatastoreFaultMsg) {
-                throw new CloudException("InvalidDatastoreFaultMsg while removing datastore file", invalidDatastoreFaultMsg);
-            } catch (RuntimeFaultFaultMsg runtimeFaultFaultMsg) {
-                throw new CloudException("RuntimeFaultFaultMsg while removing datastore file", runtimeFaultFaultMsg);
+                throw new GeneralCloudException("Error removing datastore file: " + method.getTaskError().getVal().toString(), CloudErrorType.GENERAL);
+            } catch ( RuntimeFaultFaultMsg runtimeFaultFaultMsg ) {
+                if (runtimeFaultFaultMsg.getFaultInfo() instanceof NoPermission) {
+                    throw new AuthenticationException("NoPermission fault when removing datastore file", runtimeFaultFaultMsg).withFaultType(AuthenticationException.AuthenticationFaultType.FORBIDDEN);
+                }
+                throw new GeneralCloudException("Error while removing datastore file", runtimeFaultFaultMsg, CloudErrorType.GENERAL);
+            } catch (Exception e) {
+                throw new GeneralCloudException("Error while removing datastore file", e, CloudErrorType.GENERAL);
             }
         }
         finally {
@@ -715,7 +715,7 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
         }
     }
 
-    private Object getVMProperty(@Nonnull RetrieveResult rr, @Nonnull String vmId, @Nonnull String propertyName) throws CloudException, InternalException {
+    private Object getVMProperty(@Nonnull RetrieveResult rr, @Nonnull String vmId, @Nonnull String propertyName) {
         Object object = null;
         List<ObjectContent> objectContentList = rr.getObjects();
         for (ObjectContent obj : objectContentList) {

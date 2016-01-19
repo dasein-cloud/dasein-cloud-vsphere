@@ -26,8 +26,7 @@ import javax.annotation.Nonnull;
 
 import com.vmware.vim25.*;
 
-import org.dasein.cloud.CloudException;
-import org.dasein.cloud.InternalException;
+import org.dasein.cloud.*;
 import org.dasein.cloud.util.APITrace;
 import org.dasein.util.uom.time.Second;
 import org.dasein.util.uom.time.TimePeriod;
@@ -114,17 +113,27 @@ public class VsphereMethod {
                     }
                 }
             }
-        } catch (Exception e) {
-            throw new CloudException(e);
+            return (null != taskState) && (taskState.getVal().equals(TaskInfoState.SUCCESS));
+        } catch (InvalidPropertyFaultMsg e) {
+            throw new InternalException(e);
+        } catch (RuntimeFaultFaultMsg e) {
+            if (e.getFaultInfo() instanceof NoPermission) {
+                throw new AuthenticationException("NoPermission fault when retrieving task status", e).withFaultType(AuthenticationException.AuthenticationFaultType.FORBIDDEN);
+            }
+            throw new GeneralCloudException("Error getting task progress", e, CloudErrorType.GENERAL);
+        }catch (InvalidCollectorVersionFaultMsg e) {
+            throw new GeneralCloudException("Error getting task progress", e, CloudErrorType.GENERAL);
         } finally {
             try {
                 vimPort.destroyPropertyFilter(filterSpecRef);
-            } catch (Exception e) {
-                throw new CloudException(e);
+            } catch ( RuntimeFaultFaultMsg e ) {
+                if ( e.getFaultInfo() instanceof NoPermission ) {
+                    throw new AuthenticationException("NoPermission fault when destroying property filter", e).withFaultType(AuthenticationException.AuthenticationFaultType.FORBIDDEN);
+                }
+                throw new GeneralCloudException("Error destroying property filter", e, CloudErrorType.GENERAL);
             }
             APITrace.end();
         }
-        return (null != taskState) && (taskState.getVal().equals(TaskInfoState.SUCCESS));
     }
 
     public PropertyChange getTaskResult() {

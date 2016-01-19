@@ -23,20 +23,10 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 
+import com.vmware.vim25.*;
 import org.apache.log4j.Logger;
-import org.dasein.cloud.AbstractCloud;
-import org.dasein.cloud.CloudException;
-import org.dasein.cloud.ContextRequirements;
-import org.dasein.cloud.InternalException;
-import org.dasein.cloud.ProviderContext;
+import org.dasein.cloud.*;
 import org.dasein.cloud.vsphere.compute.VsphereCompute;
-
-import com.vmware.vim25.ManagedObjectReference;
-import com.vmware.vim25.RuntimeFaultFaultMsg;
-import com.vmware.vim25.ServiceContent;
-import com.vmware.vim25.UserSession;
-import com.vmware.vim25.VimPortType;
-import com.vmware.vim25.VimService;
 
 import org.dasein.cloud.vsphere.network.VSphereNetworkServices;
 import org.dasein.util.CalendarWrapper;
@@ -149,8 +139,13 @@ public class Vsphere extends AbstractCloud {
                 ctxt.put(BindingProvider.SESSION_MAINTAIN_PROPERTY, true);
 
                 serviceContent = vimPortType.retrieveServiceContent(servicesInstance);
+            } catch (RuntimeFaultFaultMsg e) {
+                if (e.getFaultInfo() instanceof NoPermission) {
+                    throw new AuthenticationException("NoPermission fault when retrieving service content", e).withFaultType(AuthenticationException.AuthenticationFaultType.FORBIDDEN);
+                }
+                throw new GeneralCloudException("Error retrieving service content", e, CloudErrorType.GENERAL);
             } catch (Exception e) {
-                throw new InternalException(e);
+                throw new GeneralCloudException("Error getting service content", e, CloudErrorType.GENERAL);
             }
 
             List<ContextRequirements.Field> fields = getContextRequirements().getConfigurableValues();
@@ -170,8 +165,15 @@ public class Vsphere extends AbstractCloud {
 
             try {
                 userSession = vimPortType.login(serviceContent.getSessionManager(), username, password, null);
+            } catch (InvalidLoginFaultMsg e) {
+                throw new AuthenticationException(e.getMessage(), e).withFaultType(AuthenticationException.AuthenticationFaultType.UNAUTHORISED);
+            } catch ( RuntimeFaultFaultMsg e ) {
+                if (e.getFaultInfo() instanceof NoPermission) {
+                    throw new AuthenticationException("NoPermission fault when logging in", e).withFaultType(AuthenticationException.AuthenticationFaultType.FORBIDDEN);
+                }
+                throw new GeneralCloudException("Error logging in", e, CloudErrorType.GENERAL);
             } catch (Exception e) {
-                throw new CloudException(e.getMessage());
+                throw new GeneralCloudException("Error logging in", e, CloudErrorType.GENERAL);
             }
 
             String apiVersion = serviceContent.getAbout().getApiVersion();
@@ -216,6 +218,9 @@ public class Vsphere extends AbstractCloud {
 
             try {
                 getServiceInstance();
+            } catch (AuthenticationException e) {
+                log.error("AuthenticationException when connecting: "+ e.getMessage()+". Cause: "+e.getCause().getMessage());
+                return null;
             } catch (Exception e) {
                 log.error("Exception getting serviceInstance: "+ e.getMessage());
                 return null;
@@ -223,6 +228,7 @@ public class Vsphere extends AbstractCloud {
 
             try {
                 if (!getComputeServices().getVirtualMachineSupport().isSubscribed()) {
+                    log.error("Unable to verify vm support during testContext");
                     return null;
                 }
                 return ctx.getAccountNumber();
@@ -298,8 +304,8 @@ public class Vsphere extends AbstractCloud {
         try {
             if (vsphereConnection != null) {
                 vsphereConnection.getVimPort().logout(vsphereConnection.getServiceContent().getSessionManager());
+                vsphereConnection = null;
             }
-
         }
         catch( NullPointerException ignore ) {
             // ignore

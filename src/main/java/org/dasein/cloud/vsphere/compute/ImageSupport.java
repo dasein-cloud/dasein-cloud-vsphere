@@ -28,10 +28,7 @@ import javax.annotation.Nullable;
 
 import com.vmware.vim25.*;
 import org.apache.log4j.Logger;
-import org.dasein.cloud.AsynchronousTask;
-import org.dasein.cloud.CloudException;
-import org.dasein.cloud.InternalException;
-import org.dasein.cloud.ProviderContext;
+import org.dasein.cloud.*;
 import org.dasein.cloud.compute.AbstractImageSupport;
 import org.dasein.cloud.compute.Architecture;
 import org.dasein.cloud.compute.ImageClass;
@@ -110,11 +107,8 @@ public class ImageSupport extends AbstractImageSupport<Vsphere> {
         ArrayList<MachineImage> machineImages = new ArrayList<MachineImage>();
 
         ProviderContext ctx = getProvider().getContext();
-        if (ctx == null) {
-            throw new NoContextException();
-        }
         if (ctx.getRegionId() == null) {
-            throw new CloudException("Region id is not set");
+            throw new InternalException("Region id is not set");
         }
 
         try {
@@ -154,8 +148,6 @@ public class ImageSupport extends AbstractImageSupport<Vsphere> {
                     }
                 }
             }
-        } catch (Exception e) {
-            throw new CloudException(e);
         } finally {
             APITrace.end();
         }
@@ -170,11 +162,13 @@ public class ImageSupport extends AbstractImageSupport<Vsphere> {
             String vmId = options.getVirtualMachineId();
 
             if( vmId == null ) {
-                throw new CloudException("You must specify a virtual machine to capture");
+                //todo
+                //should we have a new exception for errors caused by user/client provided data?
+                throw new InternalException("You must specify a virtual machine to capture");
             }
             VirtualMachine vm = getProvider().getComputeServices().getVirtualMachineSupport().getVirtualMachine(vmId);
             if( vm == null ) {
-                throw new CloudException("No such virtual machine for imaging: " + vmId);
+                throw new ResourceNotFoundException("No such virtual machine for imaging: " + vmId);
             }
 
             ManagedObjectReference templateRef = new ManagedObjectReference();
@@ -213,7 +207,7 @@ public class ImageSupport extends AbstractImageSupport<Vsphere> {
                 img =  getImage(newVmRef.getValue());
             }
             else {
-                throw new CloudException("Failed to capture image: " + method.getTaskError().getVal());
+                throw new GeneralCloudException("Failed to capture image: " + method.getTaskError().getVal(), CloudErrorType.GENERAL);
             }
 
             if( task != null ) {
@@ -250,9 +244,12 @@ public class ImageSupport extends AbstractImageSupport<Vsphere> {
             method.getOperationComplete(taskmor, interval, 10);
         }
         catch (RuntimeFaultFaultMsg runtimeFaultFaultMsg) {
-            throw new CloudException("RuntimeFaultFaultMsg when deleting image", runtimeFaultFaultMsg);
-        } catch (VimFaultFaultMsg vimFaultFaultMsg) {
-            throw new CloudException("VimFaultFaultMsg when deleting image", vimFaultFaultMsg);
+            if (runtimeFaultFaultMsg.getFaultInfo() instanceof NoPermission) {
+                throw new AuthenticationException("NoPermission fault when deleting image", runtimeFaultFaultMsg).withFaultType(AuthenticationException.AuthenticationFaultType.FORBIDDEN);
+            }
+            throw new GeneralCloudException("Error when deleting image", runtimeFaultFaultMsg, CloudErrorType.GENERAL);
+        } catch (Exception e) {
+            throw new GeneralCloudException("Error when deleting image", e, CloudErrorType.GENERAL);
         }
         finally {
             APITrace.end();

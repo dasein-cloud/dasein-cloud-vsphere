@@ -28,14 +28,14 @@ import mockit.Expectations;
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
 
-import org.dasein.cloud.CloudException;
-import org.dasein.cloud.InternalException;
+import org.dasein.cloud.*;
 import org.dasein.cloud.compute.*;
 import org.dasein.cloud.vsphere.compute.Vm;
 import org.dasein.cloud.vsphere.compute.VsphereCompute;
 import org.dasein.cloud.vsphere.compute.ImageSupport;
 import org.dasein.util.uom.time.TimePeriod;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -46,15 +46,14 @@ import org.junit.runners.JUnit4;
  */
 @RunWith(JUnit4.class)
 public class ImageSupportTest extends VsphereTestBase {
-    ObjectManagement om = new ObjectManagement();
-    final RetrieveResult images = om.readJsonFile("src/test/resources/ImageSupport/propertiesEx.json", RetrieveResult.class);
-    final VirtualMachine vmForCapture = om.readJsonFile("src/test/resources/ImageSupport/vmForCapture.json", VirtualMachine.class);
-    final ManagedObjectReference task = om.readJsonFile("src/test/resources/ImageSupport/task.json", ManagedObjectReference.class);
-    final PropertyChange cloneResult = om.readJsonFile("src/test/resources/ImageSupport/cloneResult.json", PropertyChange.class);
-    final MachineImage newImage = om.readJsonFile("src/test/resources/ImageSupport/newImage.json", MachineImage.class);
-    final RetrieveResult postRemoveImages = om.readJsonFile("src/test/resources/ImageSupport/postRemoveImages.json", RetrieveResult.class);
-    final RetrieveResult imageNoConfigProperty = om.readJsonFile("src/test/resources/ImageSupport/imagesNoSummaryConfigProperty.json", RetrieveResult.class);
-    final RetrieveResult vmList = om.readJsonFile("src/test/resources/ImageSupport/allVms.json", RetrieveResult.class);
+    static private RetrieveResult images;
+    static private VirtualMachine vmForCapture;
+    static private ManagedObjectReference task;
+    static private PropertyChange cloneResult;
+    static private MachineImage newImage;
+    static private RetrieveResult postRemoveImages;
+    static private RetrieveResult imageNoConfigProperty;
+    static private RetrieveResult vmList;
 
     private ImageSupport img;
     private VsphereMethod method = null;
@@ -64,6 +63,19 @@ public class ImageSupportTest extends VsphereTestBase {
     VsphereCompute computeMock;
     @Mocked
     Vm vmMock;
+
+    @BeforeClass
+    static public void setupFixtures() {
+        ObjectManagement om = new ObjectManagement();
+        images = om.readJsonFile("src/test/resources/ImageSupport/propertiesEx.json", RetrieveResult.class);
+        vmForCapture = om.readJsonFile("src/test/resources/ImageSupport/vmForCapture.json", VirtualMachine.class);
+        task = om.readJsonFile("src/test/resources/ImageSupport/task.json", ManagedObjectReference.class);
+        cloneResult = om.readJsonFile("src/test/resources/ImageSupport/cloneResult.json", PropertyChange.class);
+        newImage = om.readJsonFile("src/test/resources/ImageSupport/newImage.json", MachineImage.class);
+        postRemoveImages = om.readJsonFile("src/test/resources/ImageSupport/postRemoveImages.json", RetrieveResult.class);
+        imageNoConfigProperty = om.readJsonFile("src/test/resources/ImageSupport/imagesNoSummaryConfigProperty.json", RetrieveResult.class);
+        vmList = om.readJsonFile("src/test/resources/ImageSupport/allVms.json", RetrieveResult.class);
+    }
 
     @Before
     public void setUp() throws Exception {
@@ -120,6 +132,7 @@ public class ImageSupportTest extends VsphereTestBase {
         assertTrue("found images should = 2, not " + count, 2 == count);
     }
 
+    @Test
     public void testListImagesAllDebian() throws CloudException, InternalException {
         new Expectations(ImageSupport.class){
             { img.retrieveObjectList(vsphereMock, "vmFolder", null, templatePSpec);
@@ -135,9 +148,10 @@ public class ImageSupportTest extends VsphereTestBase {
         for (MachineImage image : result) {
             count++;
         }
-        assertTrue("found images should = 2, not " + count, 2 == count);
+        assertTrue("found images should = 3, not " + count, 3 == count);
     }
 
+    @Test
     public void testListImagesAllWindows() throws CloudException, InternalException {
         new Expectations(ImageSupport.class){
             { img.retrieveObjectList(vsphereMock, "vmFolder", null, templatePSpec);
@@ -153,7 +167,7 @@ public class ImageSupportTest extends VsphereTestBase {
         for (MachineImage image : result) {
             count++;
         }
-        assertTrue("found images should = 8, not " + count, 8 == count);
+        assertTrue("found images should = 7, not " + count, 7 == count);
     }
 
     @Test
@@ -319,18 +333,7 @@ public class ImageSupportTest extends VsphereTestBase {
         assertTrue("found images should = 12, not " + count, 12 == count);
     }
 
-    @Test(expected = NoContextException.class)
-    public void listImagesShouldThrowExceptionIfNullContext() throws CloudException, InternalException{
-        new Expectations(ImageSupport.class) {
-            {vsphereMock.getContext();
-                result = null;
-            }
-        };
-
-        img.listImages(ImageFilterOptions.getInstance());
-    }
-
-    @Test(expected = CloudException.class)
+    @Test(expected = InternalException.class)
     public void listImagesShouldThrowExceptionIfNullRegionId() throws CloudException, InternalException {
         new Expectations(ImageSupport.class) {
             {providerContextMock.getRegionId();
@@ -386,7 +389,7 @@ public class ImageSupportTest extends VsphereTestBase {
         assertEquals(Platform.UBUNTU, image.getPlatform());
     }
 
-    @Test(expected = CloudException.class)
+    @Test(expected = InternalException.class)
     public void captureImageShouldThrowExceptionIfNullVmId() throws CloudException, InternalException {
         final ImageCreateOptions optionsMock = ImageCreateOptions.getInstance(vmForCapture, "name", "description");
         new Expectations(ImageCreateOptions.class) {
@@ -398,7 +401,7 @@ public class ImageSupportTest extends VsphereTestBase {
         img.captureImage(optionsMock);
     }
 
-    @Test(expected = CloudException.class)
+    @Test(expected = ResourceNotFoundException.class)
     public void captureImageShouldThrowExceptionIfNullVm() throws CloudException, InternalException {
         final ImageCreateOptions optionsMock = ImageCreateOptions.getInstance(vmForCapture, "name", "description");
 
@@ -419,7 +422,7 @@ public class ImageSupportTest extends VsphereTestBase {
         img.captureImage(optionsMock);
     }
 
-    @Test(expected = CloudException.class)
+    @Test(expected = GeneralCloudException.class)
     public void captureImageShouldThrowExceptionIfCaptureTaskIsNotSuccessful() throws CloudException, InternalException {
         new NonStrictExpectations() {
             {vsphereMock.getComputeServices();
@@ -498,7 +501,7 @@ public class ImageSupportTest extends VsphereTestBase {
         img.remove("MyFakeId");
     }
 
-    @Test(expected = CloudException.class)
+    @Test(expected = GeneralCloudException.class)
     public void removeImageShouldThrowCloudExceptionIfDestroyTaskHasRuntimeFault() throws CloudException, InternalException, RuntimeFaultFaultMsg, VimFaultFaultMsg {
         new Expectations(ImageSupport.class){
             { img.retrieveObjectList(vsphereMock, "vmFolder", null, templatePSpec);
@@ -522,7 +525,7 @@ public class ImageSupportTest extends VsphereTestBase {
         img.remove("vm-1823");
     }
 
-    @Test(expected = CloudException.class)
+    @Test(expected = GeneralCloudException.class)
     public void removeImageShouldThrowExceptionIfDestroyTaskHasVimFault() throws CloudException, InternalException, RuntimeFaultFaultMsg, VimFaultFaultMsg {
         new Expectations(ImageSupport.class){
             { img.retrieveObjectList(vsphereMock, "vmFolder", null, templatePSpec);

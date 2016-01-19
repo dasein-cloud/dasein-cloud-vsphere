@@ -22,8 +22,10 @@ package org.dasein.cloud.vsphere;
 import mockit.*;
 
 import com.vmware.vim25.*;
+import org.dasein.cloud.AuthenticationException;
 import org.dasein.cloud.CloudException;
 import org.dasein.cloud.InternalException;
+import org.dasein.cloud.ResourceNotFoundException;
 import org.dasein.cloud.compute.AffinityGroup;
 import org.dasein.cloud.compute.AffinityGroupFilterOptions;
 import org.dasein.cloud.dc.*;
@@ -35,6 +37,7 @@ import org.dasein.util.uom.time.Day;
 import org.dasein.util.uom.time.Hour;
 import org.dasein.util.uom.time.TimePeriod;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -52,24 +55,23 @@ import static org.junit.Assert.*;
 @RunWith(JUnit4.class)
 public class DataCentersTest extends VsphereTestBase{
 
-    private ObjectManagement om = new ObjectManagement();
-    private final RetrieveResult regions = om.readJsonFile("src/test/resources/DataCenters/regions.json", RetrieveResult.class);
-    private final RetrieveResult datacenters = om.readJsonFile("src/test/resources/DataCenters/datacenters.json", RetrieveResult.class);
-    private final RetrieveResult resourcePools = om.readJsonFile("src/test/resources/DataCenters/resourcePools.json", RetrieveResult.class);
-    private final RetrieveResult storagePools = om.readJsonFile("src/test/resources/DataCenters/storagePools.json", RetrieveResult.class);
-    private final RetrieveResult vmFolders = om.readJsonFile("src/test/resources/DataCenters/vmFolders.json", RetrieveResult.class);
+    static private RetrieveResult regions;
+    static private RetrieveResult datacenters;
+    static private RetrieveResult resourcePools;
+    static private RetrieveResult storagePools;
+    static private RetrieveResult vmFolders;
 
-    private final AffinityGroup[] daseinHosts = om.readJsonFile("src/test/resources/DataCenters/daseinHosts.json", AffinityGroup[].class);
-    private final AffinityGroup[] standaloneHost = om.readJsonFile("src/test/resources/DataCenters/standaloneHost.json", AffinityGroup[].class);
+    static private AffinityGroup[] daseinHosts;
+    static private AffinityGroup[] standaloneHost;
 
-    private final RetrieveResult datacentersNoNameProperty = om.readJsonFile("src/test/resources/DataCenters/missingNamePropertyDatacenters.json", RetrieveResult.class);
-    private final RetrieveResult datacentersNoStatusProperty = om.readJsonFile("src/test/resources/DataCenters/missingStatusPropertyDatacenters.json", RetrieveResult.class);
-    private final RetrieveResult resourcePoolsNoNameProperty = om.readJsonFile("src/test/resources/DataCenters/missingNamePropertyResourcePools.json", RetrieveResult.class);
-    private final RetrieveResult resourcePoolsNoOwnerProperty = om.readJsonFile("src/test/resources/DataCenters/missingOwnerPropertyResourcePools.json", RetrieveResult.class);
-    private final RetrieveResult storagePoolsNoSummaryProperty = om.readJsonFile("src/test/resources/DataCenters/missingSummaryPropertyStoragePools.json", RetrieveResult.class);
-    private final RetrieveResult vmFoldersNoNameProperty = om.readJsonFile("src/test/resources/DataCenters/missingNamePropertyVMFolders.json", RetrieveResult.class);
-    private final RetrieveResult vmFoldersNoParentProperty = om.readJsonFile("src/test/resources/DataCenters/missingParentPropertyVMFolders.json", RetrieveResult.class);
-    private final RetrieveResult vmFoldersNoChildEntityProperty = om.readJsonFile("src/test/resources/DataCenters/missingChildEntityPropertyVMFolders.json", RetrieveResult.class);
+    static private RetrieveResult datacentersNoNameProperty;
+    static private RetrieveResult datacentersNoStatusProperty;
+    static private RetrieveResult resourcePoolsNoNameProperty;
+    static private RetrieveResult resourcePoolsNoOwnerProperty;
+    static private RetrieveResult storagePoolsNoSummaryProperty;
+    static private RetrieveResult vmFoldersNoNameProperty;
+    static private RetrieveResult vmFoldersNoParentProperty;
+    static private RetrieveResult vmFoldersNoChildEntityProperty;
 
     private DataCenters dc = null;
     private List<PropertySpec> regPSpecs = null;
@@ -89,6 +91,28 @@ public class DataCentersTest extends VsphereTestBase{
     VsphereCompute vsphereComputeMock;
     @Mocked
     HostSupport vsphereAGMock;
+
+    @BeforeClass
+    static public void setupFixtures() {
+        ObjectManagement om = new ObjectManagement();
+        regions = om.readJsonFile("src/test/resources/DataCenters/regions.json", RetrieveResult.class);
+        datacenters = om.readJsonFile("src/test/resources/DataCenters/datacenters.json", RetrieveResult.class);
+        resourcePools = om.readJsonFile("src/test/resources/DataCenters/resourcePools.json", RetrieveResult.class);
+        storagePools = om.readJsonFile("src/test/resources/DataCenters/storagePools.json", RetrieveResult.class);
+        vmFolders = om.readJsonFile("src/test/resources/DataCenters/vmFolders.json", RetrieveResult.class);
+
+        daseinHosts = om.readJsonFile("src/test/resources/DataCenters/daseinHosts.json", AffinityGroup[].class);
+        standaloneHost = om.readJsonFile("src/test/resources/DataCenters/standaloneHost.json", AffinityGroup[].class);
+
+        datacentersNoNameProperty = om.readJsonFile("src/test/resources/DataCenters/missingNamePropertyDatacenters.json", RetrieveResult.class);
+        datacentersNoStatusProperty = om.readJsonFile("src/test/resources/DataCenters/missingStatusPropertyDatacenters.json", RetrieveResult.class);
+        resourcePoolsNoNameProperty = om.readJsonFile("src/test/resources/DataCenters/missingNamePropertyResourcePools.json", RetrieveResult.class);
+        resourcePoolsNoOwnerProperty = om.readJsonFile("src/test/resources/DataCenters/missingOwnerPropertyResourcePools.json", RetrieveResult.class);
+        storagePoolsNoSummaryProperty = om.readJsonFile("src/test/resources/DataCenters/missingSummaryPropertyStoragePools.json", RetrieveResult.class);
+        vmFoldersNoNameProperty = om.readJsonFile("src/test/resources/DataCenters/missingNamePropertyVMFolders.json", RetrieveResult.class);
+        vmFoldersNoParentProperty = om.readJsonFile("src/test/resources/DataCenters/missingParentPropertyVMFolders.json", RetrieveResult.class);
+        vmFoldersNoChildEntityProperty = om.readJsonFile("src/test/resources/DataCenters/missingChildEntityPropertyVMFolders.json", RetrieveResult.class);
+    }
 
     @Before
     public void setUp() throws Exception {
@@ -238,15 +262,6 @@ public class DataCentersTest extends VsphereTestBase{
         assertNotNull("Null object not allowed for listRegions, return empty list instead", regions);
         assertFalse("Cloud returned empty property list but region list is not empty", regions.iterator().hasNext());
         regCache.clear(); //make sure cache is empty when we finish
-    }
-
-    @Test(expected = NoContextException.class)
-    public void listRegionsShouldThrowExceptionIfNullContext() throws CloudException, InternalException {
-        new Expectations(DataCenters.class) {
-            { vsphereMock.getContext(); result = null; }
-        };
-
-        dc.listRegions();
     }
 
     @Test(expected = InternalException.class)
@@ -514,17 +529,8 @@ public class DataCentersTest extends VsphereTestBase{
         dcCache.clear();
     }
 
-    @Test(expected = NoContextException.class)
-    public void listDataCentersShouldThrowExceptionIfNullContext() throws CloudException, InternalException {
-        new Expectations(DataCenters.class) {
-            { vsphereMock.getContext(); result = null; }
-        };
-
-        dc.listDataCenters("datacenter-21");
-    }
-
-    @Test(expected = CloudException.class)
-    public void listDataCentersShouldThrowExceptionIfRegionNotValid() throws CloudException, InternalException {
+    @Test(expected = ResourceNotFoundException.class)
+    public void listDataCentersShouldThrowExceptionIfRegionNotValid() throws CloudException, InternalException{
         new Expectations(DataCenters.class) {
             {dc.retrieveObjectList(vsphereMock, "hostFolder", null, regPSpecs);
                 result = regions;
@@ -843,15 +849,6 @@ public class DataCentersTest extends VsphereTestBase{
         spCache.clear(); //force next test to regenerate real list
     }
 
-    @Test(expected = NoContextException.class)
-    public void listStoragePoolsShouldThrowExceptionIfNullContext() throws CloudException, InternalException {
-        new Expectations(DataCenters.class) {
-            { vsphereMock.getContext(); result = null; }
-        };
-
-        dc.listStoragePools();
-    }
-
     @Test
     public void listVmFolders() throws CloudException, InternalException{
         vfCache.clear();
@@ -1022,14 +1019,5 @@ public class DataCentersTest extends VsphereTestBase{
         assertNotNull("Cloud did not return childEntity property, but vm folder list is null instead of empty", folder.getChildren());
         assertTrue("No child entities were returned but child entity list is not empty", folder.getChildren().size() == 0);
         vfCache.clear();
-    }
-
-    @Test(expected = NoContextException.class)
-    public void listVMFoldersShouldThrowExceptionIfNullContext() throws CloudException, InternalException {
-        new Expectations(DataCenters.class) {
-            { vsphereMock.getContext(); result = null; }
-        };
-
-        dc.listVMFolders();
     }
 }

@@ -22,19 +22,11 @@ package org.dasein.cloud.vsphere.compute;
 import com.vmware.vim25.*;
 
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.annotate.JsonAutoDetect;
-import org.codehaus.jackson.annotate.JsonMethod;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.dasein.cloud.CloudException;
-import org.dasein.cloud.InternalException;
-import org.dasein.cloud.OperationNotSupportedException;
-import org.dasein.cloud.ProviderContext;
+import org.dasein.cloud.*;
 import org.dasein.cloud.compute.AbstractAffinityGroupSupport;
 import org.dasein.cloud.compute.AffinityGroup;
 import org.dasein.cloud.compute.AffinityGroupCreateOptions;
 import org.dasein.cloud.compute.AffinityGroupFilterOptions;
-import org.dasein.cloud.dc.DataCenter;
-import org.dasein.cloud.dc.DataCenterServices;
 import org.dasein.cloud.util.APITrace;
 import org.dasein.cloud.util.Cache;
 import org.dasein.cloud.util.CacheLevel;
@@ -117,9 +109,6 @@ public class HostSupport extends AbstractAffinityGroupSupport<Vsphere> {
         APITrace.begin(getProvider(), "Host.list");
         try {
             ProviderContext ctx = getProvider().getContext();
-            if( ctx == null ) {
-                throw new NoContextException();
-            }
             Cache<AffinityGroup> cache = Cache.getInstance(getProvider(), "affinityGroups", AffinityGroup.class, CacheLevel.REGION_ACCOUNT, new TimePeriod<Day>(1, TimePeriod.DAY));
             Collection<AffinityGroup> hostList = (Collection<AffinityGroup>)cache.get(ctx);
 

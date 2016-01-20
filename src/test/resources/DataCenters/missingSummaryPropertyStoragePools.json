@@ -1,0 +1,190 @@
+{
+  "token" : null,
+  "objects" : [ "java.util.ArrayList", [ {
+    "obj" : {
+      "value" : "datastore-37",
+      "type" : "Datastore"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "host",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfDatastoreHostMount",
+        "datastoreHostMount" : [ "java.util.ArrayList", [ {
+          "key" : {
+            "value" : "host-72",
+            "type" : "HostSystem"
+          },
+          "mountInfo" : {
+            "path" : "/vmfs/volumes/5398f014-ab94417c-4dfe-f8bc12c1e9b1",
+            "accessMode" : "readWrite",
+            "mounted" : true,
+            "accessible" : true,
+            "inaccessibleReason" : null
+          }
+        }, {
+          "key" : {
+            "value" : "host-74",
+            "type" : "HostSystem"
+          },
+          "mountInfo" : {
+            "path" : "/vmfs/volumes/5398f014-ab94417c-4dfe-f8bc12c1e9b1",
+            "accessMode" : "readWrite",
+            "mounted" : true,
+            "accessible" : true,
+            "inaccessibleReason" : null
+          }
+        }, {
+          "key" : {
+            "value" : "host-36",
+            "type" : "HostSystem"
+          },
+          "mountInfo" : {
+            "path" : "/vmfs/volumes/5398f014-ab94417c-4dfe-f8bc12c1e9b1",
+            "accessMode" : "readWrite",
+            "mounted" : true,
+            "accessible" : true,
+            "inaccessibleReason" : null
+          }
+        }, {
+          "key" : {
+            "value" : "host-43",
+            "type" : "HostSystem"
+          },
+          "mountInfo" : {
+            "path" : "/vmfs/volumes/5398f014-ab94417c-4dfe-f8bc12c1e9b1",
+            "accessMode" : "readWrite",
+            "mounted" : true,
+            "accessible" : true,
+            "inaccessibleReason" : null
+          }
+        } ] ]
+      }
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "datastore-44",
+      "type" : "Datastore"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "host",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfDatastoreHostMount",
+        "datastoreHostMount" : [ "java.util.ArrayList", [ {
+          "key" : {
+            "value" : "host-43",
+            "type" : "HostSystem"
+          },
+          "mountInfo" : {
+            "path" : "/vmfs/volumes/5399b050-74bfbaf5-8995-f8bc12c1e9be",
+            "accessMode" : "readWrite",
+            "mounted" : true,
+            "accessible" : true,
+            "inaccessibleReason" : null
+          }
+        } ] ]
+      }
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "datastore-73",
+      "type" : "Datastore"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "host",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfDatastoreHostMount",
+        "datastoreHostMount" : [ "java.util.ArrayList", [ {
+          "key" : {
+            "value" : "host-72",
+            "type" : "HostSystem"
+          },
+          "mountInfo" : {
+            "path" : "/vmfs/volumes/5399b7f2-7ece7bb8-a3d2-f8bc12c1e9cb",
+            "accessMode" : "readWrite",
+            "mounted" : true,
+            "accessible" : true,
+            "inaccessibleReason" : null
+          }
+        } ] ]
+      }
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "datastore-75",
+      "type" : "Datastore"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "host",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfDatastoreHostMount",
+        "datastoreHostMount" : [ "java.util.ArrayList", [ {
+          "key" : {
+            "value" : "host-74",
+            "type" : "HostSystem"
+          },
+          "mountInfo" : {
+            "path" : "/vmfs/volumes/5399bc2b-925495a7-29bf-f8bc12c1e9d8",
+            "accessMode" : "readWrite",
+            "mounted" : true,
+            "accessible" : true,
+            "inaccessibleReason" : null
+          }
+        } ] ]
+      }
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "datastore-84",
+      "type" : "Datastore"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "host",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfDatastoreHostMount",
+        "datastoreHostMount" : [ "java.util.ArrayList", [ {
+          "key" : {
+            "value" : "host-36",
+            "type" : "HostSystem"
+          },
+          "mountInfo" : {
+            "path" : "/vmfs/volumes/53b2f883-ad834ee4-e76a-f8bc12c1e9b1",
+            "accessMode" : "readWrite",
+            "mounted" : true,
+            "accessible" : true,
+            "inaccessibleReason" : null
+          }
+        } ] ]
+      }
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "datastore-521",
+      "type" : "Datastore"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "host",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfDatastoreHostMount",
+        "datastoreHostMount" : [ "java.util.ArrayList", [ {
+          "key" : {
+            "value" : "host-36",
+            "type" : "HostSystem"
+          },
+          "mountInfo" : {
+            "path" : "/vmfs/volumes/53fd20aa-bacc9252-3431-f8bc12c1e9b1",
+            "accessMode" : "readWrite",
+            "mounted" : true,
+            "accessible" : true,
+            "inaccessibleReason" : null
+          }
+        } ] ]
+      }
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  } ] ]
+}

@@ -1,0 +1,24 @@
+{
+  "token" : null,
+  "objects" : [ "java.util.ArrayList", [ {
+    "obj" : {
+      "value" : "domain-c26",
+      "type" : "ClusterComputeResource"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "name",
+      "val" : "WTC-Dev-1"
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "domain-c70",
+      "type" : "ClusterComputeResource"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "name",
+      "val" : "WTC-Dev-2"
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  } ] ]
+}

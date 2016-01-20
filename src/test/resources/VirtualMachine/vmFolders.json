@@ -1,0 +1,61 @@
+[ {
+  "id" : "group-v3",
+  "name" : "vm",
+  "type" : "VM",
+  "parent" : null,
+  "children" : [ "java.util.ArrayList", [ {
+    "id" : "group-v133",
+    "name" : null,
+    "type" : null,
+    "parent" : null,
+    "children" : null
+  }, {
+    "id" : "group-v89",
+    "name" : null,
+    "type" : null,
+    "parent" : null,
+    "children" : null
+  }, {
+    "id" : "group-v21",
+    "name" : null,
+    "type" : null,
+    "parent" : null,
+    "children" : null
+  } ] ]
+}, {
+  "id" : "group-v21",
+  "name" : "Templates",
+  "type" : "VM",
+  "parent" : {
+    "id" : "group-v3",
+    "name" : null,
+    "type" : null,
+    "parent" : null,
+    "children" : null
+  },
+  "children" : null
+}, {
+  "id" : "group-v89",
+  "name" : "JumpBox",
+  "type" : "VM",
+  "parent" : {
+    "id" : "group-v3",
+    "name" : null,
+    "type" : null,
+    "parent" : null,
+    "children" : null
+  },
+  "children" : null
+}, {
+  "id" : "group-v133",
+  "name" : "Discovered virtual machine",
+  "type" : "VM",
+  "parent" : {
+    "id" : "group-v3",
+    "name" : null,
+    "type" : null,
+    "parent" : null,
+    "children" : null
+  },
+  "children" : null
+} ]

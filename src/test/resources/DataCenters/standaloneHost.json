@@ -1,0 +1,11 @@
+[ {
+  "type" : "org.dasein.cloud.compute.AffinityGroup",
+  "affinityGroupId" : "host-123",
+  "affinityGroupName" : "standaloneHost",
+  "description" : "this host should not have a match to a datastore host mount",
+  "dataCenterId" : "domain-c26",
+  "creationTimestamp" : 0,
+  "tags" : {
+    "type" : "java.util.HashMap"
+  }
+}]

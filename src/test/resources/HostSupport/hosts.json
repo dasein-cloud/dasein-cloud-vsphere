@@ -1,0 +1,94 @@
+{
+  "token" : null,
+  "objects" : [ "java.util.ArrayList", [ {
+    "obj" : {
+      "value" : "domain-c26",
+      "type" : "ClusterComputeResource"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "host",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
+        "managedObjectReference" : [ "java.util.ArrayList", [ {
+          "value" : "host-36",
+          "type" : "HostSystem"
+        }, {
+          "value" : "host-43",
+          "type" : "HostSystem"
+        } ] ]
+      }
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "domain-c70",
+      "type" : "ClusterComputeResource"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "host",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
+        "managedObjectReference" : [ "java.util.ArrayList", [ {
+          "value" : "host-72",
+          "type" : "HostSystem"
+        }, {
+          "value" : "host-74",
+          "type" : "HostSystem"
+        } ] ]
+      }
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "host-43",
+      "type" : "HostSystem"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "name",
+      "val" : "esquin-dev-vrtx-1-bl02.esquin.dev"
+    }, {
+      "name" : "overallStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "GREEN" ]
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "host-36",
+      "type" : "HostSystem"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "name",
+      "val" : "esquin-dev-vrtx-1-bl01.esquin.dev"
+    }, {
+      "name" : "overallStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "GREEN" ]
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "host-74",
+      "type" : "HostSystem"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "name",
+      "val" : "esquin-dev-vrtx-1-bl04.esquin.dev"
+    }, {
+      "name" : "overallStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "GREEN" ]
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "host-72",
+      "type" : "HostSystem"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "name",
+      "val" : "esquin-dev-vrtx-1-bl03.esquin.dev"
+    }, {
+      "name" : "overallStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "GREEN" ]
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  } ] ]
+}

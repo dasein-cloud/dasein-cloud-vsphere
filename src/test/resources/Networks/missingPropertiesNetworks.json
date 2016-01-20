@@ -1,0 +1,39 @@
+{
+  "token" : null,
+  "objects" : [ "java.util.ArrayList", [ {
+    "obj" : {
+      "value" : "network-57",
+      "type" : "Network"
+    },
+    "propSet" : [ "java.util.ArrayList", [] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "network-58",
+      "type" : "Network"
+    },
+    "propSet" : [ "java.util.ArrayList", [] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "dvportgroup-52",
+      "type" : "DistributedVirtualPortgroup"
+    },
+    "propSet" : [ "java.util.ArrayList", [] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "dvportgroup-56",
+      "type" : "DistributedVirtualPortgroup"
+    },
+    "propSet" : [ "java.util.ArrayList", [] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "dvportgroup-55",
+      "type" : "DistributedVirtualPortgroup"
+    },
+    "propSet" : [ "java.util.ArrayList", [] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  } ] ]
+}

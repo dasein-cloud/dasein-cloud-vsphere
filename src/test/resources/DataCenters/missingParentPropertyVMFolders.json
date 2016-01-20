@@ -1,0 +1,221 @@
+{
+  "token" : null,
+  "objects" : [ "java.util.ArrayList", [ {
+    "obj" : {
+      "value" : "group-d80",
+      "type" : "Folder"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "childEntity",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
+        "managedObjectReference" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "name",
+      "val" : "Folder1"
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "group-v22",
+      "type" : "Folder"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "childEntity",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
+        "managedObjectReference" : [ "java.util.ArrayList", [ {
+          "value" : "group-v28",
+          "type" : "Folder"
+        }, {
+          "value" : "group-v1800",
+          "type" : "Folder"
+        }, {
+          "value" : "group-v81",
+          "type" : "Folder"
+        }, {
+          "value" : "vm-2068",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-1970",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-1801",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-2078",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-2082",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-2087",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-2080",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-2085",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-2014",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-2084",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-1976",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-1113",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-2083",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-2081",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-1674",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-2062",
+          "type" : "VirtualMachine"
+        } ] ]
+      }
+    }, {
+      "name" : "name",
+      "val" : "vm"
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "group-v81",
+      "type" : "Folder"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "childEntity",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
+        "managedObjectReference" : [ "java.util.ArrayList", [ {
+          "value" : "group-v451",
+          "type" : "Folder"
+        } ] ]
+      }
+    }, {
+      "name" : "name",
+      "val" : "VM Folder1"
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "group-v1800",
+      "type" : "Folder"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "childEntity",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
+        "managedObjectReference" : [ "java.util.ArrayList", [ {
+          "value" : "group-v1884",
+          "type" : "Folder"
+        }, {
+          "value" : "vm-1781",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-1783",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-1782",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-1823",
+          "type" : "VirtualMachine"
+        } ] ]
+      }
+    }, {
+      "name" : "name",
+      "val" : "Templates"
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "group-v28",
+      "type" : "Folder"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "childEntity",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
+        "managedObjectReference" : [ "java.util.ArrayList", [ {
+          "value" : "vm-1853",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-1835",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-1863",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-1843",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-59",
+          "type" : "VirtualMachine"
+        } ] ]
+      }
+    }, {
+      "name" : "name",
+      "val" : "Discovered virtual machine"
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "group-v451",
+      "type" : "Folder"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "childEntity",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
+        "managedObjectReference" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "name",
+      "val" : "DMNestedFolder"
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "group-v1884",
+      "type" : "Folder"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "childEntity",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
+        "managedObjectReference" : [ "java.util.ArrayList", [ {
+          "value" : "vm-1951",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-2017",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-1955",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-1919",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-2013",
+          "type" : "VirtualMachine"
+        } ] ]
+      }
+    }, {
+      "name" : "name",
+      "val" : "SM-DoNotDelete"
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  } ] ]
+}

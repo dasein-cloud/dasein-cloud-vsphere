@@ -1,0 +1,46 @@
+{
+  "token" : null,
+  "objects" : [ "java.util.ArrayList", [ {
+    "obj" : {
+      "value" : "domain-c26",
+      "type" : "ClusterComputeResource"
+    },
+    "propSet" : [ "java.util.ArrayList", [] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "domain-c70",
+      "type" : "ClusterComputeResource"
+    },
+    "propSet" : [ "java.util.ArrayList", [] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "host-43",
+      "type" : "HostSystem"
+    },
+    "propSet" : [ "java.util.ArrayList", [] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "host-36",
+      "type" : "HostSystem"
+    },
+    "propSet" : [ "java.util.ArrayList", [] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "host-74",
+      "type" : "HostSystem"
+    },
+    "propSet" : [ "java.util.ArrayList", [] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "host-72",
+      "type" : "HostSystem"
+    },
+    "propSet" : [ "java.util.ArrayList", [] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  } ] ]
+}

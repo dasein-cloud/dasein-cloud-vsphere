@@ -1,0 +1,106 @@
+{
+  "token" : null,
+  "objects" : [ "java.util.ArrayList", [ {
+    "obj" : {
+      "value" : "datastore-84",
+      "type" : "Datastore"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "browser",
+      "val" : {
+        "type" : "com.vmware.vim25.ManagedObjectReference",
+        "value" : "datastoreBrowser-datastore-84",
+        "type" : "HostDatastoreBrowser"
+      }
+    }, {
+      "name" : "summary.name",
+      "val" : "bl01-datastore"
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "datastore-44",
+      "type" : "Datastore"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "browser",
+      "val" : {
+        "type" : "com.vmware.vim25.ManagedObjectReference",
+        "value" : "datastoreBrowser-datastore-44",
+        "type" : "HostDatastoreBrowser"
+      }
+    }, {
+      "name" : "summary.name",
+      "val" : "local-storage-1 (1)"
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "datastore-73",
+      "type" : "Datastore"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "browser",
+      "val" : {
+        "type" : "com.vmware.vim25.ManagedObjectReference",
+        "value" : "datastoreBrowser-datastore-73",
+        "type" : "HostDatastoreBrowser"
+      }
+    }, {
+      "name" : "summary.name",
+      "val" : "local-storage-1 (2)"
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "datastore-75",
+      "type" : "Datastore"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "browser",
+      "val" : {
+        "type" : "com.vmware.vim25.ManagedObjectReference",
+        "value" : "datastoreBrowser-datastore-75",
+        "type" : "HostDatastoreBrowser"
+      }
+    }, {
+      "name" : "summary.name",
+      "val" : "local-storage-1 (3)"
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "datastore-521",
+      "type" : "Datastore"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "browser",
+      "val" : {
+        "type" : "com.vmware.vim25.ManagedObjectReference",
+        "value" : "datastoreBrowser-datastore-521",
+        "type" : "HostDatastoreBrowser"
+      }
+    }, {
+      "name" : "summary.name",
+      "val" : "local-storage-1 (4)"
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "datastore-37",
+      "type" : "Datastore"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "browser",
+      "val" : {
+        "type" : "com.vmware.vim25.ManagedObjectReference",
+        "value" : "datastoreBrowser-datastore-37",
+        "type" : "HostDatastoreBrowser"
+      }
+    }, {
+      "name" : "summary.name",
+      "val" : "shared-datastore-1"
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  } ] ]
+}

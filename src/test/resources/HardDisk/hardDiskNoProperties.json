@@ -1,0 +1,26 @@
+{
+  "type" : "com.vmware.vim25.RetrieveResult",
+  "token" : null,
+  "objects" : [ "java.util.ArrayList", [
+    {
+      "type" : "com.vmware.vim25.ObjectContent",
+      "obj" : {
+        "type" : "com.vmware.vim25.ManagedObjectReference",
+        "value" : "vm-2013",
+        "type" : "VirtualMachine"
+      },
+      "propSet" : [ "java.util.ArrayList", [ ] ],
+      "missingSet" : [ "java.util.ArrayList", [ ] ]
+    },
+    {
+      "type" : "com.vmware.vim25.ObjectContent",
+      "obj" : {
+        "type" : "com.vmware.vim25.ManagedObjectReference",
+        "value" : "vm-2250",
+        "type" : "VirtualMachine"
+      },
+      "propSet" : [ "java.util.ArrayList", [ ] ],
+      "missingSet" : [ "java.util.ArrayList", [ ] ]
+    }
+  ] ]
+}

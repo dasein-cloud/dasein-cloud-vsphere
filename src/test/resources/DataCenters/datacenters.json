@@ -1,0 +1,30 @@
+{
+  "token" : null,
+  "objects" : [ "java.util.ArrayList", [ {
+    "obj" : {
+      "value" : "domain-c26",
+      "type" : "ClusterComputeResource"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "name",
+      "val" : "WTC-Dev-1"
+    }, {
+      "name" : "overallStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "YELLOW" ]
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "domain-c70",
+      "type" : "ClusterComputeResource"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "name",
+      "val" : "WTC-Dev-2"
+    }, {
+      "name" : "overallStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "GREEN" ]
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  } ] ]
+}

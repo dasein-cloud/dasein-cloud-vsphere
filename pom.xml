@@ -197,7 +197,8 @@
         </configuration>
       </plugin>
 
-      <plugin>
+      <!-- Removing the javadoc temporarily as it fails on the generated code during release -->
+      <!--<plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>2.10.3</version>
@@ -209,7 +210,6 @@
               <goal>jar</goal>
             </goals>
             <configuration>
-              <!-- Exclude generated code, as > is not being escaped to &gt; -->
               <excludePackageNames>com.vmware.*</excludePackageNames>
               <failOnError>false</failOnError>
               <encoding>utf-8</encoding>
@@ -233,7 +233,7 @@
             </configuration>
           </execution>
         </executions>
-      </plugin>
+      </plugin>-->
 
       <plugin>
         <groupId>com.mycila.maven-license-plugin</groupId>

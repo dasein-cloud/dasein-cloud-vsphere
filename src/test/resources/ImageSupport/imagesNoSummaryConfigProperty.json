@@ -1,0 +1,214 @@
+{
+  "token" : null,
+  "objects" : [ "java.util.ArrayList", [ {
+    "obj" : {
+      "value" : "vm-1835",
+      "type" : "VirtualMachine"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "summary.overallStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "GREEN" ]
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "vm-1955",
+      "type" : "VirtualMachine"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "summary.overallStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "GREEN" ]
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "vm-2013",
+      "type" : "VirtualMachine"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "summary.overallStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "GREEN" ]
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "vm-1823",
+      "type" : "VirtualMachine"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "summary.overallStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "GREEN" ]
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "vm-1853",
+      "type" : "VirtualMachine"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "summary.overallStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "GREEN" ]
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "vm-2112",
+      "type" : "VirtualMachine"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "summary.overallStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "GREEN" ]
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "vm-2093",
+      "type" : "VirtualMachine"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "summary.overallStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "GREEN" ]
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "vm-1919",
+      "type" : "VirtualMachine"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "summary.overallStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "GREEN" ]
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "vm-1863",
+      "type" : "VirtualMachine"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "summary.overallStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "GREEN" ]
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "vm-2089",
+      "type" : "VirtualMachine"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "summary.overallStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "GREEN" ]
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "vm-1843",
+      "type" : "VirtualMachine"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "summary.overallStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "GREEN" ]
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "vm-59",
+      "type" : "VirtualMachine"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "summary.overallStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "GREEN" ]
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "vm-2175",
+      "type" : "VirtualMachine"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "summary.overallStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "GREEN" ]
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "vm-1674",
+      "type" : "VirtualMachine"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "summary.overallStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "GREEN" ]
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "vm-2145",
+      "type" : "VirtualMachine"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "summary.overallStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "GREEN" ]
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "vm-1782",
+      "type" : "VirtualMachine"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "summary.overallStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "GREEN" ]
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "vm-1783",
+      "type" : "VirtualMachine"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "summary.overallStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "GREEN" ]
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "vm-1970",
+      "type" : "VirtualMachine"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "summary.overallStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "GREEN" ]
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "vm-2017",
+      "type" : "VirtualMachine"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "summary.overallStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "GREEN" ]
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "vm-2177",
+      "type" : "VirtualMachine"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "summary.overallStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "GREEN" ]
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "vm-1976",
+      "type" : "VirtualMachine"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "summary.overallStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "GREEN" ]
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  } ] ]
+}

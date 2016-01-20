@@ -1,0 +1,1343 @@
+{
+  "token" : null,
+  "objects" : [ "java.util.ArrayList", [ {
+    "obj" : {
+      "value" : "network-57",
+      "type" : "Network"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "alarmActionsEnabled",
+      "val" : true
+    }, {
+      "name" : "availableField",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfCustomFieldDef",
+        "customFieldDef" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "configIssue",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfEvent",
+        "event" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "configStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "GREEN" ]
+    }, {
+      "name" : "customValue",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfCustomFieldValue",
+        "customFieldValue" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "declaredAlarmState",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfAlarmState",
+        "alarmState" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "disabledMethod",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfString",
+        "string" : [ "java.util.ArrayList", [ ] ]
+      }
+    },  {
+      "name" : "host",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
+        "managedObjectReference" : [ "java.util.ArrayList", [ {
+          "value" : "host-43",
+          "type" : "HostSystem"
+        }, {
+          "value" : "host-72",
+          "type" : "HostSystem"
+        }, {
+          "value" : "host-74",
+          "type" : "HostSystem"
+        }, {
+          "value" : "host-36",
+          "type" : "HostSystem"
+        } ] ]
+      }
+    }, {
+      "name" : "name",
+      "val" : "1-My Fancy Test Network"
+    }, {
+      "name" : "overallStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "GREEN" ]
+    }, {
+      "name" : "parent",
+      "val" : {
+        "type" : "com.vmware.vim25.ManagedObjectReference",
+        "value" : "group-n25",
+        "type" : "Folder"
+      }
+    }, {
+      "name" : "permission",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfPermission",
+        "permission" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "recentTask",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
+        "managedObjectReference" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "summary",
+      "val" : {
+        "type" : "com.vmware.vim25.NetworkSummary",
+        "network" : {
+          "value" : "network-57",
+          "type" : "Network"
+        },
+        "name" : "1-My Fancy Test Network",
+        "accessible" : true,
+        "ipPoolName" : "",
+        "ipPoolId" : null
+      }
+    }, {
+      "name" : "tag",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfTag",
+        "tag" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "triggeredAlarmState",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfAlarmState",
+        "alarmState" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "value",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfCustomFieldValue",
+        "customFieldValue" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "vm",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
+        "managedObjectReference" : [ "java.util.ArrayList", [ {
+          "value" : "vm-1970",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-1823",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-1782",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-1783",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-1976",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-1835",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-1843",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-1853",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-1674",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-1863",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-2093",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-2145",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-2148",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-2151",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-2152",
+          "type" : "VirtualMachine"
+        } ] ]
+      }
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "network-58",
+      "type" : "Network"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "alarmActionsEnabled",
+      "val" : true
+    }, {
+      "name" : "availableField",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfCustomFieldDef",
+        "customFieldDef" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "configIssue",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfEvent",
+        "event" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "configStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "GREEN" ]
+    }, {
+      "name" : "customValue",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfCustomFieldValue",
+        "customFieldValue" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "declaredAlarmState",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfAlarmState",
+        "alarmState" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "disabledMethod",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfString",
+        "string" : [ "java.util.ArrayList", [ ] ]
+      }
+    },  {
+      "name" : "host",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
+        "managedObjectReference" : [ "java.util.ArrayList", [ {
+          "value" : "host-43",
+          "type" : "HostSystem"
+        }, {
+          "value" : "host-72",
+          "type" : "HostSystem"
+        }, {
+          "value" : "host-74",
+          "type" : "HostSystem"
+        }, {
+          "value" : "host-36",
+          "type" : "HostSystem"
+        } ] ]
+      }
+    }, {
+      "name" : "name",
+      "val" : "2-VM Test Network"
+    }, {
+      "name" : "overallStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "GREEN" ]
+    }, {
+      "name" : "parent",
+      "val" : {
+        "type" : "com.vmware.vim25.ManagedObjectReference",
+        "value" : "group-n25",
+        "type" : "Folder"
+      }
+    }, {
+      "name" : "permission",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfPermission",
+        "permission" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "recentTask",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
+        "managedObjectReference" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "summary",
+      "val" : {
+        "type" : "com.vmware.vim25.NetworkSummary",
+        "network" : {
+          "value" : "network-58",
+          "type" : "Network"
+        },
+        "name" : "2-VM Test Network",
+        "accessible" : true,
+        "ipPoolName" : "",
+        "ipPoolId" : null
+      }
+    }, {
+      "name" : "tag",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfTag",
+        "tag" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "triggeredAlarmState",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfAlarmState",
+        "alarmState" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "value",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfCustomFieldValue",
+        "customFieldValue" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "vm",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
+        "managedObjectReference" : [ "java.util.ArrayList", [ {
+          "value" : "vm-1955",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-1801",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-2013",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-2017",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-59",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-1919",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-2089",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-2106",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-2112",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-2134",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-2135",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-2136",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-2137",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-2138",
+          "type" : "VirtualMachine"
+        }, {
+          "value" : "vm-2153",
+          "type" : "VirtualMachine"
+        } ] ]
+      }
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "dvportgroup-52",
+      "type" : "DistributedVirtualPortgroup"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "alarmActionsEnabled",
+      "val" : true
+    }, {
+      "name" : "availableField",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfCustomFieldDef",
+        "customFieldDef" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "config",
+      "val" : {
+        "type" : "com.vmware.vim25.DVPortgroupConfigInfo",
+        "key" : "dvportgroup-52",
+        "name" : "DSwitch-DVUplinks-51",
+        "numPorts" : 16,
+        "distributedVirtualSwitch" : {
+          "value" : "dvs-51",
+          "type" : "VmwareDistributedVirtualSwitch"
+        },
+        "defaultPortConfig" : {
+          "blocked" : {
+            "inherited" : false,
+            "value" : false
+          },
+          "vmDirectPathGen2Allowed" : {
+            "inherited" : false,
+            "value" : false
+          },
+          "inShapingPolicy" : {
+            "inherited" : false,
+            "enabled" : {
+              "inherited" : false,
+              "value" : false
+            },
+            "averageBandwidth" : {
+              "inherited" : false,
+              "value" : 100000000
+            },
+            "peakBandwidth" : {
+              "inherited" : false,
+              "value" : 100000000
+            },
+            "burstSize" : {
+              "inherited" : false,
+              "value" : 104857600
+            }
+          },
+          "outShapingPolicy" : {
+            "inherited" : false,
+            "enabled" : {
+              "inherited" : false,
+              "value" : false
+            },
+            "averageBandwidth" : {
+              "inherited" : false,
+              "value" : 100000000
+            },
+            "peakBandwidth" : {
+              "inherited" : false,
+              "value" : 100000000
+            },
+            "burstSize" : {
+              "inherited" : false,
+              "value" : 104857600
+            }
+          },
+          "vendorSpecificConfig" : {
+            "inherited" : false,
+            "keyValue" : [ "java.util.ArrayList", [ ] ]
+          },
+          "networkResourcePoolKey" : {
+            "inherited" : false,
+            "value" : "-1"
+          },
+          "filterPolicy" : {
+            "inherited" : false,
+            "filterConfig" : [ "java.util.ArrayList", [ {
+              "inherited" : false,
+              "key" : "51_52_ _83452958",
+              "agentName" : "dvfilter-generic-vmware",
+              "slotNumber" : null,
+              "parameters" : null,
+              "onFailure" : null,
+              "trafficRuleset" : {
+                "key" : "51_52_ _57013166",
+                "enabled" : null,
+                "precedence" : null,
+                "rules" : [ "java.util.ArrayList", [ ] ]
+              }
+            } ] ]
+          },
+          "vlan" : {
+            "inherited" : false,
+            "vlanId" : [ "java.util.ArrayList", [ {
+              "start" : 0,
+              "end" : 4094
+            } ] ]
+          },
+          "qosTag" : {
+            "inherited" : false,
+            "value" : -1
+          },
+          "uplinkTeamingPolicy" : {
+            "inherited" : false,
+            "policy" : {
+              "inherited" : false,
+              "value" : "loadbalance_srcid"
+            },
+            "reversePolicy" : {
+              "inherited" : false,
+              "value" : true
+            },
+            "notifySwitches" : {
+              "inherited" : false,
+              "value" : true
+            },
+            "rollingOrder" : {
+              "inherited" : false,
+              "value" : false
+            },
+            "failureCriteria" : {
+              "inherited" : false,
+              "checkSpeed" : {
+                "inherited" : false,
+                "value" : "minimum"
+              },
+              "speed" : {
+                "inherited" : false,
+                "value" : 10
+              },
+              "checkDuplex" : {
+                "inherited" : false,
+                "value" : false
+              },
+              "fullDuplex" : {
+                "inherited" : false,
+                "value" : false
+              },
+              "checkErrorPercent" : {
+                "inherited" : false,
+                "value" : false
+              },
+              "percentage" : {
+                "inherited" : false,
+                "value" : 0
+              },
+              "checkBeacon" : {
+                "inherited" : false,
+                "value" : false
+              }
+            },
+            "uplinkPortOrder" : {
+              "inherited" : false,
+              "activeUplinkPort" : [ "java.util.ArrayList", [ ] ],
+              "standbyUplinkPort" : [ "java.util.ArrayList", [ ] ]
+            }
+          },
+          "securityPolicy" : {
+            "inherited" : false,
+            "allowPromiscuous" : {
+              "inherited" : false,
+              "value" : false
+            },
+            "macChanges" : {
+              "inherited" : false,
+              "value" : false
+            },
+            "forgedTransmits" : {
+              "inherited" : false,
+              "value" : true
+            }
+          },
+          "ipfixEnabled" : {
+            "inherited" : false,
+            "value" : false
+          },
+          "txUplink" : {
+            "inherited" : false,
+            "value" : false
+          },
+          "lacpPolicy" : {
+            "inherited" : true,
+            "enable" : {
+              "inherited" : true,
+              "value" : false
+            },
+            "mode" : {
+              "inherited" : true,
+              "value" : "passive"
+            }
+          }
+        },
+        "description" : null,
+        "type" : "earlyBinding",
+        "policy" : {
+          "blockOverrideAllowed" : true,
+          "shapingOverrideAllowed" : false,
+          "vendorConfigOverrideAllowed" : false,
+          "livePortMovingAllowed" : false,
+          "portConfigResetAtDisconnect" : true,
+          "networkResourcePoolOverrideAllowed" : false,
+          "trafficFilterOverrideAllowed" : false,
+          "vlanOverrideAllowed" : false,
+          "uplinkTeamingOverrideAllowed" : false,
+          "securityPolicyOverrideAllowed" : false,
+          "ipfixOverrideAllowed" : false
+        },
+        "portNameFormat" : null,
+        "scope" : [ "java.util.ArrayList", [ ] ],
+        "vendorSpecificConfig" : [ "java.util.ArrayList", [ ] ],
+        "configVersion" : "0",
+        "autoExpand" : false,
+        "vmVnicNetworkResourcePoolKey" : null
+      }
+    }, {
+      "name" : "configIssue",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfEvent",
+        "event" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "configStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "GREEN" ]
+    }, {
+      "name" : "customValue",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfCustomFieldValue",
+        "customFieldValue" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "declaredAlarmState",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfAlarmState",
+        "alarmState" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "disabledMethod",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfString",
+        "string" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "host",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
+        "managedObjectReference" : [ "java.util.ArrayList", [ {
+          "value" : "host-43",
+          "type" : "HostSystem"
+        }, {
+          "value" : "host-36",
+          "type" : "HostSystem"
+        }, {
+          "value" : "host-72",
+          "type" : "HostSystem"
+        }, {
+          "value" : "host-74",
+          "type" : "HostSystem"
+        } ] ]
+      }
+    }, {
+      "name" : "key",
+      "val" : "dvportgroup-52"
+    }, {
+      "name" : "name",
+      "val" : "DSwitch-DVUplinks-51"
+    }, {
+      "name" : "overallStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "GREEN" ]
+    }, {
+      "name" : "parent",
+      "val" : {
+        "type" : "com.vmware.vim25.ManagedObjectReference",
+        "value" : "group-n25",
+        "type" : "Folder"
+      }
+    }, {
+      "name" : "permission",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfPermission",
+        "permission" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "portKeys",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfString",
+        "string" : [ "java.util.ArrayList", [ "36", "37", "38", "39", "56", "57", "58", "59", "60", "61", "62", "63", "74", "75", "76", "77" ] ]
+      }
+    }, {
+      "name" : "recentTask",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
+        "managedObjectReference" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "summary",
+      "val" : {
+        "type" : "com.vmware.vim25.NetworkSummary",
+        "network" : {
+          "value" : "dvportgroup-52",
+          "type" : "DistributedVirtualPortgroup"
+        },
+        "name" : "DSwitch-DVUplinks-51",
+        "accessible" : true,
+        "ipPoolName" : "",
+        "ipPoolId" : null
+      }
+    }, {
+      "name" : "tag",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfTag",
+        "tag" : [ "java.util.ArrayList", [ {
+          "key" : "SYSTEM/DVS.UPLINKPG"
+        } ] ]
+      }
+    }, {
+      "name" : "triggeredAlarmState",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfAlarmState",
+        "alarmState" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "value",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfCustomFieldValue",
+        "customFieldValue" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "vm",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
+        "managedObjectReference" : [ "java.util.ArrayList", [ ] ]
+      }
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "dvportgroup-56",
+      "type" : "DistributedVirtualPortgroup"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "alarmActionsEnabled",
+      "val" : true
+    }, {
+      "name" : "availableField",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfCustomFieldDef",
+        "customFieldDef" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "config",
+      "val" : {
+        "type" : "com.vmware.vim25.DVPortgroupConfigInfo",
+        "key" : "dvportgroup-56",
+        "name" : "VM Network",
+        "numPorts" : 8,
+        "distributedVirtualSwitch" : {
+          "value" : "dvs-51",
+          "type" : "VmwareDistributedVirtualSwitch"
+        },
+        "defaultPortConfig" : {
+          "blocked" : {
+            "inherited" : true,
+            "value" : false
+          },
+          "vmDirectPathGen2Allowed" : {
+            "inherited" : true,
+            "value" : false
+          },
+          "inShapingPolicy" : {
+            "inherited" : true,
+            "enabled" : {
+              "inherited" : true,
+              "value" : false
+            },
+            "averageBandwidth" : {
+              "inherited" : true,
+              "value" : 100000000
+            },
+            "peakBandwidth" : {
+              "inherited" : true,
+              "value" : 100000000
+            },
+            "burstSize" : {
+              "inherited" : true,
+              "value" : 104857600
+            }
+          },
+          "outShapingPolicy" : {
+            "inherited" : true,
+            "enabled" : {
+              "inherited" : true,
+              "value" : false
+            },
+            "averageBandwidth" : {
+              "inherited" : true,
+              "value" : 100000000
+            },
+            "peakBandwidth" : {
+              "inherited" : true,
+              "value" : 100000000
+            },
+            "burstSize" : {
+              "inherited" : true,
+              "value" : 104857600
+            }
+          },
+          "vendorSpecificConfig" : {
+            "inherited" : true,
+            "keyValue" : [ "java.util.ArrayList", [ ] ]
+          },
+          "networkResourcePoolKey" : {
+            "inherited" : false,
+            "value" : "-1"
+          },
+          "filterPolicy" : {
+            "inherited" : true,
+            "filterConfig" : [ "java.util.ArrayList", [ ] ]
+          },
+          "vlan" : {
+            "inherited" : false,
+            "vlanId" : [ "java.util.ArrayList", [ {
+              "start" : 0,
+              "end" : 4094
+            } ] ]
+          },
+          "qosTag" : {
+            "inherited" : true,
+            "value" : -1
+          },
+          "uplinkTeamingPolicy" : {
+            "inherited" : true,
+            "policy" : {
+              "inherited" : true,
+              "value" : "loadbalance_srcid"
+            },
+            "reversePolicy" : {
+              "inherited" : true,
+              "value" : true
+            },
+            "notifySwitches" : {
+              "inherited" : true,
+              "value" : true
+            },
+            "rollingOrder" : {
+              "inherited" : true,
+              "value" : false
+            },
+            "failureCriteria" : {
+              "inherited" : true,
+              "checkSpeed" : {
+                "inherited" : true,
+                "value" : "minimum"
+              },
+              "speed" : {
+                "inherited" : true,
+                "value" : 10
+              },
+              "checkDuplex" : {
+                "inherited" : true,
+                "value" : false
+              },
+              "fullDuplex" : {
+                "inherited" : true,
+                "value" : false
+              },
+              "checkErrorPercent" : {
+                "inherited" : true,
+                "value" : false
+              },
+              "percentage" : {
+                "inherited" : true,
+                "value" : 0
+              },
+              "checkBeacon" : {
+                "inherited" : true,
+                "value" : false
+              }
+            },
+            "uplinkPortOrder" : {
+              "inherited" : true,
+              "activeUplinkPort" : [ "java.util.ArrayList", [ "Uplink 1", "Uplink 2", "Uplink 3", "Uplink 4" ] ],
+              "standbyUplinkPort" : [ "java.util.ArrayList", [ ] ]
+            }
+          },
+          "securityPolicy" : {
+            "inherited" : true,
+            "allowPromiscuous" : {
+              "inherited" : true,
+              "value" : false
+            },
+            "macChanges" : {
+              "inherited" : true,
+              "value" : false
+            },
+            "forgedTransmits" : {
+              "inherited" : true,
+              "value" : false
+            }
+          },
+          "ipfixEnabled" : {
+            "inherited" : true,
+            "value" : false
+          },
+          "txUplink" : {
+            "inherited" : true,
+            "value" : false
+          },
+          "lacpPolicy" : {
+            "inherited" : true,
+            "enable" : {
+              "inherited" : true,
+              "value" : false
+            },
+            "mode" : {
+              "inherited" : true,
+              "value" : "passive"
+            }
+          }
+        },
+        "description" : null,
+        "type" : "earlyBinding",
+        "policy" : {
+          "blockOverrideAllowed" : true,
+          "shapingOverrideAllowed" : false,
+          "vendorConfigOverrideAllowed" : false,
+          "livePortMovingAllowed" : false,
+          "portConfigResetAtDisconnect" : true,
+          "networkResourcePoolOverrideAllowed" : false,
+          "trafficFilterOverrideAllowed" : false,
+          "vlanOverrideAllowed" : false,
+          "uplinkTeamingOverrideAllowed" : false,
+          "securityPolicyOverrideAllowed" : false,
+          "ipfixOverrideAllowed" : false
+        },
+        "portNameFormat" : null,
+        "scope" : [ "java.util.ArrayList", [ ] ],
+        "vendorSpecificConfig" : [ "java.util.ArrayList", [ ] ],
+        "configVersion" : "0",
+        "autoExpand" : true,
+        "vmVnicNetworkResourcePoolKey" : null
+      }
+    }, {
+      "name" : "configIssue",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfEvent",
+        "event" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "configStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "GREEN" ]
+    }, {
+      "name" : "customValue",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfCustomFieldValue",
+        "customFieldValue" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "declaredAlarmState",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfAlarmState",
+        "alarmState" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "disabledMethod",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfString",
+        "string" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "host",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
+        "managedObjectReference" : [ "java.util.ArrayList", [ {
+          "value" : "host-43",
+          "type" : "HostSystem"
+        }, {
+          "value" : "host-36",
+          "type" : "HostSystem"
+        }, {
+          "value" : "host-72",
+          "type" : "HostSystem"
+        }, {
+          "value" : "host-74",
+          "type" : "HostSystem"
+        } ] ]
+      }
+    }, {
+      "name" : "key",
+      "val" : "dvportgroup-56"
+    }, {
+      "name" : "name",
+      "val" : "VM Network"
+    }, {
+      "name" : "overallStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "GREEN" ]
+    }, {
+      "name" : "parent",
+      "val" : {
+        "type" : "com.vmware.vim25.ManagedObjectReference",
+        "value" : "group-n25",
+        "type" : "Folder"
+      }
+    }, {
+      "name" : "permission",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfPermission",
+        "permission" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "portKeys",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfString",
+        "string" : [ "java.util.ArrayList", [ "48", "49", "50", "51", "52", "53", "54", "55" ] ]
+      }
+    }, {
+      "name" : "recentTask",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
+        "managedObjectReference" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "summary",
+      "val" : {
+        "type" : "com.vmware.vim25.NetworkSummary",
+        "network" : {
+          "value" : "dvportgroup-56",
+          "type" : "DistributedVirtualPortgroup"
+        },
+        "name" : "VM Network",
+        "accessible" : true,
+        "ipPoolName" : "",
+        "ipPoolId" : null
+      }
+    }, {
+      "name" : "tag",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfTag",
+        "tag" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "triggeredAlarmState",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfAlarmState",
+        "alarmState" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "value",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfCustomFieldValue",
+        "customFieldValue" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "vm",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
+        "managedObjectReference" : [ "java.util.ArrayList", [ ] ]
+      }
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "dvportgroup-55",
+      "type" : "DistributedVirtualPortgroup"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "alarmActionsEnabled",
+      "val" : true
+    }, {
+      "name" : "availableField",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfCustomFieldDef",
+        "customFieldDef" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "config",
+      "val" : {
+        "type" : "com.vmware.vim25.DVPortgroupConfigInfo",
+        "key" : "dvportgroup-55",
+        "name" : "vKernel",
+        "numPorts" : 16,
+        "distributedVirtualSwitch" : {
+          "value" : "dvs-51",
+          "type" : "VmwareDistributedVirtualSwitch"
+        },
+        "defaultPortConfig" : {
+          "blocked" : {
+            "inherited" : false,
+            "value" : false
+          },
+          "vmDirectPathGen2Allowed" : {
+            "inherited" : true,
+            "value" : false
+          },
+          "inShapingPolicy" : {
+            "inherited" : false,
+            "enabled" : {
+              "inherited" : false,
+              "value" : false
+            },
+            "averageBandwidth" : {
+              "inherited" : true,
+              "value" : 100000000
+            },
+            "peakBandwidth" : {
+              "inherited" : true,
+              "value" : 100000000
+            },
+            "burstSize" : {
+              "inherited" : true,
+              "value" : 104857600
+            }
+          },
+          "outShapingPolicy" : {
+            "inherited" : false,
+            "enabled" : {
+              "inherited" : false,
+              "value" : false
+            },
+            "averageBandwidth" : {
+              "inherited" : true,
+              "value" : 100000000
+            },
+            "peakBandwidth" : {
+              "inherited" : true,
+              "value" : 100000000
+            },
+            "burstSize" : {
+              "inherited" : true,
+              "value" : 104857600
+            }
+          },
+          "vendorSpecificConfig" : {
+            "inherited" : true,
+            "keyValue" : [ "java.util.ArrayList", [ ] ]
+          },
+          "networkResourcePoolKey" : {
+            "inherited" : false,
+            "value" : "-1"
+          },
+          "filterPolicy" : {
+            "inherited" : false,
+            "filterConfig" : [ "java.util.ArrayList", [ {
+              "inherited" : false,
+              "key" : "51_55_ _37976613",
+              "agentName" : "dvfilter-generic-vmware",
+              "slotNumber" : null,
+              "parameters" : null,
+              "onFailure" : null,
+              "trafficRuleset" : {
+                "key" : "51_55_ _39946953",
+                "enabled" : null,
+                "precedence" : null,
+                "rules" : [ "java.util.ArrayList", [ ] ]
+              }
+            } ] ]
+          },
+          "vlan" : {
+            "inherited" : false,
+            "vlanId" : [ "java.util.ArrayList", [ {
+              "start" : 100,
+              "end" : 101
+            } ] ]
+          },
+          "qosTag" : {
+            "inherited" : true,
+            "value" : -1
+          },
+          "uplinkTeamingPolicy" : {
+            "inherited" : false,
+            "policy" : {
+              "inherited" : false,
+              "value" : "loadbalance_srcid"
+            },
+            "reversePolicy" : {
+              "inherited" : false,
+              "value" : true
+            },
+            "notifySwitches" : {
+              "inherited" : false,
+              "value" : true
+            },
+            "rollingOrder" : {
+              "inherited" : false,
+              "value" : false
+            },
+            "failureCriteria" : {
+              "inherited" : false,
+              "checkSpeed" : {
+                "inherited" : false,
+                "value" : "minimum"
+              },
+              "speed" : {
+                "inherited" : false,
+                "value" : 10
+              },
+              "checkDuplex" : {
+                "inherited" : false,
+                "value" : false
+              },
+              "fullDuplex" : {
+                "inherited" : false,
+                "value" : false
+              },
+              "checkErrorPercent" : {
+                "inherited" : false,
+                "value" : false
+              },
+              "percentage" : {
+                "inherited" : false,
+                "value" : 0
+              },
+              "checkBeacon" : {
+                "inherited" : false,
+                "value" : false
+              }
+            },
+            "uplinkPortOrder" : {
+              "inherited" : false,
+              "activeUplinkPort" : [ "java.util.ArrayList", [ "Uplink 1", "Uplink 2", "Uplink 3", "Uplink 4" ] ],
+              "standbyUplinkPort" : [ "java.util.ArrayList", [ ] ]
+            }
+          },
+          "securityPolicy" : {
+            "inherited" : false,
+            "allowPromiscuous" : {
+              "inherited" : false,
+              "value" : false
+            },
+            "macChanges" : {
+              "inherited" : false,
+              "value" : false
+            },
+            "forgedTransmits" : {
+              "inherited" : false,
+              "value" : false
+            }
+          },
+          "ipfixEnabled" : {
+            "inherited" : false,
+            "value" : false
+          },
+          "txUplink" : {
+            "inherited" : true,
+            "value" : false
+          },
+          "lacpPolicy" : {
+            "inherited" : true,
+            "enable" : {
+              "inherited" : true,
+              "value" : false
+            },
+            "mode" : {
+              "inherited" : true,
+              "value" : "passive"
+            }
+          }
+        },
+        "description" : null,
+        "type" : "earlyBinding",
+        "policy" : {
+          "blockOverrideAllowed" : true,
+          "shapingOverrideAllowed" : false,
+          "vendorConfigOverrideAllowed" : false,
+          "livePortMovingAllowed" : false,
+          "portConfigResetAtDisconnect" : true,
+          "networkResourcePoolOverrideAllowed" : false,
+          "trafficFilterOverrideAllowed" : false,
+          "vlanOverrideAllowed" : false,
+          "uplinkTeamingOverrideAllowed" : false,
+          "securityPolicyOverrideAllowed" : false,
+          "ipfixOverrideAllowed" : false
+        },
+        "portNameFormat" : null,
+        "scope" : [ "java.util.ArrayList", [ ] ],
+        "vendorSpecificConfig" : [ "java.util.ArrayList", [ ] ],
+        "configVersion" : "0",
+        "autoExpand" : true,
+        "vmVnicNetworkResourcePoolKey" : null
+      }
+    }, {
+      "name" : "configIssue",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfEvent",
+        "event" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "configStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "GREEN" ]
+    }, {
+      "name" : "customValue",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfCustomFieldValue",
+        "customFieldValue" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "declaredAlarmState",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfAlarmState",
+        "alarmState" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "disabledMethod",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfString",
+        "string" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "host",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
+        "managedObjectReference" : [ "java.util.ArrayList", [ {
+          "value" : "host-43",
+          "type" : "HostSystem"
+        }, {
+          "value" : "host-36",
+          "type" : "HostSystem"
+        }, {
+          "value" : "host-72",
+          "type" : "HostSystem"
+        }, {
+          "value" : "host-74",
+          "type" : "HostSystem"
+        } ] ]
+      }
+    }, {
+      "name" : "key",
+      "val" : "dvportgroup-55"
+    }, {
+      "name" : "name",
+      "val" : "vKernel"
+    }, {
+      "name" : "overallStatus",
+      "val" : [ "com.vmware.vim25.ManagedEntityStatus", "GREEN" ]
+    }, {
+      "name" : "parent",
+      "val" : {
+        "type" : "com.vmware.vim25.ManagedObjectReference",
+        "value" : "group-n25",
+        "type" : "Folder"
+      }
+    }, {
+      "name" : "permission",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfPermission",
+        "permission" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "portKeys",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfString",
+        "string" : [ "java.util.ArrayList", [ "24", "25", "26", "27", "28", "29", "30", "31", "64", "65", "66", "67", "68", "69", "70", "71" ] ]
+      }
+    }, {
+      "name" : "recentTask",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
+        "managedObjectReference" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "summary",
+      "val" : {
+        "type" : "com.vmware.vim25.NetworkSummary",
+        "network" : {
+          "value" : "dvportgroup-55",
+          "type" : "DistributedVirtualPortgroup"
+        },
+        "name" : "vKernel",
+        "accessible" : true,
+        "ipPoolName" : "",
+        "ipPoolId" : null
+      }
+    }, {
+      "name" : "tag",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfTag",
+        "tag" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "triggeredAlarmState",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfAlarmState",
+        "alarmState" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "value",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfCustomFieldValue",
+        "customFieldValue" : [ "java.util.ArrayList", [ ] ]
+      }
+    }, {
+      "name" : "vm",
+      "val" : {
+        "type" : "com.vmware.vim25.ArrayOfManagedObjectReference",
+        "managedObjectReference" : [ "java.util.ArrayList", [ ] ]
+      }
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  } ] ]
+}

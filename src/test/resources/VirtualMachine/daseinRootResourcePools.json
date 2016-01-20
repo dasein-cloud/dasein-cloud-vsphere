@@ -1,0 +1,13 @@
+[ {
+  "type" : "org.dasein.cloud.dc.ResourcePool",
+  "name" : null,
+  "dataCenterId" : "domain-c34",
+  "provideResourcePoolId" : "resgroup-35",
+  "available" : false
+}, {
+  "type" : "org.dasein.cloud.dc.ResourcePool",
+  "name" : null,
+  "dataCenterId" : "domain-c45",
+  "provideResourcePoolId" : "resgroup-46",
+  "available" : false
+} ]

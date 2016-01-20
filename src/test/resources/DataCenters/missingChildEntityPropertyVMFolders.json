@@ -1,0 +1,123 @@
+{
+  "token" : null,
+  "objects" : [ "java.util.ArrayList", [ {
+    "obj" : {
+      "value" : "group-d80",
+      "type" : "Folder"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "name",
+      "val" : "Folder1"
+    }, {
+      "name" : "parent",
+      "val" : {
+        "type" : "com.vmware.vim25.ManagedObjectReference",
+        "value" : "group-d1",
+        "type" : "Folder"
+      }
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "group-v22",
+      "type" : "Folder"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "name",
+      "val" : "vm"
+    }, {
+      "name" : "parent",
+      "val" : {
+        "type" : "com.vmware.vim25.ManagedObjectReference",
+        "value" : "datacenter-21",
+        "type" : "Datacenter"
+      }
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "group-v81",
+      "type" : "Folder"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "name",
+      "val" : "VM Folder1"
+    }, {
+      "name" : "parent",
+      "val" : {
+        "type" : "com.vmware.vim25.ManagedObjectReference",
+        "value" : "group-v22",
+        "type" : "Folder"
+      }
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "group-v1800",
+      "type" : "Folder"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "name",
+      "val" : "Templates"
+    }, {
+      "name" : "parent",
+      "val" : {
+        "type" : "com.vmware.vim25.ManagedObjectReference",
+        "value" : "group-v22",
+        "type" : "Folder"
+      }
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "group-v28",
+      "type" : "Folder"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "name",
+      "val" : "Discovered virtual machine"
+    }, {
+      "name" : "parent",
+      "val" : {
+        "type" : "com.vmware.vim25.ManagedObjectReference",
+        "value" : "group-v22",
+        "type" : "Folder"
+      }
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "group-v451",
+      "type" : "Folder"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "name",
+      "val" : "DMNestedFolder"
+    }, {
+      "name" : "parent",
+      "val" : {
+        "type" : "com.vmware.vim25.ManagedObjectReference",
+        "value" : "group-v81",
+        "type" : "Folder"
+      }
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  }, {
+    "obj" : {
+      "value" : "group-v1884",
+      "type" : "Folder"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "name",
+      "val" : "SM-DoNotDelete"
+    }, {
+      "name" : "parent",
+      "val" : {
+        "type" : "com.vmware.vim25.ManagedObjectReference",
+        "value" : "group-v1800",
+        "type" : "Folder"
+      }
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  } ] ]
+}

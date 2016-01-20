@@ -1,0 +1,7 @@
+[ {
+  "type" : "org.dasein.cloud.dc.ResourcePool",
+  "name" : "dev1-rp1",
+  "dataCenterId" : "domain-c45",
+  "provideResourcePoolId" : "resgroup-27",
+  "available" : true
+}]

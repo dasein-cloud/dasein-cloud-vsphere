@@ -1,5 +1,6 @@
 /**
- * Copyright (C) 2010-2015 Dell, Inc
+ * Copyright (C) 2012-2016 Dell, Inc.
+ * See annotations for authorship information
  *
  * ====================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,53 +23,52 @@ import org.dasein.cloud.*;
 import org.dasein.cloud.network.IPVersion;
 import org.dasein.cloud.network.VLANCapabilities;
 import org.dasein.cloud.util.NamingConstraints;
-import org.dasein.cloud.vsphere.PrivateCloud;
+import org.dasein.cloud.vsphere.Vsphere;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Locale;
 
 /**
  * User: daniellemayne
- * Date: 11/06/2014
- * Time: 12:42
+ * Date: 21/09/2015
+ * Time: 12:34
  */
-public class VSphereNetworkCapabilities extends AbstractCapabilities<PrivateCloud> implements VLANCapabilities {
+public class VSphereNetworkCapabilities extends AbstractCapabilities<Vsphere> implements VLANCapabilities {
 
-    VSphereNetworkCapabilities(PrivateCloud provider) {
+    VSphereNetworkCapabilities(Vsphere provider) {
         super(provider);
     }
 
     @Override
     public boolean allowsNewNetworkInterfaceCreation() throws CloudException, InternalException {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return false;
     }
 
     @Override
     public boolean allowsNewVlanCreation() throws CloudException, InternalException {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return false;
     }
 
     @Override
     public boolean allowsNewRoutingTableCreation() throws CloudException, InternalException {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return false;
     }
 
     @Override
     public boolean allowsNewSubnetCreation() throws CloudException, InternalException {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return false;
     }
 
     @Override
     public boolean allowsMultipleTrafficTypesOverSubnet() throws CloudException, InternalException {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return false;
     }
 
     @Override
     public boolean allowsMultipleTrafficTypesOverVlan() throws CloudException, InternalException {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return false;
     }
 
     @Override
@@ -89,13 +89,13 @@ public class VSphereNetworkCapabilities extends AbstractCapabilities<PrivateClou
     @Nonnull
     @Override
     public String getProviderTermForNetworkInterface(@Nonnull Locale locale) {
-        return "nic";
+        return "";
     }
 
     @Nonnull
     @Override
     public String getProviderTermForSubnet(@Nonnull Locale locale) {
-        return "network";
+        return "";
     }
 
     @Nonnull
@@ -119,7 +119,7 @@ public class VSphereNetworkCapabilities extends AbstractCapabilities<PrivateClou
     @Nullable
     @Override
     public VisibleScope getVLANVisibleScope() {
-        return VisibleScope.ACCOUNT_REGION;
+        return null;
     }
 
     @Nonnull
@@ -130,12 +130,12 @@ public class VSphereNetworkCapabilities extends AbstractCapabilities<PrivateClou
 
     @Override
     public boolean isNetworkInterfaceSupportEnabled() throws CloudException, InternalException {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return false;
     }
 
     @Override
     public boolean isSubnetDataCenterConstrained() throws CloudException, InternalException {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return false;
     }
 
     @Override
@@ -154,16 +154,17 @@ public class VSphereNetworkCapabilities extends AbstractCapabilities<PrivateClou
 
     @Override
     public boolean supportsInternetGatewayCreation() throws CloudException, InternalException {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return false;
     }
 
     @Override
     public boolean supportsRawAddressRouting() throws CloudException, InternalException {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return false;
     }
 
+    @Nonnull
     @Override
-    public NamingConstraints getVlanNamingConstraints(){
-        return NamingConstraints.getAlphaNumeric(1, 30).constrainedBy(new char[] {'-'}).lowerCaseOnly();
+    public NamingConstraints getVlanNamingConstraints() throws CloudException, InternalException {
+        return NamingConstraints.getAlphaNumeric(1, 30).constrainedBy('-').lowerCaseOnly();
     }
 }

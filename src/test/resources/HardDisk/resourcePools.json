@@ -1,0 +1,37 @@
+[ {
+  "type" : "org.dasein.cloud.dc.ResourcePool",
+  "name" : null,
+  "dataCenterId" : "domain-c26",
+  "provideResourcePoolId" : "resgroup-27",
+  "available" : false
+}, {
+  "type" : "org.dasein.cloud.dc.ResourcePool",
+  "name" : null,
+  "dataCenterId" : "domain-c26",
+  "provideResourcePoolId" : "resgroup-77",
+  "available" : false
+}, {
+  "type" : "org.dasein.cloud.dc.ResourcePool",
+  "name" : null,
+  "dataCenterId" : "domain-c26",
+  "provideResourcePoolId" : "resgroup-76",
+  "available" : false
+}, {
+  "type" : "org.dasein.cloud.dc.ResourcePool",
+  "name" : null,
+  "dataCenterId" : "domain-c70",
+  "provideResourcePoolId" : "resgroup-71",
+  "available" : false
+}, {
+  "type" : "org.dasein.cloud.dc.ResourcePool",
+  "name" : null,
+  "dataCenterId" : "domain-c70",
+  "provideResourcePoolId" : "resgroup-79",
+  "available" : false
+}, {
+  "type" : "org.dasein.cloud.dc.ResourcePool",
+  "name" : null,
+  "dataCenterId" : "domain-c70",
+  "provideResourcePoolId" : "resgroup-78",
+  "available" : false
+} ]

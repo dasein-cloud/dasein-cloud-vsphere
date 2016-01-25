@@ -122,12 +122,12 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
             Vm vmSupport = getProvider().getComputeServices().getVirtualMachineSupport();
             VirtualMachine vm = vmSupport.getVirtualMachine(toServer);
             if (vm == null) {
-                throw new ResourceNotFoundException("Unable to find vm with id "+toServer);
+                throw new ResourceNotFoundException("vm", toServer);
             }
 
             Volume volume = getVolume(volumeId);
             if (volume == null) {
-                throw new ResourceNotFoundException("Unable to find volume with id "+volumeId);
+                throw new ResourceNotFoundException("volume", volumeId);
             }
             if (volume.getProviderVirtualMachineId() != null) {
                 //todo
@@ -149,7 +149,7 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
 
             Object vmMor = getVMProperty(props, toServer, "MOR");
             if (vmMor == null) {
-                throw new ResourceNotFoundException("Unable to find vm reference for attach task");
+                throw new ResourceNotFoundException("vm reference for vm", toServer);
             }
             ManagedObjectReference vmRef = (ManagedObjectReference) vmMor;
 
@@ -230,7 +230,7 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
             Vm vmSupport = getProvider().getComputeServices().getVirtualMachineSupport();
             VirtualMachine vm = vmSupport.getVirtualMachine(options.getProviderVirtualMachineId());
             if( vm == null ) {
-                throw new ResourceNotFoundException("Unable to find vm with id " + options.getProviderVirtualMachineId());
+                throw new ResourceNotFoundException("vm", options.getProviderVirtualMachineId());
             }
 
             List<PropertySpec> pSpecs = getHardDiskPSpec();
@@ -335,7 +335,7 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
                     }
                 }
                 //todo is ResourceNotFoundException appropriate here?
-                lastError = new ResourceNotFoundException("Unable to identify new volume.");
+                lastError = new ResourceNotFoundException("new volume", "n/a");
             }
             else {
                 lastError = new GeneralCloudException("Failed to create volume: " + method.getTaskError().getVal(), CloudErrorType.GENERAL);
@@ -355,7 +355,7 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
         APITrace.begin(getProvider(), "HardDisk.detach");
         Volume volume = getVolume(volumeId);
         if (volume == null ) {
-            throw new ResourceNotFoundException("Volume not found with id "+volumeId);
+            throw new ResourceNotFoundException("Volume", volumeId);
         }
         if ( volume.getProviderVirtualMachineId() == null) {
             //todo
@@ -366,7 +366,7 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
         Vm vmSupport = getProvider().getComputeServices().getVirtualMachineSupport();
         VirtualMachine vm = vmSupport.getVirtualMachine(volume.getProviderVirtualMachineId());
         if (vm == null) {
-            throw new ResourceNotFoundException("Vm not found with id " + volume.getProviderVirtualMachineId());
+            throw new ResourceNotFoundException("Vm", volume.getProviderVirtualMachineId());
         }
 
         List<PropertySpec> pSpecs = getHardDiskPSpec();
@@ -433,7 +433,7 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
                 }
             }
             else {
-                throw new ResourceNotFoundException("Couldn't find device "+volumeId+" to detach in vm "+vm.getName());
+                throw new ResourceNotFoundException("device ", volumeId);
             }
         }
         finally {
@@ -629,7 +629,7 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
             Volume volume = getVolume(volumeId);
 
             if (volume == null) {
-                throw new ResourceNotFoundException("Unable to find volume with id " + volumeId);
+                throw new ResourceNotFoundException("volume", volumeId);
             }
             if (volume.getProviderVirtualMachineId() != null) {
                 //todo

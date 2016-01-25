@@ -140,7 +140,7 @@ public class Vm extends AbstractVMSupport<Vsphere> {
         try {
             VirtualMachine vm = getVirtualMachine(virtualMachineId);
             if( vm == null ) {
-                throw new ResourceNotFoundException("Unable to find vm with id " + virtualMachineId);
+                throw new ResourceNotFoundException("Vm", virtualMachineId);
             }
 
             if( cpuCount == null && ramInMB == null ) {
@@ -190,7 +190,7 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                     }
                 }
                 //todo is ResourceNotFoundException appropriate here?
-                lastError = new ResourceNotFoundException("Unable to identify updated server.");
+                lastError = new ResourceNotFoundException("Updated server", virtualMachineId);
             }
             else {
                 lastError = new GeneralCloudException("Failed to update VM: " + method.getTaskError().getVal(), CloudErrorType.GENERAL);
@@ -209,7 +209,7 @@ public class Vm extends AbstractVMSupport<Vsphere> {
         try {
             VirtualMachine vm = getVirtualMachine(vmId);
             if (vm == null) {
-                throw new ResourceNotFoundException("Unable to find vm with id " + vmId);
+                throw new ResourceNotFoundException("vm", vmId);
             }
 
             ManagedObjectReference vmRef = new ManagedObjectReference();
@@ -276,7 +276,7 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                 }
                 throw new GeneralCloudException("Failed to create VM: " + method.getTaskError().getVal(), CloudErrorType.GENERAL);
             }
-            throw new ResourceNotFoundException("Unable to clone vm due to inability to find host and/or resource pool");
+            throw new ResourceNotFoundException("Unable to create vm because available Host and/or resource pool for datacenter", intoDcId);
         }
         finally {
             APITrace.end();
@@ -588,7 +588,7 @@ public class Vm extends AbstractVMSupport<Vsphere> {
             }
 
             if (!foundTemplate) {
-                throw new ResourceNotFoundException("No such template: " + options.getMachineImageId());
+                throw new ResourceNotFoundException("Template", options.getMachineImageId());
             }
             if (templateConfigInfo != null) {
                 int apiMajorVersion = getProvider().getApiMajorVersion();
@@ -958,7 +958,7 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                         }
                     }
                     //todo is ResourceNotFoundException appropriate here?
-                    lastError = new ResourceNotFoundException("Unable to find newly created vm");
+                    lastError = new ResourceNotFoundException("Newly created vm", newVmRef.getValue());
                 }
                 if (lastError == null) {
                     lastError = new GeneralCloudException("Failed to create VM: " + method.getTaskError().getVal(), CloudErrorType.GENERAL);
@@ -1083,7 +1083,7 @@ public class Vm extends AbstractVMSupport<Vsphere> {
         try {
             VirtualMachine vm = getVirtualMachine(vmId);
             if (vm == null) {
-                throw new ResourceNotFoundException("Unable to find vm with id "+vmId);
+                throw new ResourceNotFoundException("Vm", vmId);
             }
             if (!getCapabilities().canReboot(vm.getCurrentState())) {
                 //todo
@@ -1107,7 +1107,7 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                 }
                 throw new GeneralCloudException("Error when rebooting vm", runtimeFaultFaultMsg, CloudErrorType.GENERAL);
             } catch (TaskInProgressFaultMsg taskInProgressFaultMsg) {
-                throw new TaskInProgressException("TaskInProgressFaultMsg when rebooting vm", taskInProgressFaultMsg);
+                throw new TaskInProgressException("TaskInProgressFaultMsg when rebooting vm: "+ taskInProgressFaultMsg.getMessage());
             } catch (Exception e) {
                 throw new GeneralCloudException("Error when rebooting vm", e, CloudErrorType.GENERAL);
             }
@@ -1123,7 +1123,7 @@ public class Vm extends AbstractVMSupport<Vsphere> {
         try {
             VirtualMachine vm = getVirtualMachine(vmId);
             if (vm == null) {
-                throw new ResourceNotFoundException("Unable to find vm with id "+vmId);
+                throw new ResourceNotFoundException("vm", vmId);
             }
 
             if (!getCapabilities().canResume(vm.getCurrentState())) {
@@ -1154,7 +1154,7 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                 }
                 throw new GeneralCloudException("Error when resuming vm", runtimeFaultFaultMsg, CloudErrorType.GENERAL);
             } catch (TaskInProgressFaultMsg taskInProgressFaultMsg) {
-                throw new TaskInProgressException("TaskInProgressFaultMsg when resuming vm", taskInProgressFaultMsg);
+                throw new TaskInProgressException("TaskInProgressFaultMsg when resuming vm: "+ taskInProgressFaultMsg.getMessage());
             } catch (Exception e) {
                 throw new GeneralCloudException("Error when resuming vm", e, CloudErrorType.GENERAL);
             }
@@ -1170,7 +1170,7 @@ public class Vm extends AbstractVMSupport<Vsphere> {
         try {
             VirtualMachine vm = getVirtualMachine(vmId);
             if (vm == null) {
-                throw new ResourceNotFoundException("Unable to find vm with id "+vmId);
+                throw new ResourceNotFoundException("VM", vmId);
             }
 
             if (!getCapabilities().canStart(vm.getCurrentState())) {
@@ -1204,7 +1204,7 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                     }
                     throw new GeneralCloudException("Error when starting vm", runtimeFaultFaultMsg, CloudErrorType.GENERAL);
                 } catch (TaskInProgressFaultMsg taskInProgressFaultMsg) {
-                    throw new TaskInProgressException("TaskInProgressFaultMsg when starting vm", taskInProgressFaultMsg);
+                    throw new TaskInProgressException("TaskInProgressFaultMsg when starting vm: "+ taskInProgressFaultMsg.getMessage());
                 } catch (Exception e) {
                     throw new GeneralCloudException("Error when starting vm", e, CloudErrorType.GENERAL);
                 }
@@ -1221,7 +1221,7 @@ public class Vm extends AbstractVMSupport<Vsphere> {
         try {
             VirtualMachine vm = getVirtualMachine(vmId);
             if (vm == null) {
-                throw new ResourceNotFoundException("Unable to find vm with id "+vmId);
+                throw new ResourceNotFoundException("vm", vmId);
             }
 
             if (!getCapabilities().canStop(vm.getCurrentState())) {
@@ -1251,7 +1251,7 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                 }
                 throw new GeneralCloudException("Error when stopping vm", runtimeFaultFaultMsg, CloudErrorType.GENERAL);
             } catch (TaskInProgressFaultMsg taskInProgressFaultMsg) {
-                throw new TaskInProgressException("TaskInProgressFaultMsg when stopping vm", taskInProgressFaultMsg);
+                throw new TaskInProgressException("TaskInProgressFaultMsg when stopping vm: "+taskInProgressFaultMsg.getMessage());
             } catch (Exception e) {
                 throw new GeneralCloudException("Error when stopping vm", e, CloudErrorType.GENERAL);
             }
@@ -1267,7 +1267,7 @@ public class Vm extends AbstractVMSupport<Vsphere> {
         try {
             VirtualMachine vm = getVirtualMachine(vmId);
             if (vm == null) {
-                throw new ResourceNotFoundException("Unable to find vm with id "+vmId);
+                throw new ResourceNotFoundException("vm", vmId);
             }
 
             if (!getCapabilities().canSuspend(vm.getCurrentState())) {
@@ -1292,7 +1292,7 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                 }
                 throw new GeneralCloudException("Error when suspending vm", runtimeFaultFaultMsg, CloudErrorType.GENERAL);
             } catch (TaskInProgressFaultMsg taskInProgressFaultMsg) {
-                throw new TaskInProgressException("TaskInProgressFaultMsg when suspending vm", taskInProgressFaultMsg);
+                throw new TaskInProgressException("TaskInProgressFaultMsg when suspending vm: "+taskInProgressFaultMsg.getMessage());
             }
         }
         finally {
@@ -1335,7 +1335,7 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                 }
                 throw new GeneralCloudException("Error when terminating vm", runtimeFaultFaultMsg, CloudErrorType.GENERAL);
             } catch (TaskInProgressFaultMsg taskInProgressFaultMsg) {
-                throw new TaskInProgressException("TaskInProgressFaultMsg when terminating vm", taskInProgressFaultMsg);
+                throw new TaskInProgressException("TaskInProgressFaultMsg when terminating vm: "+taskInProgressFaultMsg.getMessage());
             } catch (Exception e) {
                 throw new GeneralCloudException("Error when terminating vm", e, CloudErrorType.GENERAL);
             }
@@ -1369,7 +1369,7 @@ public class Vm extends AbstractVMSupport<Vsphere> {
             }
             throw new GeneralCloudException("Error when altering vm", runtimeFaultFaultMsg, CloudErrorType.GENERAL);
         } catch (TaskInProgressFaultMsg taskInProgressFaultMsg) {
-            throw new TaskInProgressException("TaskInProgressFaultMsg when altering vm", taskInProgressFaultMsg);
+            throw new TaskInProgressException("TaskInProgressFaultMsg when altering vm: "+taskInProgressFaultMsg.getMessage());
         } catch (Exception e) {
             throw new GeneralCloudException("Error when altering vm", e, CloudErrorType.GENERAL);
         }
@@ -1390,7 +1390,7 @@ public class Vm extends AbstractVMSupport<Vsphere> {
             }
             throw new GeneralCloudException("Error when cloning vm", runtimeFaultFaultMsg, CloudErrorType.GENERAL);
         } catch (TaskInProgressFaultMsg taskInProgressFaultMsg) {
-            throw new TaskInProgressException("TaskInProgressFaultMsg when cloning vm", taskInProgressFaultMsg);
+            throw new TaskInProgressException("TaskInProgressFaultMsg when cloning vm: "+taskInProgressFaultMsg.getMessage());
         } catch (InvalidDatastoreFaultMsg invalidDatastoreFaultMsg) {
             if (invalidDatastoreFaultMsg.getFaultInfo() instanceof InvalidDatastorePath) {
                 throw new GeneralCloudException("InvalidDatastore when cloning vm: " + ((InvalidDatastorePath) invalidDatastoreFaultMsg.getFaultInfo()).getDatastorePath(), invalidDatastoreFaultMsg, CloudErrorType.INVALID_USER_DATA);

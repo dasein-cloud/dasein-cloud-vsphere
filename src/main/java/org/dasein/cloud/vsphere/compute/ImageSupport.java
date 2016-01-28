@@ -20,15 +20,30 @@
 package org.dasein.cloud.vsphere.compute;
 
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import com.vmware.vim25.*;
+import com.vmware.vim25.DynamicProperty;
+import com.vmware.vim25.ManagedEntityStatus;
+import com.vmware.vim25.ManagedObjectReference;
+import com.vmware.vim25.NoPermission;
+import com.vmware.vim25.ObjectContent;
+import com.vmware.vim25.PropertyChange;
+import com.vmware.vim25.PropertySpec;
+import com.vmware.vim25.RetrieveResult;
+import com.vmware.vim25.RuntimeFaultFaultMsg;
+import com.vmware.vim25.SelectionSpec;
+import com.vmware.vim25.VimPortType;
+import com.vmware.vim25.VirtualMachineCloneSpec;
+import com.vmware.vim25.VirtualMachineConfigSummary;
+import com.vmware.vim25.VirtualMachineGuestOsIdentifier;
+import com.vmware.vim25.VirtualMachineRelocateSpec;
 import org.apache.log4j.Logger;
-import org.dasein.cloud.*;
+import org.dasein.cloud.AsynchronousTask;
+import org.dasein.cloud.AuthenticationException;
+import org.dasein.cloud.CloudErrorType;
+import org.dasein.cloud.CloudException;
+import org.dasein.cloud.GeneralCloudException;
+import org.dasein.cloud.InternalException;
+import org.dasein.cloud.ProviderContext;
+import org.dasein.cloud.ResourceNotFoundException;
 import org.dasein.cloud.compute.AbstractImageSupport;
 import org.dasein.cloud.compute.Architecture;
 import org.dasein.cloud.compute.ImageClass;
@@ -38,12 +53,20 @@ import org.dasein.cloud.compute.MachineImage;
 import org.dasein.cloud.compute.MachineImageState;
 import org.dasein.cloud.compute.Platform;
 import org.dasein.cloud.compute.VirtualMachine;
-import org.dasein.cloud.vsphere.*;
-import org.dasein.cloud.vsphere.capabilities.VsphereImageCapabilities;
-
 import org.dasein.cloud.util.APITrace;
+import org.dasein.cloud.vsphere.Vsphere;
+import org.dasein.cloud.vsphere.VsphereConnection;
+import org.dasein.cloud.vsphere.VsphereInventoryNavigation;
+import org.dasein.cloud.vsphere.VsphereMethod;
+import org.dasein.cloud.vsphere.VsphereTraversalSpec;
+import org.dasein.cloud.vsphere.capabilities.VsphereImageCapabilities;
 import org.dasein.util.uom.time.Second;
 import org.dasein.util.uom.time.TimePeriod;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -168,7 +191,7 @@ public class ImageSupport extends AbstractImageSupport<Vsphere> {
             }
             VirtualMachine vm = getProvider().getComputeServices().getVirtualMachineSupport().getVirtualMachine(vmId);
             if( vm == null ) {
-                throw new ResourceNotFoundException("No such virtual machine for imaging: " + vmId);
+                throw new ResourceNotFoundException("virtual machine", vmId);
             }
 
             ManagedObjectReference templateRef = new ManagedObjectReference();

@@ -19,28 +19,52 @@
 
 package org.dasein.cloud.vsphere;
 
-import com.vmware.vim25.*;
-
+import com.vmware.vim25.ArrayOfDatastoreHostMount;
+import com.vmware.vim25.ArrayOfManagedObjectReference;
+import com.vmware.vim25.DatastoreHostMount;
+import com.vmware.vim25.DatastoreSummary;
+import com.vmware.vim25.DynamicProperty;
+import com.vmware.vim25.ManagedEntityStatus;
+import com.vmware.vim25.ManagedObjectReference;
+import com.vmware.vim25.ObjectContent;
+import com.vmware.vim25.PropertySpec;
+import com.vmware.vim25.ResourcePoolRuntimeInfo;
+import com.vmware.vim25.RetrieveResult;
+import com.vmware.vim25.SelectionSpec;
+import com.vmware.vim25.TraversalSpec;
 import org.apache.commons.collections.IteratorUtils;
-import org.apache.log4j.Logger;
-import org.dasein.cloud.*;
+import org.dasein.cloud.CloudException;
+import org.dasein.cloud.InternalException;
+import org.dasein.cloud.ProviderContext;
+import org.dasein.cloud.ResourceNotFoundException;
 import org.dasein.cloud.compute.AffinityGroup;
 import org.dasein.cloud.compute.AffinityGroupFilterOptions;
 import org.dasein.cloud.compute.AffinityGroupSupport;
-import org.dasein.cloud.dc.*;
+import org.dasein.cloud.dc.AbstractDataCenterServices;
+import org.dasein.cloud.dc.DataCenter;
+import org.dasein.cloud.dc.DataCenterCapabilities;
+import org.dasein.cloud.dc.Folder;
+import org.dasein.cloud.dc.FolderType;
+import org.dasein.cloud.dc.Region;
+import org.dasein.cloud.dc.ResourcePool;
+import org.dasein.cloud.dc.StoragePool;
 import org.dasein.cloud.util.APITrace;
 import org.dasein.cloud.util.Cache;
 import org.dasein.cloud.util.CacheLevel;
 import org.dasein.cloud.vsphere.capabilities.VsphereDataCenterCapabilities;
-import org.dasein.util.uom.storage.*;
+import org.dasein.util.uom.storage.Megabyte;
+import org.dasein.util.uom.storage.Storage;
 import org.dasein.util.uom.time.Day;
 import org.dasein.util.uom.time.Hour;
 import org.dasein.util.uom.time.TimePeriod;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Danielle Mayne
@@ -150,7 +174,7 @@ public class DataCenters extends AbstractDataCenterServices<Vsphere> {
             Region region = getRegion(providerRegionId);
 
             if( region == null ) {
-                throw new ResourceNotFoundException("No such region: " + providerRegionId);
+                throw new ResourceNotFoundException("Region", providerRegionId);
             }
             ProviderContext ctx = getProvider().getContext();
 

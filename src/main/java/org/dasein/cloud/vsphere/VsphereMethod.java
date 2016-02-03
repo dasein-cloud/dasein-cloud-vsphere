@@ -19,18 +19,29 @@
 
 package org.dasein.cloud.vsphere;
 
-import java.util.Arrays;
-import java.util.List;
-
-import javax.annotation.Nonnull;
-
-import com.vmware.vim25.*;
-
+import com.vmware.vim25.LocalizedMethodFault;
+import com.vmware.vim25.ManagedObjectReference;
+import com.vmware.vim25.ObjectSpec;
+import com.vmware.vim25.ObjectUpdate;
+import com.vmware.vim25.ObjectUpdateKind;
+import com.vmware.vim25.PropertyChange;
+import com.vmware.vim25.PropertyFilterSpec;
+import com.vmware.vim25.PropertyFilterUpdate;
+import com.vmware.vim25.PropertySpec;
+import com.vmware.vim25.ServiceContent;
+import com.vmware.vim25.TaskInfoState;
+import com.vmware.vim25.UpdateSet;
+import com.vmware.vim25.VimPortType;
+import com.vmware.vim25.WaitOptions;
 import org.dasein.cloud.CloudException;
 import org.dasein.cloud.InternalException;
 import org.dasein.cloud.util.APITrace;
 import org.dasein.util.uom.time.Second;
 import org.dasein.util.uom.time.TimePeriod;
+
+import javax.annotation.Nonnull;
+import java.util.Arrays;
+import java.util.List;
 
 public class VsphereMethod {
 
@@ -123,6 +134,13 @@ public class VsphereMethod {
                 throw new CloudException(e);
             }
             APITrace.end();
+        }
+        if (taskState.getVal().equals(TaskInfoState.ERROR)) {
+            String detailedMessage = taskError.getVal().toString();
+            if (taskError.getVal() instanceof LocalizedMethodFault) {
+                detailedMessage = (((LocalizedMethodFault) taskError.getVal()).getLocalizedMessage());
+            }
+            throw new CloudException("Error waiting on task completion: "+detailedMessage);
         }
         return (null != taskState) && (taskState.getVal().equals(TaskInfoState.SUCCESS));
     }

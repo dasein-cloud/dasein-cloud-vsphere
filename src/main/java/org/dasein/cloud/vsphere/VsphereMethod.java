@@ -38,7 +38,6 @@ import com.vmware.vim25.UpdateSet;
 import com.vmware.vim25.VimPortType;
 import com.vmware.vim25.WaitOptions;
 import org.dasein.cloud.AuthenticationException;
-import org.dasein.cloud.CloudErrorType;
 import org.dasein.cloud.CloudException;
 import org.dasein.cloud.GeneralCloudException;
 import org.dasein.cloud.InternalException;
@@ -137,7 +136,7 @@ public class VsphereMethod {
                 if (taskError.getVal() instanceof LocalizedMethodFault) {
                     detailedMessage = (((LocalizedMethodFault) taskError.getVal()).getLocalizedMessage());
                 }
-                throw new GeneralCloudException("Error waiting on task completion: "+detailedMessage, CloudErrorType.GENERAL);
+                throw new GeneralCloudException("Error waiting on task completion: "+detailedMessage);
             }
             return (null != taskState) && (taskState.getVal().equals(TaskInfoState.SUCCESS));
         } catch (InvalidPropertyFaultMsg e) {
@@ -146,9 +145,9 @@ public class VsphereMethod {
             if (e.getFaultInfo() instanceof NoPermission) {
                 throw new AuthenticationException("NoPermission fault when retrieving task status", e).withFaultType(AuthenticationException.AuthenticationFaultType.FORBIDDEN);
             }
-            throw new GeneralCloudException("Error getting task progress", e, CloudErrorType.GENERAL);
+            throw new GeneralCloudException("Error getting task progress", e);
         }catch (InvalidCollectorVersionFaultMsg e) {
-            throw new GeneralCloudException("Error getting task progress", e, CloudErrorType.GENERAL);
+            throw new GeneralCloudException("Error getting task progress", e);
         } finally {
             try {
                 vimPort.destroyPropertyFilter(filterSpecRef);
@@ -156,7 +155,7 @@ public class VsphereMethod {
                 if ( e.getFaultInfo() instanceof NoPermission ) {
                     throw new AuthenticationException("NoPermission fault when destroying property filter", e).withFaultType(AuthenticationException.AuthenticationFaultType.FORBIDDEN);
                 }
-                throw new GeneralCloudException("Error destroying property filter", e, CloudErrorType.GENERAL);
+                throw new GeneralCloudException("Error destroying property filter", e);
             }
             APITrace.end();
         }

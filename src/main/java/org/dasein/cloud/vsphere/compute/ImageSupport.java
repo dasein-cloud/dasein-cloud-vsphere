@@ -38,7 +38,6 @@ import com.vmware.vim25.VirtualMachineRelocateSpec;
 import org.apache.log4j.Logger;
 import org.dasein.cloud.AsynchronousTask;
 import org.dasein.cloud.AuthenticationException;
-import org.dasein.cloud.CloudErrorType;
 import org.dasein.cloud.CloudException;
 import org.dasein.cloud.GeneralCloudException;
 import org.dasein.cloud.InternalException;
@@ -230,7 +229,7 @@ public class ImageSupport extends AbstractImageSupport<Vsphere> {
                 img =  getImage(newVmRef.getValue());
             }
             else {
-                throw new GeneralCloudException("Failed to capture image: " + method.getTaskError().getVal(), CloudErrorType.GENERAL);
+                throw new GeneralCloudException("Failed to capture image: " + method.getTaskError().getVal());
             }
 
             if( task != null ) {
@@ -270,9 +269,9 @@ public class ImageSupport extends AbstractImageSupport<Vsphere> {
             if (runtimeFaultFaultMsg.getFaultInfo() instanceof NoPermission) {
                 throw new AuthenticationException("NoPermission fault when deleting image", runtimeFaultFaultMsg).withFaultType(AuthenticationException.AuthenticationFaultType.FORBIDDEN);
             }
-            throw new GeneralCloudException("Error when deleting image", runtimeFaultFaultMsg, CloudErrorType.GENERAL);
+            throw new GeneralCloudException("Error when deleting image", runtimeFaultFaultMsg);
         } catch (Exception e) {
-            throw new GeneralCloudException("Error when deleting image", e, CloudErrorType.GENERAL);
+            throw new GeneralCloudException("Error when deleting image", e);
         }
         finally {
             APITrace.end();

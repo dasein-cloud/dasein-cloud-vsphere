@@ -19,22 +19,33 @@
 
 package org.dasein.cloud.vsphere;
 
-import java.io.UnsupportedEncodingException;
-import java.util.List;
-import java.util.Map;
-
-import com.vmware.vim25.*;
+import com.vmware.vim25.InvalidLoginFaultMsg;
+import com.vmware.vim25.ManagedObjectReference;
+import com.vmware.vim25.NoPermission;
+import com.vmware.vim25.RuntimeFaultFaultMsg;
+import com.vmware.vim25.ServiceContent;
+import com.vmware.vim25.UserSession;
+import com.vmware.vim25.VimPortType;
+import com.vmware.vim25.VimService;
 import org.apache.log4j.Logger;
-import org.dasein.cloud.*;
+import org.dasein.cloud.AbstractCloud;
+import org.dasein.cloud.AuthenticationException;
+import org.dasein.cloud.CloudException;
+import org.dasein.cloud.ContextRequirements;
+import org.dasein.cloud.GeneralCloudException;
+import org.dasein.cloud.InternalException;
+import org.dasein.cloud.ProviderContext;
 import org.dasein.cloud.vsphere.compute.VsphereCompute;
-
 import org.dasein.cloud.vsphere.network.VSphereNetworkServices;
 import org.dasein.util.CalendarWrapper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.xml.ws.BindingProvider;
 import javax.net.ssl.SSLContext;
+import javax.xml.ws.BindingProvider;
+import java.io.UnsupportedEncodingException;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -143,9 +154,9 @@ public class Vsphere extends AbstractCloud {
                 if (e.getFaultInfo() instanceof NoPermission) {
                     throw new AuthenticationException("NoPermission fault when retrieving service content", e).withFaultType(AuthenticationException.AuthenticationFaultType.FORBIDDEN);
                 }
-                throw new GeneralCloudException("Error retrieving service content", e, CloudErrorType.GENERAL);
+                throw new GeneralCloudException("Error retrieving service content", e);
             } catch (Exception e) {
-                throw new GeneralCloudException("Error getting service content", e, CloudErrorType.GENERAL);
+                throw new GeneralCloudException("Error getting service content", e);
             }
 
             List<ContextRequirements.Field> fields = getContextRequirements().getConfigurableValues();
@@ -171,9 +182,9 @@ public class Vsphere extends AbstractCloud {
                 if (e.getFaultInfo() instanceof NoPermission) {
                     throw new AuthenticationException("NoPermission fault when logging in", e).withFaultType(AuthenticationException.AuthenticationFaultType.FORBIDDEN);
                 }
-                throw new GeneralCloudException("Error logging in", e, CloudErrorType.GENERAL);
+                throw new GeneralCloudException("Error logging in", e);
             } catch (Exception e) {
-                throw new GeneralCloudException("Error logging in", e, CloudErrorType.GENERAL);
+                throw new GeneralCloudException("Error logging in", e);
             }
 
             String apiVersion = serviceContent.getAbout().getApiVersion();

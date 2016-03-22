@@ -76,7 +76,7 @@ public class VsphereInventoryNavigation {
             if (e.getFaultInfo() instanceof NoPermission) {
                 throw new AuthenticationException("NoPermission fault when retrieving service content", e).withFaultType(AuthenticationException.AuthenticationFaultType.FORBIDDEN);
             }
-            throw new GeneralCloudException("Error retrieving service content for inventory search", e, CloudErrorType.GENERAL);
+            throw new GeneralCloudException("Error retrieving service content for inventory search", e);
         }
 
         RetrieveResult props;
@@ -88,9 +88,9 @@ public class VsphereInventoryNavigation {
             if (e.getFaultInfo() instanceof NoPermission) {
                 throw new AuthenticationException("NoPermission fault when searching inventory", e).withFaultType(AuthenticationException.AuthenticationFaultType.FORBIDDEN);
             }
-            throw new GeneralCloudException("Error retrieving object list", e, CloudErrorType.GENERAL);
+            throw new GeneralCloudException("Error retrieving object list", e);
         } catch ( Exception e ) {
-            throw new GeneralCloudException("Error retrieving object list", e, CloudErrorType.GENERAL);
+            throw new GeneralCloudException("Error retrieving object list", e);
         }
 
         return props;
@@ -105,9 +105,9 @@ public class VsphereInventoryNavigation {
             if (runtimeFaultFaultMsg.getFaultInfo() instanceof NoPermission) {
                 throw new AuthenticationException("NoPermission fault when searching datastores", runtimeFaultFaultMsg).withFaultType(AuthenticationException.AuthenticationFaultType.FORBIDDEN);
             }
-            throw new GeneralCloudException("Error searching datastores", runtimeFaultFaultMsg, CloudErrorType.GENERAL);
+            throw new GeneralCloudException("Error searching datastores", runtimeFaultFaultMsg);
         }catch (Exception e) {
-            throw new GeneralCloudException("Error searching datastores", e, CloudErrorType.GENERAL);
+            throw new GeneralCloudException("Error searching datastores", e);
         }
     }
 }

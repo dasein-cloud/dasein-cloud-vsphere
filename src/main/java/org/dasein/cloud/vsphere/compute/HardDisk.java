@@ -206,7 +206,7 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
             TimePeriod interval = new TimePeriod<Second>(30, TimePeriod.SECOND);
 
             if( taskmor != null && !method.getOperationComplete(taskmor, interval, 10) ) {
-                lastError = new GeneralCloudException("Failed to attach volume: " + method.getTaskError().getVal(), CloudErrorType.GENERAL);
+                lastError = new GeneralCloudException("Failed to attach volume: " + method.getTaskError().getVal());
             }
             if( lastError != null ) {
                 throw lastError;
@@ -338,12 +338,12 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
                 lastError = new ResourceNotFoundException("new volume", "n/a");
             }
             else {
-                lastError = new GeneralCloudException("Failed to create volume: " + method.getTaskError().getVal(), CloudErrorType.GENERAL);
+                lastError = new GeneralCloudException("Failed to create volume: " + method.getTaskError().getVal());
             }
             if( lastError != null ) {
                 throw lastError;
             }
-            throw new GeneralCloudException("No volume and no error", CloudErrorType.GENERAL);
+            throw new GeneralCloudException("No volume and no error" + method.getTaskError().getVal());
         }
         finally {
             APITrace.end();
@@ -426,7 +426,7 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
                 TimePeriod interval = new TimePeriod<Second>(30, TimePeriod.SECOND);
 
                 if( !method.getOperationComplete(taskmor, interval, 10) ) {
-                    lastError = new GeneralCloudException("Failed to update VM: " + method.getTaskError().getVal(), CloudErrorType.GENERAL);
+                    lastError = new GeneralCloudException("Failed to update VM: " + method.getTaskError().getVal());
                 }
                 if( lastError != null ) {
                     throw lastError;
@@ -661,14 +661,14 @@ public class HardDisk extends AbstractVolumeSupport<Vsphere> {
                         return;
                     }
                 }
-                throw new GeneralCloudException("Error removing datastore file: " + method.getTaskError().getVal().toString(), CloudErrorType.GENERAL);
+                throw new GeneralCloudException("Error removing datastore file: " + method.getTaskError().getVal().toString());
             } catch ( RuntimeFaultFaultMsg runtimeFaultFaultMsg ) {
                 if (runtimeFaultFaultMsg.getFaultInfo() instanceof NoPermission) {
                     throw new AuthenticationException("NoPermission fault when removing datastore file", runtimeFaultFaultMsg).withFaultType(AuthenticationException.AuthenticationFaultType.FORBIDDEN);
                 }
-                throw new GeneralCloudException("Error while removing datastore file", runtimeFaultFaultMsg, CloudErrorType.GENERAL);
+                throw new GeneralCloudException("Error while removing datastore file", runtimeFaultFaultMsg);
             } catch (Exception e) {
-                throw new GeneralCloudException("Error while removing datastore file", e, CloudErrorType.GENERAL);
+                throw new GeneralCloudException("Error while removing datastore file", e);
             }
         }
         finally {

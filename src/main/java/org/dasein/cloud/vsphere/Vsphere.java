@@ -143,9 +143,9 @@ public class Vsphere extends AbstractCloud {
                 if (e.getFaultInfo() instanceof NoPermission) {
                     throw new AuthenticationException("NoPermission fault when retrieving service content", e).withFaultType(AuthenticationException.AuthenticationFaultType.FORBIDDEN);
                 }
-                throw new GeneralCloudException("Error retrieving service content", e, CloudErrorType.GENERAL);
+                throw new GeneralCloudException("Error retrieving service content", e);
             } catch (Exception e) {
-                throw new GeneralCloudException("Error getting service content", e, CloudErrorType.GENERAL);
+                throw new GeneralCloudException("Error getting service content", e);
             }
 
             List<ContextRequirements.Field> fields = getContextRequirements().getConfigurableValues();
@@ -171,9 +171,9 @@ public class Vsphere extends AbstractCloud {
                 if (e.getFaultInfo() instanceof NoPermission) {
                     throw new AuthenticationException("NoPermission fault when logging in", e).withFaultType(AuthenticationException.AuthenticationFaultType.FORBIDDEN);
                 }
-                throw new GeneralCloudException("Error logging in", e, CloudErrorType.GENERAL);
+                throw new GeneralCloudException("Error logging in", e);
             } catch (Exception e) {
-                throw new GeneralCloudException("Error logging in", e, CloudErrorType.GENERAL);
+                throw new GeneralCloudException("Error logging in", e);
             }
 
             String apiVersion = serviceContent.getAbout().getApiVersion();

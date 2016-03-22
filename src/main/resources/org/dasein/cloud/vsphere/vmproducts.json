@@ -10,7 +10,8 @@
         "description":"Custom product - 1 CPU, 512MB RAM",
         "cpuCount":1,
         "rootVolumeSizeInGb":1,
-        "ramSizeInMb":512
+        "ramSizeInMb":512,
+        "current": true
       },
       {
         "architectures":["I32", "I64"],
@@ -19,7 +20,8 @@
         "description":"Custom product - 1 CPU, 1024MB RAM",
         "cpuCount":1,
         "rootVolumeSizeInGb":1,
-        "ramSizeInMb":1024
+        "ramSizeInMb":1024,
+        "current": true
       },
       {
         "architectures":["I32", "I64"],
@@ -28,7 +30,8 @@
         "description":"Custom product - 1 CPU, 2048MB RAM",
         "cpuCount":1,
         "rootVolumeSizeInGb":1,
-        "ramSizeInMb":2048
+        "ramSizeInMb":2048,
+        "current": true
       },
       {
         "architectures":["I64"],
@@ -37,7 +40,8 @@
         "description":"Custom product - 1 CPU, 4096MB RAM",
         "cpuCount":1,
         "rootVolumeSizeInGb":1,
-        "ramSizeInMb":4096
+        "ramSizeInMb":4096,
+        "current": true
       },
       {
         "architectures":["I64"],
@@ -46,7 +50,8 @@
         "description":"Custom product - 1 CPU, 10240MB RAM",
         "cpuCount":1,
         "rootVolumeSizeInGb":1,
-        "ramSizeInMb":10240
+        "ramSizeInMb":10240,
+        "current": true
       },
       {
         "architectures":["I64"],
@@ -55,7 +60,8 @@
         "description":"Custom product - 1 CPU, 20480MB RAM",
         "cpuCount":1,
         "rootVolumeSizeInGb":1,
-        "ramSizeInMb":20480
+        "ramSizeInMb":20480,
+        "current": true
       },
 
       {
@@ -65,7 +71,8 @@
         "description":"Custom product - 2 CPU, 512MB RAM",
         "cpuCount":2,
         "rootVolumeSizeInGb":1,
-        "ramSizeInMb":512
+        "ramSizeInMb":512,
+        "current": true
       },
       {
         "architectures":["I32", "I64"],
@@ -74,7 +81,8 @@
         "description":"Custom product - 2 CPU, 1024MB RAM",
         "cpuCount":2,
         "rootVolumeSizeInGb":1,
-        "ramSizeInMb":1024
+        "ramSizeInMb":1024,
+        "current": true
       },
       {
         "architectures":["I32", "I64"],
@@ -83,7 +91,8 @@
         "description":"Custom product - 2 CPU, 2048MB RAM",
         "cpuCount":2,
         "rootVolumeSizeInGb":1,
-        "ramSizeInMb":2048
+        "ramSizeInMb":2048,
+        "current": true
       },
       {
         "architectures":["I64"],
@@ -92,7 +101,8 @@
         "description":"Custom product - 2 CPU, 4096MB RAM",
         "cpuCount":2,
         "rootVolumeSizeInGb":1,
-        "ramSizeInMb":4096
+        "ramSizeInMb":4096,
+        "current": true
       },
       {
         "architectures":["I64"],
@@ -101,7 +111,8 @@
         "description":"Custom product - 2 CPU, 10240MB RAM",
         "cpuCount":2,
         "rootVolumeSizeInGb":1,
-        "ramSizeInMb":10240
+        "ramSizeInMb":10240,
+        "current": true
       },
       {
         "architectures":["I64"],
@@ -110,7 +121,8 @@
         "description":"Custom product - 2 CPU, 20480MB RAM",
         "cpuCount":2,
         "rootVolumeSizeInGb":1,
-        "ramSizeInMb":20480
+        "ramSizeInMb":20480,
+        "current": true
       },
 
       {
@@ -120,7 +132,8 @@
         "description":"Custom product - 4 CPU, 1024MB RAM",
         "cpuCount":4,
         "rootVolumeSizeInGb":1,
-        "ramSizeInMb":1024
+        "ramSizeInMb":1024,
+        "current": true
       },
       {
         "architectures":["I64"],
@@ -129,7 +142,8 @@
         "description":"Custom product - 4 CPU, 2048MB RAM",
         "cpuCount":4,
         "rootVolumeSizeInGb":1,
-        "ramSizeInMb":2048
+        "ramSizeInMb":2048,
+        "current": true
       },
       {
         "architectures":["I64"],
@@ -138,7 +152,8 @@
         "description":"Custom product - 4 CPU, 4096MB RAM",
         "cpuCount":4,
         "rootVolumeSizeInGb":1,
-        "ramSizeInMb":4096
+        "ramSizeInMb":4096,
+        "current": true
       },
       {
         "architectures":["I64"],
@@ -147,7 +162,8 @@
         "description":"Custom product - 4 CPU, 10240MB RAM",
         "cpuCount":4,
         "rootVolumeSizeInGb":1,
-        "ramSizeInMb":10240
+        "ramSizeInMb":10240,
+        "current": true
       },
       {
         "architectures":["I64"],
@@ -156,7 +172,8 @@
         "description":"Custom product - 4 CPU, 20480MB RAM",
         "cpuCount":4,
         "rootVolumeSizeInGb":1,
-        "ramSizeInMb":20480
+        "ramSizeInMb":20480,
+        "current": true
       },
 
       {
@@ -166,7 +183,8 @@
         "description":"Custom product - 8 CPU, 1024MB RAM",
         "cpuCount":8,
         "rootVolumeSizeInGb":1,
-        "ramSizeInMb":1024
+        "ramSizeInMb":1024,
+        "current": true
       },
       {
         "architectures":["I64"],
@@ -175,7 +193,8 @@
         "description":"Custom product - 8 CPU, 2048MB RAM",
         "cpuCount":8,
         "rootVolumeSizeInGb":1,
-        "ramSizeInMb":2048
+        "ramSizeInMb":2048,
+        "current": true
       },
       {
         "architectures":["I64"],
@@ -184,7 +203,8 @@
         "description":"Custom product - 8 CPU, 4096MB RAM",
         "cpuCount":8,
         "rootVolumeSizeInGb":1,
-        "ramSizeInMb":4096
+        "ramSizeInMb":4096,
+        "current": true
       },
       {
         "architectures":["I64"],
@@ -193,7 +213,8 @@
         "description":"Custom product - 8 CPU, 10240MB RAM",
         "cpuCount":8,
         "rootVolumeSizeInGb":1,
-        "ramSizeInMb":10240
+        "ramSizeInMb":10240,
+        "current": true
       },
       {
         "architectures":["I64"],
@@ -202,7 +223,8 @@
         "description":"Custom product - 8 CPU, 20480MB RAM",
         "cpuCount":8,
         "rootVolumeSizeInGb":1,
-        "ramSizeInMb":20480
+        "ramSizeInMb":20480,
+        "current": true
       }
     ]
   }

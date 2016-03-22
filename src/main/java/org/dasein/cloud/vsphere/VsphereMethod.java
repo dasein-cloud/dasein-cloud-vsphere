@@ -120,9 +120,9 @@ public class VsphereMethod {
             if (e.getFaultInfo() instanceof NoPermission) {
                 throw new AuthenticationException("NoPermission fault when retrieving task status", e).withFaultType(AuthenticationException.AuthenticationFaultType.FORBIDDEN);
             }
-            throw new GeneralCloudException("Error getting task progress", e, CloudErrorType.GENERAL);
+            throw new GeneralCloudException("Error getting task progress", e);
         }catch (InvalidCollectorVersionFaultMsg e) {
-            throw new GeneralCloudException("Error getting task progress", e, CloudErrorType.GENERAL);
+            throw new GeneralCloudException("Error getting task progress", e);
         } finally {
             try {
                 vimPort.destroyPropertyFilter(filterSpecRef);
@@ -130,7 +130,7 @@ public class VsphereMethod {
                 if ( e.getFaultInfo() instanceof NoPermission ) {
                     throw new AuthenticationException("NoPermission fault when destroying property filter", e).withFaultType(AuthenticationException.AuthenticationFaultType.FORBIDDEN);
                 }
-                throw new GeneralCloudException("Error destroying property filter", e, CloudErrorType.GENERAL);
+                throw new GeneralCloudException("Error destroying property filter", e);
             }
             APITrace.end();
         }

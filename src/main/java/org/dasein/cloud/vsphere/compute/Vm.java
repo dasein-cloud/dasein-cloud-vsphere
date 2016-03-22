@@ -193,7 +193,7 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                 lastError = new ResourceNotFoundException("Updated server", virtualMachineId);
             }
             else {
-                lastError = new GeneralCloudException("Failed to update VM: " + method.getTaskError().getVal(), CloudErrorType.GENERAL);
+                lastError = new GeneralCloudException("Failed to update VM: " + method.getTaskError().getVal());
             }
             throw lastError;
         }
@@ -274,7 +274,7 @@ public class Vm extends AbstractVMSupport<Vsphere> {
 
                     return getVirtualMachine(newVmRef.getValue());
                 }
-                throw new GeneralCloudException("Failed to create VM: " + method.getTaskError().getVal(), CloudErrorType.GENERAL);
+                throw new GeneralCloudException("Failed to create VM: " + method.getTaskError().getVal());
             }
             throw new ResourceNotFoundException("Unable to create vm because available Host and/or resource pool for datacenter", intoDcId);
         }
@@ -340,21 +340,20 @@ public class Vm extends AbstractVMSupport<Vsphere> {
             // get resource pools from cache or live
             Cache<ResourcePool> cache = Cache.getInstance(
                     getProvider(), "resourcePools", ResourcePool.class, CacheLevel.REGION_ACCOUNT,
-                    new TimePeriod<Minute>(15, TimePeriod.MINUTE));
+                    new TimePeriod<>(15, TimePeriod.MINUTE));
             List<ResourcePool> rps = (ArrayList<ResourcePool>) cache.get(getContext());
 
             if( rps == null ) {
-                rps = new ArrayList<ResourcePool>();
+                rps = new ArrayList<>();
 
                 Collection<ResourcePool> pools = getProvider().getDataCenterServices().listResourcePools(null);
                 rps.addAll(pools);
                 cache.put(getContext(), rps);
             }
 
-            List<VirtualMachineProduct> results = new ArrayList<VirtualMachineProduct>();
-            Iterable<VirtualMachineProduct> jsonProducts = listProductsJson();
-            // first add all matching products from vmproducts.json
-            for( VirtualMachineProduct product : jsonProducts ) {
+            List<VirtualMachineProduct> results = new ArrayList<>();
+            VirtualMachineProduct[] jsonProducts = VirtualMachineProduct.fromConfigurationFile("/org/dasein/cloud/vsphere/vmproducts.json", getContext());
+            for( VirtualMachineProduct product : jsonProducts) {
                 if( options == null || options.matches(product) ) {
                     results.add(product);
                 }
@@ -388,163 +387,6 @@ public class Vm extends AbstractVMSupport<Vsphere> {
     @Override
     public Iterable<VirtualMachineProduct> listAllProducts() throws InternalException, CloudException {
         return listProducts("ignore", VirtualMachineProductFilterOptions.getInstance());
-    }
-
-    /**
-     * Load products list from vmproducts.json filtered by architecture if specified in the options.
-     * Uses a cache for one day.
-     * @return list of products
-     * @throws InternalException
-     */
-    private @Nonnull Iterable<VirtualMachineProduct> listProductsJson() throws InternalException {
-        APITrace.begin(getProvider(), "VM.listProducts");
-        try {
-            Cache<VirtualMachineProduct> cache = Cache.getInstance(getProvider(), "products", VirtualMachineProduct.class, CacheLevel.REGION_ACCOUNT, new TimePeriod<Day>(1, TimePeriod.DAY));
-            Iterable<VirtualMachineProduct> products = cache.get(getContext());
-
-            if( products != null && products.iterator().hasNext() ) {
-                return products;
-            }
-
-            List<VirtualMachineProduct> list = new ArrayList<VirtualMachineProduct>();
-
-            try {
-                InputStream input = AbstractVMSupport.class.getResourceAsStream("/org/dasein/cloud/vsphere/vmproducts.json");
-
-                if( input == null ) {
-                    return Collections.emptyList();
-                }
-                BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-                StringBuilder json = new StringBuilder();
-                String line;
-
-                while( ( line = reader.readLine() ) != null ) {
-                    json.append(line);
-                    json.append("\n");
-                }
-                JSONArray arr = new JSONArray(json.toString());
-                JSONObject toCache = null;
-
-                for( int i = 0; i < arr.length(); i++ ) {
-                    JSONObject productSet = arr.getJSONObject(i);
-                    String cloud, provider;
-
-                    if( productSet.has("cloud") ) {
-                        cloud = productSet.getString("cloud");
-                    }
-                    else {
-                        continue;
-                    }
-                    if( productSet.has("provider") ) {
-                        provider = productSet.getString("provider");
-                    }
-                    else {
-                        continue;
-                    }
-                    if( !productSet.has("products") ) {
-                        continue;
-                    }
-                    if( toCache == null || ( provider.equals("vSphere") && cloud.equals("vSphere") ) ) {
-                        toCache = productSet;
-                    }
-                    if( provider.equalsIgnoreCase(getProvider().getProviderName()) && cloud.equalsIgnoreCase(getProvider().getCloudName()) ) {
-                        toCache = productSet;
-                        break;
-                    }
-                }
-                if( toCache == null ) {
-                    return Collections.emptyList();
-                }
-                JSONArray plist = toCache.getJSONArray("products");
-
-                for( int i = 0; i < plist.length(); i++ ) {
-                    JSONObject product = plist.getJSONObject(i);
-                    boolean supported = true;
-                    if( product.has("excludesRegions") ) {
-                        JSONArray regions = product.getJSONArray("excludesRegions");
-
-                        for( int j = 0; j < regions.length(); j++ ) {
-                            String r = regions.getString(j);
-
-                            if( r.equals(getContext().getRegionId()) ) {
-                                supported = false;
-                                break;
-                            }
-                        }
-                    }
-                    if( supported ) {
-                        list.add(toProduct(product));
-                    }
-                }
-                // save the products to cache
-                cache.put(getContext(), list);
-            } catch( IOException e ) {
-                throw new InternalException(e);
-            } catch( JSONException e ) {
-                throw new InternalException(e);
-            }
-            return list;
-        } finally {
-            APITrace.end();
-        }
-    }
-
-    private @Nullable
-    VirtualMachineProduct toProduct( @Nonnull JSONObject json ) throws InternalException {
-        VirtualMachineProduct prd = new VirtualMachineProduct();
-
-        try {
-            if( json.has("id") ) {
-                prd.setProviderProductId(json.getString("id"));
-            }
-            else {
-                return null;
-            }
-            if( json.has("name") ) {
-                prd.setName(json.getString("name"));
-            }
-            else {
-                prd.setName(prd.getProviderProductId());
-            }
-            if( json.has("description") ) {
-                prd.setDescription(json.getString("description"));
-            }
-            else {
-                prd.setDescription(prd.getName());
-            }
-            if( json.has("cpuCount") ) {
-                prd.setCpuCount(json.getInt("cpuCount"));
-            }
-            else {
-                prd.setCpuCount(1);
-            }
-            if( json.has("rootVolumeSizeInGb") ) {
-                prd.setRootVolumeSize(new Storage<Gigabyte>(json.getInt("rootVolumeSizeInGb"), Storage.GIGABYTE));
-            }
-            else {
-                prd.setRootVolumeSize(new Storage<Gigabyte>(1, Storage.GIGABYTE));
-            }
-            if( json.has("ramSizeInMb") ) {
-                prd.setRamSize(new Storage<Megabyte>(json.getInt("ramSizeInMb"), Storage.MEGABYTE));
-            }
-            else {
-                prd.setRamSize(new Storage<Megabyte>(512, Storage.MEGABYTE));
-            }
-            if( json.has("standardHourlyRates") ) {
-                JSONArray rates = json.getJSONArray("standardHourlyRates");
-
-                for( int i = 0; i < rates.length(); i++ ) {
-                    JSONObject rate = rates.getJSONObject(i);
-
-                    if( rate.has("rate") ) {
-                        prd.setStandardHourlyRate(( float ) rate.getDouble("rate"));
-                    }
-                }
-            }
-        } catch( JSONException e ) {
-            throw new InternalException(e);
-        }
-        return prd;
     }
 
     @Nonnull
@@ -937,7 +779,7 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                             start(newVmRef.getValue());
                         }
                         else {
-                            throw new GeneralCloudException("Failed to reconfigure VM: " + method.getTaskError().getVal(), CloudErrorType.GENERAL);
+                            throw new GeneralCloudException("Failed to reconfigure VM: " + method.getTaskError().getVal());
                         }
                     }
 
@@ -961,7 +803,7 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                     lastError = new ResourceNotFoundException("Newly created vm", newVmRef.getValue());
                 }
                 if (lastError == null) {
-                    lastError = new GeneralCloudException("Failed to create VM: " + method.getTaskError().getVal(), CloudErrorType.GENERAL);
+                    lastError = new GeneralCloudException("Failed to create VM: " + method.getTaskError().getVal());
                 }
                 throw lastError;
             }
@@ -1105,11 +947,11 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                 if (runtimeFaultFaultMsg.getFaultInfo() instanceof NoPermission) {
                     throw new AuthenticationException("NoPermission fault when rebooting vm", runtimeFaultFaultMsg).withFaultType(AuthenticationException.AuthenticationFaultType.FORBIDDEN);
                 }
-                throw new GeneralCloudException("Error when rebooting vm", runtimeFaultFaultMsg, CloudErrorType.GENERAL);
+                throw new GeneralCloudException("Error when rebooting vm", runtimeFaultFaultMsg);
             } catch (TaskInProgressFaultMsg taskInProgressFaultMsg) {
                 throw new TaskInProgressException("TaskInProgressFaultMsg when rebooting vm: "+ taskInProgressFaultMsg.getMessage());
             } catch (Exception e) {
-                throw new GeneralCloudException("Error when rebooting vm", e, CloudErrorType.GENERAL);
+                throw new GeneralCloudException("Error when rebooting vm", e);
             }
         }
         finally {
@@ -1145,18 +987,18 @@ public class Vm extends AbstractVMSupport<Vsphere> {
             try {
                 vimPortType.powerOnVMTask(vmRef, hostRef);
             } catch (InsufficientResourcesFaultFaultMsg insufficientResourcesFaultFaultMsg) {
-                throw new GeneralCloudException("InsufficientResourcesFaultFaultMsg when resuming vm", insufficientResourcesFaultFaultMsg, CloudErrorType.CAPACITY);
+                throw new GeneralCloudException("InsufficientResourcesFaultFaultMsg when resuming vm", insufficientResourcesFaultFaultMsg);
             } catch (InvalidStateFaultMsg invalidStateFaultMsg) {
                 throw new InvalidStateException("Vm is in invalid state for resume: " + invalidStateFaultMsg.getMessage(), invalidStateFaultMsg);
             } catch (RuntimeFaultFaultMsg runtimeFaultFaultMsg) {
                 if (runtimeFaultFaultMsg.getFaultInfo() instanceof NoPermission) {
                     throw new AuthenticationException("NoPermission fault when resuming vm", runtimeFaultFaultMsg).withFaultType(AuthenticationException.AuthenticationFaultType.FORBIDDEN);
                 }
-                throw new GeneralCloudException("Error when resuming vm", runtimeFaultFaultMsg, CloudErrorType.GENERAL);
+                throw new GeneralCloudException("Error when resuming vm", runtimeFaultFaultMsg);
             } catch (TaskInProgressFaultMsg taskInProgressFaultMsg) {
                 throw new TaskInProgressException("TaskInProgressFaultMsg when resuming vm: "+ taskInProgressFaultMsg.getMessage());
             } catch (Exception e) {
-                throw new GeneralCloudException("Error when resuming vm", e, CloudErrorType.GENERAL);
+                throw new GeneralCloudException("Error when resuming vm", e);
             }
         }
         finally {
@@ -1195,18 +1037,18 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                 try {
                     vimPortType.powerOnVMTask(vmRef, hostRef);
                 } catch (InsufficientResourcesFaultFaultMsg insufficientResourcesFaultFaultMsg) {
-                    throw new GeneralCloudException("InsufficientResourcesFaultFaultMsg when starting vm", insufficientResourcesFaultFaultMsg, CloudErrorType.CAPACITY);
+                    throw new GeneralCloudException("InsufficientResourcesFaultFaultMsg when starting vm", insufficientResourcesFaultFaultMsg);
                 } catch (InvalidStateFaultMsg invalidStateFaultMsg) {
                     throw new InvalidStateException("Vm is in invalid state for start: " + invalidStateFaultMsg.getMessage(), invalidStateFaultMsg);
                 } catch (RuntimeFaultFaultMsg runtimeFaultFaultMsg) {
                     if (runtimeFaultFaultMsg.getFaultInfo() instanceof NoPermission) {
                         throw new AuthenticationException("NoPermission fault when starting vm", runtimeFaultFaultMsg).withFaultType(AuthenticationException.AuthenticationFaultType.FORBIDDEN);
                     }
-                    throw new GeneralCloudException("Error when starting vm", runtimeFaultFaultMsg, CloudErrorType.GENERAL);
+                    throw new GeneralCloudException("Error when starting vm", runtimeFaultFaultMsg);
                 } catch (TaskInProgressFaultMsg taskInProgressFaultMsg) {
                     throw new TaskInProgressException("TaskInProgressFaultMsg when starting vm: "+ taskInProgressFaultMsg.getMessage());
                 } catch (Exception e) {
-                    throw new GeneralCloudException("Error when starting vm", e, CloudErrorType.GENERAL);
+                    throw new GeneralCloudException("Error when starting vm", e);
                 }
             }
         }
@@ -1249,11 +1091,11 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                 if (runtimeFaultFaultMsg.getFaultInfo() instanceof NoPermission) {
                     throw new AuthenticationException("NoPermission fault when stopping vm", runtimeFaultFaultMsg).withFaultType(AuthenticationException.AuthenticationFaultType.FORBIDDEN);
                 }
-                throw new GeneralCloudException("Error when stopping vm", runtimeFaultFaultMsg, CloudErrorType.GENERAL);
+                throw new GeneralCloudException("Error when stopping vm", runtimeFaultFaultMsg);
             } catch (TaskInProgressFaultMsg taskInProgressFaultMsg) {
                 throw new TaskInProgressException("TaskInProgressFaultMsg when stopping vm: "+taskInProgressFaultMsg.getMessage());
             } catch (Exception e) {
-                throw new GeneralCloudException("Error when stopping vm", e, CloudErrorType.GENERAL);
+                throw new GeneralCloudException("Error when stopping vm", e);
             }
         }
         finally {
@@ -1290,7 +1132,7 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                 if (runtimeFaultFaultMsg.getFaultInfo() instanceof NoPermission) {
                     throw new AuthenticationException("NoPermission fault when suspending vm", runtimeFaultFaultMsg).withFaultType(AuthenticationException.AuthenticationFaultType.FORBIDDEN);
                 }
-                throw new GeneralCloudException("Error when suspending vm", runtimeFaultFaultMsg, CloudErrorType.GENERAL);
+                throw new GeneralCloudException("Error when suspending vm", runtimeFaultFaultMsg);
             } catch (TaskInProgressFaultMsg taskInProgressFaultMsg) {
                 throw new TaskInProgressException("TaskInProgressFaultMsg when suspending vm: "+taskInProgressFaultMsg.getMessage());
             }
@@ -1323,7 +1165,7 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                     VsphereMethod method = new VsphereMethod(getProvider());
                     TimePeriod interval = new TimePeriod<Second>(30, TimePeriod.SECOND);
                     if (!method.getOperationComplete(taskMor, interval, 10)) {
-                        throw new GeneralCloudException("Error stopping vm prior to termination: "+method.getTaskError().getVal(), CloudErrorType.GENERAL);
+                        throw new GeneralCloudException("Error stopping vm prior to termination: "+method.getTaskError().getVal());
                     }
                 }
                 vimPortType.destroyTask(vmRef);
@@ -1333,11 +1175,11 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                 if (runtimeFaultFaultMsg.getFaultInfo() instanceof NoPermission) {
                     throw new AuthenticationException("NoPermission fault when terminating vm", runtimeFaultFaultMsg).withFaultType(AuthenticationException.AuthenticationFaultType.FORBIDDEN);
                 }
-                throw new GeneralCloudException("Error when terminating vm", runtimeFaultFaultMsg, CloudErrorType.GENERAL);
+                throw new GeneralCloudException("Error when terminating vm", runtimeFaultFaultMsg);
             } catch (TaskInProgressFaultMsg taskInProgressFaultMsg) {
                 throw new TaskInProgressException("TaskInProgressFaultMsg when terminating vm: "+taskInProgressFaultMsg.getMessage());
             } catch (Exception e) {
-                throw new GeneralCloudException("Error when terminating vm", e, CloudErrorType.GENERAL);
+                throw new GeneralCloudException("Error when terminating vm", e);
             }
         }
         finally {
@@ -1351,27 +1193,27 @@ public class Vm extends AbstractVMSupport<Vsphere> {
         try {
             return vimPort.reconfigVMTask(vmRef, spec);
         } catch (DuplicateNameFaultMsg duplicateNameFaultMsg) {
-            throw new GeneralCloudException("DuplicateName when altering vm: " + duplicateNameFaultMsg.getFaultInfo().getName(), duplicateNameFaultMsg, CloudErrorType.INVALID_USER_DATA);
+            throw new GeneralCloudException("DuplicateName when altering vm: " + duplicateNameFaultMsg.getFaultInfo().getName(), duplicateNameFaultMsg);
         } catch (InsufficientResourcesFaultFaultMsg insufficientResourcesFaultFaultMsg) {
-            throw new GeneralCloudException("InsufficientResourcesFaultFaultMsg when altering vm", insufficientResourcesFaultFaultMsg, CloudErrorType.CAPACITY);
+            throw new GeneralCloudException("InsufficientResourcesFaultFaultMsg when altering vm", insufficientResourcesFaultFaultMsg);
         } catch (InvalidDatastoreFaultMsg invalidDatastoreFaultMsg) {
             if (invalidDatastoreFaultMsg.getFaultInfo() instanceof InvalidDatastorePath) {
-                throw new GeneralCloudException("InvalidDatastore when altering vm: "+((InvalidDatastorePath) invalidDatastoreFaultMsg.getFaultInfo()).getDatastorePath(), invalidDatastoreFaultMsg, CloudErrorType.INVALID_USER_DATA);
+                throw new GeneralCloudException("InvalidDatastore when altering vm: "+((InvalidDatastorePath) invalidDatastoreFaultMsg.getFaultInfo()).getDatastorePath(), invalidDatastoreFaultMsg);
             }
-            throw new GeneralCloudException("Error when altering vm", invalidDatastoreFaultMsg, CloudErrorType.GENERAL);
+            throw new GeneralCloudException("Error when altering vm", invalidDatastoreFaultMsg);
         } catch (InvalidNameFaultMsg invalidNameFaultMsg) {
-            throw new GeneralCloudException("InvalidNameFault when altering vm: " + invalidNameFaultMsg.getFaultInfo().getName(), invalidNameFaultMsg, CloudErrorType.INVALID_USER_DATA);
+            throw new GeneralCloudException("InvalidNameFault when altering vm: " + invalidNameFaultMsg.getFaultInfo().getName(), invalidNameFaultMsg);
         } catch (InvalidStateFaultMsg invalidStateFaultMsg) {
             throw new InvalidStateException("Vm is in invalid state for reconfig: " + invalidStateFaultMsg.getMessage(), invalidStateFaultMsg);
         } catch (RuntimeFaultFaultMsg runtimeFaultFaultMsg) {
             if (runtimeFaultFaultMsg.getFaultInfo() instanceof NoPermission) {
                 throw new AuthenticationException("NoPermission fault when altering vm", runtimeFaultFaultMsg).withFaultType(AuthenticationException.AuthenticationFaultType.FORBIDDEN);
             }
-            throw new GeneralCloudException("Error when altering vm", runtimeFaultFaultMsg, CloudErrorType.GENERAL);
+            throw new GeneralCloudException("Error when altering vm", runtimeFaultFaultMsg);
         } catch (TaskInProgressFaultMsg taskInProgressFaultMsg) {
             throw new TaskInProgressException("TaskInProgressFaultMsg when altering vm: "+taskInProgressFaultMsg.getMessage());
         } catch (Exception e) {
-            throw new GeneralCloudException("Error when altering vm", e, CloudErrorType.GENERAL);
+            throw new GeneralCloudException("Error when altering vm", e);
         }
     }
 
@@ -1381,23 +1223,23 @@ public class Vm extends AbstractVMSupport<Vsphere> {
         try {
             return vimPort.cloneVMTask(vmRef, vmFolder, name, spec);
         } catch (InsufficientResourcesFaultFaultMsg insufficientResourcesFaultFaultMsg) {
-            throw new GeneralCloudException("InsufficientResourcesFaultFaultMsg when cloning vm", insufficientResourcesFaultFaultMsg, CloudErrorType.CAPACITY);
+            throw new GeneralCloudException("InsufficientResourcesFaultFaultMsg when cloning vm", insufficientResourcesFaultFaultMsg);
         } catch (InvalidStateFaultMsg invalidStateFaultMsg) {
             throw new InvalidStateException("Vm is in invalid state for clone: " + invalidStateFaultMsg.getMessage(), invalidStateFaultMsg);
         } catch (RuntimeFaultFaultMsg runtimeFaultFaultMsg) {
             if (runtimeFaultFaultMsg.getFaultInfo() instanceof NoPermission) {
                 throw new AuthenticationException("NoPermission fault when cloning vm", runtimeFaultFaultMsg).withFaultType(AuthenticationException.AuthenticationFaultType.FORBIDDEN);
             }
-            throw new GeneralCloudException("Error when cloning vm", runtimeFaultFaultMsg, CloudErrorType.GENERAL);
+            throw new GeneralCloudException("Error when cloning vm", runtimeFaultFaultMsg);
         } catch (TaskInProgressFaultMsg taskInProgressFaultMsg) {
             throw new TaskInProgressException("TaskInProgressFaultMsg when cloning vm: "+taskInProgressFaultMsg.getMessage());
         } catch (InvalidDatastoreFaultMsg invalidDatastoreFaultMsg) {
             if (invalidDatastoreFaultMsg.getFaultInfo() instanceof InvalidDatastorePath) {
-                throw new GeneralCloudException("InvalidDatastore when cloning vm: " + ((InvalidDatastorePath) invalidDatastoreFaultMsg.getFaultInfo()).getDatastorePath(), invalidDatastoreFaultMsg, CloudErrorType.INVALID_USER_DATA);
+                throw new GeneralCloudException("InvalidDatastore when cloning vm: " + ((InvalidDatastorePath) invalidDatastoreFaultMsg.getFaultInfo()).getDatastorePath(), invalidDatastoreFaultMsg);
             }
-            throw new GeneralCloudException("Error when cloning vm", invalidDatastoreFaultMsg, CloudErrorType.GENERAL);
+            throw new GeneralCloudException("Error when cloning vm", invalidDatastoreFaultMsg);
         } catch (Exception e) {
-            throw new GeneralCloudException("Error when cloning vm", e, CloudErrorType.GENERAL);
+            throw new GeneralCloudException("Error when cloning vm", e);
         }
     }
 

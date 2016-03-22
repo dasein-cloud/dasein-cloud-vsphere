@@ -340,21 +340,20 @@ public class Vm extends AbstractVMSupport<Vsphere> {
             // get resource pools from cache or live
             Cache<ResourcePool> cache = Cache.getInstance(
                     getProvider(), "resourcePools", ResourcePool.class, CacheLevel.REGION_ACCOUNT,
-                    new TimePeriod<Minute>(15, TimePeriod.MINUTE));
+                    new TimePeriod<>(15, TimePeriod.MINUTE));
             List<ResourcePool> rps = (ArrayList<ResourcePool>) cache.get(getContext());
 
             if( rps == null ) {
-                rps = new ArrayList<ResourcePool>();
+                rps = new ArrayList<>();
 
                 Collection<ResourcePool> pools = getProvider().getDataCenterServices().listResourcePools(null);
                 rps.addAll(pools);
                 cache.put(getContext(), rps);
             }
 
-            List<VirtualMachineProduct> results = new ArrayList<VirtualMachineProduct>();
-            Iterable<VirtualMachineProduct> jsonProducts = listProductsJson();
-            // first add all matching products from vmproducts.json
-            for( VirtualMachineProduct product : jsonProducts ) {
+            List<VirtualMachineProduct> results = new ArrayList<>();
+            VirtualMachineProduct[] jsonProducts = VirtualMachineProduct.fromConfigurationFile("/org/dasein/cloud/vsphere/vmproducts.json", getContext());
+            for( VirtualMachineProduct product : jsonProducts) {
                 if( options == null || options.matches(product) ) {
                     results.add(product);
                 }
@@ -388,163 +387,6 @@ public class Vm extends AbstractVMSupport<Vsphere> {
     @Override
     public Iterable<VirtualMachineProduct> listAllProducts() throws InternalException, CloudException {
         return listProducts("ignore", VirtualMachineProductFilterOptions.getInstance());
-    }
-
-    /**
-     * Load products list from vmproducts.json filtered by architecture if specified in the options.
-     * Uses a cache for one day.
-     * @return list of products
-     * @throws InternalException
-     */
-    private @Nonnull Iterable<VirtualMachineProduct> listProductsJson() throws InternalException {
-        APITrace.begin(getProvider(), "VM.listProducts");
-        try {
-            Cache<VirtualMachineProduct> cache = Cache.getInstance(getProvider(), "products", VirtualMachineProduct.class, CacheLevel.REGION_ACCOUNT, new TimePeriod<Day>(1, TimePeriod.DAY));
-            Iterable<VirtualMachineProduct> products = cache.get(getContext());
-
-            if( products != null && products.iterator().hasNext() ) {
-                return products;
-            }
-
-            List<VirtualMachineProduct> list = new ArrayList<VirtualMachineProduct>();
-
-            try {
-                InputStream input = AbstractVMSupport.class.getResourceAsStream("/org/dasein/cloud/vsphere/vmproducts.json");
-
-                if( input == null ) {
-                    return Collections.emptyList();
-                }
-                BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-                StringBuilder json = new StringBuilder();
-                String line;
-
-                while( ( line = reader.readLine() ) != null ) {
-                    json.append(line);
-                    json.append("\n");
-                }
-                JSONArray arr = new JSONArray(json.toString());
-                JSONObject toCache = null;
-
-                for( int i = 0; i < arr.length(); i++ ) {
-                    JSONObject productSet = arr.getJSONObject(i);
-                    String cloud, provider;
-
-                    if( productSet.has("cloud") ) {
-                        cloud = productSet.getString("cloud");
-                    }
-                    else {
-                        continue;
-                    }
-                    if( productSet.has("provider") ) {
-                        provider = productSet.getString("provider");
-                    }
-                    else {
-                        continue;
-                    }
-                    if( !productSet.has("products") ) {
-                        continue;
-                    }
-                    if( toCache == null || ( provider.equals("vSphere") && cloud.equals("vSphere") ) ) {
-                        toCache = productSet;
-                    }
-                    if( provider.equalsIgnoreCase(getProvider().getProviderName()) && cloud.equalsIgnoreCase(getProvider().getCloudName()) ) {
-                        toCache = productSet;
-                        break;
-                    }
-                }
-                if( toCache == null ) {
-                    return Collections.emptyList();
-                }
-                JSONArray plist = toCache.getJSONArray("products");
-
-                for( int i = 0; i < plist.length(); i++ ) {
-                    JSONObject product = plist.getJSONObject(i);
-                    boolean supported = true;
-                    if( product.has("excludesRegions") ) {
-                        JSONArray regions = product.getJSONArray("excludesRegions");
-
-                        for( int j = 0; j < regions.length(); j++ ) {
-                            String r = regions.getString(j);
-
-                            if( r.equals(getContext().getRegionId()) ) {
-                                supported = false;
-                                break;
-                            }
-                        }
-                    }
-                    if( supported ) {
-                        list.add(toProduct(product));
-                    }
-                }
-                // save the products to cache
-                cache.put(getContext(), list);
-            } catch( IOException e ) {
-                throw new InternalException(e);
-            } catch( JSONException e ) {
-                throw new InternalException(e);
-            }
-            return list;
-        } finally {
-            APITrace.end();
-        }
-    }
-
-    private @Nullable
-    VirtualMachineProduct toProduct( @Nonnull JSONObject json ) throws InternalException {
-        VirtualMachineProduct prd = new VirtualMachineProduct();
-
-        try {
-            if( json.has("id") ) {
-                prd.setProviderProductId(json.getString("id"));
-            }
-            else {
-                return null;
-            }
-            if( json.has("name") ) {
-                prd.setName(json.getString("name"));
-            }
-            else {
-                prd.setName(prd.getProviderProductId());
-            }
-            if( json.has("description") ) {
-                prd.setDescription(json.getString("description"));
-            }
-            else {
-                prd.setDescription(prd.getName());
-            }
-            if( json.has("cpuCount") ) {
-                prd.setCpuCount(json.getInt("cpuCount"));
-            }
-            else {
-                prd.setCpuCount(1);
-            }
-            if( json.has("rootVolumeSizeInGb") ) {
-                prd.setRootVolumeSize(new Storage<Gigabyte>(json.getInt("rootVolumeSizeInGb"), Storage.GIGABYTE));
-            }
-            else {
-                prd.setRootVolumeSize(new Storage<Gigabyte>(1, Storage.GIGABYTE));
-            }
-            if( json.has("ramSizeInMb") ) {
-                prd.setRamSize(new Storage<Megabyte>(json.getInt("ramSizeInMb"), Storage.MEGABYTE));
-            }
-            else {
-                prd.setRamSize(new Storage<Megabyte>(512, Storage.MEGABYTE));
-            }
-            if( json.has("standardHourlyRates") ) {
-                JSONArray rates = json.getJSONArray("standardHourlyRates");
-
-                for( int i = 0; i < rates.length(); i++ ) {
-                    JSONObject rate = rates.getJSONObject(i);
-
-                    if( rate.has("rate") ) {
-                        prd.setStandardHourlyRate(( float ) rate.getDouble("rate"));
-                    }
-                }
-            }
-        } catch( JSONException e ) {
-            throw new InternalException(e);
-        }
-        return prd;
     }
 
     @Nonnull

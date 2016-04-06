@@ -1,0 +1,14 @@
+{
+  "token" : null,
+  "objects" : [ "java.util.ArrayList", [ {
+    "obj" : {
+      "value" : "dvs-51",
+      "type" : "DistributedVirtualSwitch"
+    },
+    "propSet" : [ "java.util.ArrayList", [ {
+      "name" : "uuid",
+      "val" : "aa11 bb22 cc33"
+    } ] ],
+    "missingSet" : [ "java.util.ArrayList", [ ] ]
+  } ] ]
+}

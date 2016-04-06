@@ -2816,7 +2816,7 @@ public class VirtualMachineTest extends VsphereTestBase {
                 times = 0;
             }
             {vimPortMock.cloneVMTask((ManagedObjectReference) any, (ManagedObjectReference) any, anyString, (VirtualMachineCloneSpec) any);
-                result = new GeneralCloudException("Missing param: owner", CloudErrorType.INVALID_USER_DATA);
+                result = new GeneralCloudException("Missing param: owner");
             }
             {vm.reconfigVMTask((ManagedObjectReference) any, (VirtualMachineConfigSpec) any);
                 result = task;
@@ -2881,7 +2881,7 @@ public class VirtualMachineTest extends VsphereTestBase {
                 times = 0;
             }
             {vimPortMock.cloneVMTask((ManagedObjectReference) any, (ManagedObjectReference) any, anyString, (VirtualMachineCloneSpec) any);
-                result = new GeneralCloudException("Missing param: org", CloudErrorType.INVALID_USER_DATA);
+                result = new GeneralCloudException("Missing param: org");
             }
             {vm.reconfigVMTask((ManagedObjectReference) any, (VirtualMachineConfigSpec) any);
                 result = task;

@@ -19,17 +19,30 @@
 
 package org.dasein.cloud.vsphere.network;
 
-import com.vmware.vim25.*;
-import org.apache.log4j.Logger;
+import com.vmware.vim25.DVPortgroupConfigInfo;
+import com.vmware.vim25.DynamicProperty;
+import com.vmware.vim25.ManagedObjectReference;
+import com.vmware.vim25.NetworkSummary;
+import com.vmware.vim25.ObjectContent;
+import com.vmware.vim25.PropertySpec;
+import com.vmware.vim25.RetrieveResult;
+import com.vmware.vim25.SelectionSpec;
 import org.dasein.cloud.CloudException;
 import org.dasein.cloud.InternalException;
 import org.dasein.cloud.ProviderContext;
 import org.dasein.cloud.VisibleScope;
-import org.dasein.cloud.network.*;
+import org.dasein.cloud.network.AbstractVLANSupport;
+import org.dasein.cloud.network.IPVersion;
+import org.dasein.cloud.network.VLAN;
+import org.dasein.cloud.network.VLANCapabilities;
+import org.dasein.cloud.network.VLANState;
 import org.dasein.cloud.util.APITrace;
 import org.dasein.cloud.util.Cache;
 import org.dasein.cloud.util.CacheLevel;
-import org.dasein.cloud.vsphere.*;
+import org.dasein.cloud.vsphere.NoContextException;
+import org.dasein.cloud.vsphere.Vsphere;
+import org.dasein.cloud.vsphere.VsphereInventoryNavigation;
+import org.dasein.cloud.vsphere.VsphereTraversalSpec;
 import org.dasein.util.uom.time.Day;
 import org.dasein.util.uom.time.TimePeriod;
 
@@ -37,8 +50,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * User: daniellemayne
@@ -47,6 +62,7 @@ import java.util.Locale;
  */
 public class VSphereNetwork extends AbstractVLANSupport<Vsphere> {
     private List<PropertySpec> networkPSpec;
+    private List<PropertySpec> switchPSpec;
 
     public VSphereNetwork(Vsphere provider) {
         super(provider);
@@ -62,6 +78,13 @@ public class VSphereNetwork extends AbstractVLANSupport<Vsphere> {
             networkPSpec = VsphereTraversalSpec.createPropertySpec(networkPSpec, "Network", true);
         }
         return networkPSpec;
+    }
+
+    public List<PropertySpec> getSwitchPSpec() {
+        if (switchPSpec == null) {
+            switchPSpec = VsphereTraversalSpec.createPropertySpec(switchPSpec, "DistributedVirtualSwitch", false, "uuid");
+        }
+        return switchPSpec;
     }
 
     private transient volatile VSphereNetworkCapabilities capabilities;
@@ -115,8 +138,27 @@ public class VSphereNetwork extends AbstractVLANSupport<Vsphere> {
 
             List<VLAN> list = new ArrayList<VLAN>();
             List<PropertySpec> pSpecs = getNetworkPSpec();
+            List<PropertySpec> switchPSpecs = getSwitchPSpec();
 
             RetrieveResult listobcont = retrieveObjectList(getProvider(), "networkFolder", null, pSpecs);
+            RetrieveResult switchListObCont = retrieveObjectList(getProvider(), "networkFolder", null, switchPSpecs);
+
+            Map<String, String> switchMap = new HashMap<String, String>();
+            if (switchListObCont != null) {
+                List<ObjectContent> switchObjectContents = switchListObCont.getObjects();
+                for (ObjectContent oc : switchObjectContents) {
+                    ManagedObjectReference mo = oc.getObj();
+                    String id = mo.getValue();
+                    String uuid = "";
+                    List<DynamicProperty> props = oc.getPropSet();
+                    for (DynamicProperty dp : props) {
+                        if ( dp.getName().equals("uuid") ) {
+                            uuid = (String) dp.getVal();
+                        }
+                    }
+                    switchMap.put(id, uuid);
+                }
+            }
 
             if (listobcont != null) {
                 List<ObjectContent> objectContents = listobcont.getObjects();
@@ -137,7 +179,8 @@ public class VSphereNetwork extends AbstractVLANSupport<Vsphere> {
                             else if (dp.getVal() instanceof DVPortgroupConfigInfo) {
                                 DVPortgroupConfigInfo di = (DVPortgroupConfigInfo) dp.getVal();
                                 ManagedObjectReference switchMO = di.getDistributedVirtualSwitch();
-                                dvsId = switchMO.getValue();
+                                String tmp = switchMO.getValue();
+                                dvsId = switchMap.get(tmp);
                             }
                         }
                         if ( networkName != null ) {

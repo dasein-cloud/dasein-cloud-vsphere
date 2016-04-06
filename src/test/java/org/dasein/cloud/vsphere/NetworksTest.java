@@ -23,7 +23,6 @@ import com.vmware.vim25.PropertySpec;
 import com.vmware.vim25.RetrieveResult;
 import mockit.Expectations;
 import mockit.NonStrictExpectations;
-import org.dasein.cloud.AuthenticationException;
 import org.dasein.cloud.CloudException;
 import org.dasein.cloud.InternalException;
 import org.dasein.cloud.network.VLAN;
@@ -51,9 +50,11 @@ public class NetworksTest extends VsphereTestBase {
     static private RetrieveResult networksNoProperties;
     static private RetrieveResult networksNoSummaryProperty;
     static private RetrieveResult networksNoConfigProperty;
+    static private RetrieveResult switches;
 
     private VSphereNetwork network = null;
     private List<PropertySpec> networkPSpec = null;
+    private List<PropertySpec> switchPSpec = null;
 
     private Cache<VLAN> cache = null;
 
@@ -64,6 +65,8 @@ public class NetworksTest extends VsphereTestBase {
         networksNoProperties = om.readJsonFile("src/test/resources/Networks/missingPropertiesNetworks.json", RetrieveResult.class);
         networksNoSummaryProperty = om.readJsonFile("src/test/resources/Networks/missingSummaryPropertyNetworks.json", RetrieveResult.class);
         networksNoConfigProperty = om.readJsonFile("src/test/resources/Networks/missingConfigPropertyNetworks.json", RetrieveResult.class);
+
+        switches = om.readJsonFile("src/test/resources/Networks/switches.json", RetrieveResult.class);
     }
 
     @Before
@@ -71,6 +74,7 @@ public class NetworksTest extends VsphereTestBase {
         super.setUp();
         network = new VSphereNetwork(vsphereMock);
         networkPSpec = network.getNetworkPSpec();
+        switchPSpec = network.getSwitchPSpec();
         cache = Cache.getInstance(vsphereMock, "networks", VLAN.class, CacheLevel.REGION_ACCOUNT, new TimePeriod<Day>(1, TimePeriod.DAY));
     }
 
@@ -81,6 +85,9 @@ public class NetworksTest extends VsphereTestBase {
         new NonStrictExpectations(VSphereNetwork.class) {
             {network.retrieveObjectList(vsphereMock, "networkFolder", null, networkPSpec);
                 result = networks;
+            }
+            {network.retrieveObjectList(vsphereMock, "networkFolder", null, switchPSpec);
+                result = switches;
             }
         };
 
@@ -108,6 +115,9 @@ public class NetworksTest extends VsphereTestBase {
             {network.retrieveObjectList(vsphereMock, "networkFolder", null, networkPSpec);
                 result = networks;
             }
+            {network.retrieveObjectList(vsphereMock, "networkFolder", null, switchPSpec);
+                result = switches;
+            }
         };
 
         VLAN vlan = network.getVlan("dvportgroup-56");
@@ -118,7 +128,7 @@ public class NetworksTest extends VsphereTestBase {
         assertEquals("VM Network (dvportgroup-56)", vlan.getDescription());
         assertNotNull(vlan.getTags());
         assertNotNull(vlan.getTag("switch.uuid"));
-        assertEquals("dvs-51", vlan.getTag("switch.uuid"));
+        assertEquals("aa11 bb22 cc33", vlan.getTag("switch.uuid"));
     }
 
     @Test
@@ -126,6 +136,9 @@ public class NetworksTest extends VsphereTestBase {
         new NonStrictExpectations(VSphereNetwork.class) {
             {network.retrieveObjectList(vsphereMock, "networkFolder", null, networkPSpec);
                 result = networks;
+            }
+            {network.retrieveObjectList(vsphereMock, "networkFolder", null, switchPSpec);
+                result = switches;
             }
         };
 
@@ -155,7 +168,7 @@ public class NetworksTest extends VsphereTestBase {
         new Expectations(VSphereNetwork.class) {
             {network.retrieveObjectList(vsphereMock, anyString, (List) any, (List) any);
                 result = null;
-                times=1;
+                result = switches;
             }
         };
 
@@ -172,7 +185,7 @@ public class NetworksTest extends VsphereTestBase {
         new Expectations(VSphereNetwork.class) {
             {network.retrieveObjectList(vsphereMock, anyString, (List) any, (List) any);
                 result = new RetrieveResult();
-                times=1;
+                result = switches;
             }
         };
 
@@ -189,7 +202,7 @@ public class NetworksTest extends VsphereTestBase {
         new Expectations(VSphereNetwork.class) {
             {network.retrieveObjectList(vsphereMock, anyString, (List) any, (List) any);
                 result = networksNoProperties;
-                times=1;
+                result = switches;
             }
         };
 
@@ -205,7 +218,7 @@ public class NetworksTest extends VsphereTestBase {
         new Expectations(VSphereNetwork.class) {
             {network.retrieveObjectList(vsphereMock, anyString, (List) any, (List) any);
                 result = networksNoSummaryProperty;
-                times=1;
+                result = switches;
             }
         };
 
@@ -221,7 +234,7 @@ public class NetworksTest extends VsphereTestBase {
         new Expectations(VSphereNetwork.class) {
             {network.retrieveObjectList(vsphereMock, anyString, (List) any, (List) any);
                 result = networksNoConfigProperty;
-                times=1;
+                result = switches;
             }
         };
 

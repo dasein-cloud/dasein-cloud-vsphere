@@ -49,7 +49,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * User: daniellemayne
@@ -58,6 +60,7 @@ import java.util.List;
  */
 public class VSphereNetwork extends AbstractVLANSupport<Vsphere> {
     private List<PropertySpec> networkPSpec;
+    private List<PropertySpec> switchPSpec;
 
     public VSphereNetwork(Vsphere provider) {
         super(provider);
@@ -73,6 +76,13 @@ public class VSphereNetwork extends AbstractVLANSupport<Vsphere> {
             networkPSpec = VsphereTraversalSpec.createPropertySpec(networkPSpec, "Network", true);
         }
         return networkPSpec;
+    }
+
+    public List<PropertySpec> getSwitchPSpec() {
+        if (switchPSpec == null) {
+            switchPSpec = VsphereTraversalSpec.createPropertySpec(switchPSpec, "DistributedVirtualSwitch", false, "uuid");
+        }
+        return switchPSpec;
     }
 
     private transient volatile VSphereNetworkCapabilities capabilities;
@@ -105,9 +115,28 @@ public class VSphereNetwork extends AbstractVLANSupport<Vsphere> {
 
             List<VLAN> list = new ArrayList<VLAN>();
             List<PropertySpec> pSpecs = getNetworkPSpec();
+            List<PropertySpec> switchPSpecs = getSwitchPSpec();
 
             RetrieveResult listobcont = retrieveObjectList(getProvider(), "networkFolder", null, pSpecs);
 
+            RetrieveResult switchListObCont = retrieveObjectList(getProvider(), "networkFolder", null, switchPSpecs);
+
+            Map<String, String> switchMap = new HashMap<String, String>();
+            if (switchListObCont != null) {
+                List<ObjectContent> switchObjectContents = switchListObCont.getObjects();
+                for (ObjectContent oc : switchObjectContents) {
+                    ManagedObjectReference mo = oc.getObj();
+                    String id = mo.getValue();
+                    String uuid = "";
+                    List<DynamicProperty> props = oc.getPropSet();
+                    for (DynamicProperty dp : props) {
+                        if ( dp.getName().equals("uuid") ) {
+                            uuid = (String) dp.getVal();
+                        }
+                    }
+                    switchMap.put(id, uuid);
+                }
+            }
             if (listobcont != null) {
                 List<ObjectContent> objectContents = listobcont.getObjects();
                 for (ObjectContent oc : objectContents) {
@@ -127,7 +156,8 @@ public class VSphereNetwork extends AbstractVLANSupport<Vsphere> {
                             else if (dp.getVal() instanceof DVPortgroupConfigInfo) {
                                 DVPortgroupConfigInfo di = (DVPortgroupConfigInfo) dp.getVal();
                                 ManagedObjectReference switchMO = di.getDistributedVirtualSwitch();
-                                dvsId = switchMO.getValue();
+                                String tmp = switchMO.getValue();
+                                dvsId = switchMap.get(tmp);
                             }
                         }
                         if ( networkName != null ) {

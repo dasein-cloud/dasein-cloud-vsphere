@@ -791,12 +791,16 @@ public class Vm extends AbstractVMSupport<Vsphere> {
                         resultingNetworks.add(vlan);
                     }
                     if (!machineSpecs.isEmpty()) {
-                        if (apiMajorVersion >= 6) {
-                            location.getDeviceChange().addAll(machineSpecs);
-                        }
-                        else {
-                            config.getDeviceChange().addAll(machineSpecs);
-                        }
+                        /**COMMENT BELOW IS HOW CODE SHOULD BE ACCORDING TO SDK DOCUMENTATION
+                         * http://pubs.vmware.com/vsphere-60/index.jsp#com.vmware.wssdk.apiref.doc/vim.vm.CloneSpec.html
+                         * BUT IT DOESN'T WORK
+                         */
+                       // if (apiMajorVersion >= 6) {
+                       //     location.getDeviceChange().addAll(machineSpecs);
+                       // }
+                       // else {
+                         config.getDeviceChange().addAll(machineSpecs);
+                       // }
                     }
                     // end networking section
                 }

@@ -33,7 +33,6 @@ import org.dasein.util.uom.storage.Gigabyte;
 import org.dasein.util.uom.storage.Storage;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -51,12 +50,12 @@ public class HardDiskCapabilities extends AbstractCapabilities<Vsphere> implemen
 
     @Override
     public boolean canAttach(VmState vmState) throws InternalException, CloudException {
-        return (vmState.equals(VmState.RUNNING));
+        return true;
     }
 
     @Override
     public boolean canDetach(VmState vmState) throws InternalException, CloudException {
-        return (vmState.equals(VmState.RUNNING));
+        return true;
     }
 
     @Override
